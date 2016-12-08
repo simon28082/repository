@@ -1,0 +1,24 @@
+{
+    "name": "crcms/repository",
+    "description": "crcms repository extends laravel",
+	"keywords": ["crcms", "repository","laravel","php"],
+	"homepage": "https://github.com/crcms/kernel",
+    "license": "MIT",
+	"authors": [
+        {
+            "name": "simon",
+            "email": "28737164@qq.com",
+			"homepage": "http://crcms.cn"
+        }
+    ],
+    "require": {
+        "php":">=7.0"
+    },
+	"autoload": {
+        "files": [
+        ],
+        "psr-4": {
+            "CrCms\\Repository\\": "src/"
+        }
+    }
+}
