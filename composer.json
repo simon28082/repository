@@ -2,7 +2,7 @@
     "name": "crcms/repository",
     "description": "crcms repository extends laravel",
 	"keywords": ["crcms", "repository","laravel","php"],
-	"homepage": "https://github.com/crcms/kernel",
+	"homepage": "https://github.com/crcms/repository",
     "license": "MIT",
 	"authors": [
         {
