@@ -2,7 +2,9 @@
 
 namespace CrCms\Repository\Repositories;
 
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 interface RepositoryInterface
 {
@@ -10,7 +12,7 @@ interface RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function all(array $columns = ['*']);
+    public function all(array $columns = ['*']) : Collection;
 
 
     /**
@@ -18,7 +20,7 @@ interface RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findAllPaginate(int $perPage = 15, array $columns = ['*']);
+    public function findAllPaginate(int $perPage = 15, array $columns = ['*']) : Paginator;
 
 
     /**
@@ -48,7 +50,7 @@ interface RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findById(int $id, array $columns = ['*']);
+    public function findById(int $id, array $columns = ['*']) : Model;
 
 
     /**
@@ -57,7 +59,7 @@ interface RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findOneBy(string $field,string $value,array $columns = ['*']);
+    public function findOneBy(string $field,string $value,array $columns = ['*']) : Model;
 
 
     /**
@@ -66,5 +68,5 @@ interface RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findBy(string $field,string $value,array $columns = ['*']);
+    public function findBy(string $field,string $value,array $columns = ['*']) : Collection;
 }
