@@ -1,9 +1,7 @@
 <?php
 namespace CrCms\Repository\Repositories\Traits;
 
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 trait RepositoryTrait
 {
@@ -18,7 +16,7 @@ trait RepositoryTrait
      * @param array $columns
      * @return mixed
      */
-    public function all(array $columns = ['*']) : Collection
+    public function all(array $columns = ['*'])
     {
         return $this->model->select($columns)->orderBy($this->model->getKeyName(),'desc')->get();
     }
@@ -29,7 +27,7 @@ trait RepositoryTrait
      * @param array $columns
      * @return mixed
      */
-    public function findAllPaginate(int $perPage = 15, array $columns = ['*']) : Paginator
+    public function findAllPaginate(int $perPage = 15, array $columns = ['*'])
     {
         return $this->model->select($columns)->orderBy($this->model->getKeyName(),'desc')->paginate($perPage);
     }
@@ -80,7 +78,7 @@ trait RepositoryTrait
      * @param array $columns
      * @return mixed
      */
-    public function findById(int $id, array $columns = ['*']) : Model
+    public function findById(int $id, array $columns = ['*'])
     {
         return $this->model->select($columns)->where($this->model->getKeyName(),$id)->firstOrFail();
     }
@@ -92,9 +90,9 @@ trait RepositoryTrait
      * @param array $columns
      * @return mixed
      */
-    public function findOneBy(string $field,string $value,array $columns = ['*']) : Model
+    public function findOneBy(string $field,string $value,array $columns = ['*'])
     {
-        return $this->model->select($columns)->where($field,$value)->firstOrFail();
+        return $this->model->select($columns)->where($field,$value)->orderBy($this->model->getKeyName(),'desc')->first();
     }
 
 
@@ -104,7 +102,7 @@ trait RepositoryTrait
      * @param array $columns
      * @return mixed
      */
-    public function findBy(string $field,string $value,array $columns = ['*']) : Collection
+    public function findBy(string $field,string $value,array $columns = ['*'])
     {
         return $this->model->select($columns)->where($field,$value)->orderBy($this->model->getKeyName(),'desc')->get();
     }
