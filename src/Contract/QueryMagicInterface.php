@@ -6,7 +6,7 @@ namespace CrCms\Repository\Contract;
  * Interface QueryExtendInterface
  * @package CrCms\Repository\Contract
  */
-interface QueryExtendInterface
+interface QueryMagicInterface
 {
 
     /**

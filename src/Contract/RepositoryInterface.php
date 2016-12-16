@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
  */
 interface RepositoryInterface
 {
-
     /**
      * @param array $columns
      * @return Collection
@@ -28,17 +27,17 @@ interface RepositoryInterface
 
     /**
      * @param array $data
-     * @return BaseModelInterface
+     * @return Collection
      */
-    public function create(array $data) : BaseModelInterface;
+    public function create(array $data) : Collection;
 
 
     /**
      * @param array $data
      * @param int $id
-     * @return BaseModelInterface
+     * @return Collection
      */
-    public function update(array $data, int $id) : BaseModelInterface;
+    public function update(array $data, int $id) : Collection;
 
 
     /**
@@ -72,4 +71,18 @@ interface RepositoryInterface
      * @return Collection
      */
     public function findBy(string $field, string $value, array $columns = ['*']) : Collection;
+
+
+    /**
+     * @param QueryMagicInterface $queryMagic
+     * @return RepositoryInterface
+     */
+    public function findByQueryMagic(QueryMagicInterface $queryMagic) : RepositoryInterface;
+
+
+    /**
+     * @param callable $callable
+     * @return RepositoryInterface
+     */
+    public function findByQueryCallback(callable $callable) : RepositoryInterface;
 }
