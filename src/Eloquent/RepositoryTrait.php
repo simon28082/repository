@@ -5,6 +5,7 @@ namespace CrCms\Repository\Repositories;
 
 use CrCms\Repository\Contract\QueryMagicInterface;
 use CrCms\Repository\Contract\RepositoryInterface;
+use CrCms\Repository\Contract\RepositoryMagicInterface;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
 
@@ -38,7 +39,7 @@ trait RepositoryTrait
      * @param QueryMagicInterface $queryMagic
      * @return $this
      */
-    public function findByQueryMagic(QueryMagicInterface $queryMagic) : RepositoryInterface
+    public function findByQueryMagic(RepositoryMagicInterface $queryMagic) : RepositoryInterface
     {
         $this->query = $queryMagic->apply($this->query,$this);
         return $this;
