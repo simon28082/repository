@@ -1,12 +1,11 @@
 <?php
-
 namespace CrCms\Repository\Contracts;
 
 use Illuminate\Support\Collection;
 
 /**
- * Interface RepositoryInterface
- * @package CrCms\Repository\Contract
+ * Interface Repository
+ * @package CrCms\Repository\Contracts
  */
 interface Repository
 {
@@ -26,23 +25,6 @@ interface Repository
 
 
     /**
-     * @param int $id
-     * @param array $columns
-     * @return Collection
-     */
-    public function byId(int $id, array $columns = ['*']) : Collection;
-
-
-    /**
-     * @param string $field
-     * @param string $value
-     * @param array $columns
-     * @return Collection
-     */
-    public function oneBy(string $field, string $value, array $columns = ['*']) : Collection;
-
-
-    /**
      * @param string $field
      * @param string $value
      * @param array $columns
@@ -52,15 +34,16 @@ interface Repository
 
 
     /**
-     * @param QueryMagic $queryMagic
-     * @return Repository
-     */
-    public function byQueryMagic(QueryMagic $queryMagic) : Repository;
-
-
-    /**
      * @param callable $callable
      * @return Repository
      */
-    public function byQueryCallback(callable $callable) : Repository;
+    public function byCallable(callable $callable) : Repository;
+
+
+    /**
+     * @param array $wheres
+     * @param array $columns
+     * @return Collection
+     */
+    public function byWhere(array $wheres, array $columns = ['*']) : Collection;
 }
