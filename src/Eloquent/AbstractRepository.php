@@ -4,6 +4,7 @@ namespace CrCms\Repository\Eloquent;
 use CrCms\Repository\Contracts\Eloquent\Eloquent;
 use CrCms\Repository\Contracts\Eloquent\QueryMagic;
 use CrCms\Repository\Contracts\Repository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -197,11 +198,20 @@ abstract class AbstractRepository implements Repository,Eloquent
 
 
     /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->getNewQuery()->count();
+    }
+
+
+    /**
      * @param int $perPage
      * @param array $columns
-     * @return Collection
+     * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15, array $columns = ['*']): Collection
+    public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator
     {
         return $this->getNewQuery()->select($columns)->orderBy($this->getModel()->getKeyName(),'desc')->paginate($perPage);
     }

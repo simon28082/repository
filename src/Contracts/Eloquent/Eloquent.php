@@ -2,6 +2,7 @@
 namespace CrCms\Repository\Contracts\Eloquent;
 
 use CrCms\Repository\Contracts\Repository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,6 +11,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 interface Eloquent
 {
+
+    /**
+     * @param int $perPage
+     * @param array $columns
+     * @return LengthAwarePaginator
+     */
+    public function paginate(int $perPage = 15, array $columns = ['*']) : LengthAwarePaginator;
+
+
+
     /**
      * @param array $data
      * @return Model

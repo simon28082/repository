@@ -17,11 +17,9 @@ interface Repository
 
 
     /**
-     * @param int $perPage
-     * @param array $columns
-     * @return Collection
+     * @return int
      */
-    public function paginate(int $perPage = 15, array $columns = ['*']) : Collection;
+    public function count() : int;
 
 
     /**
