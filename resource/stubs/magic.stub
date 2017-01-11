@@ -2,7 +2,7 @@
 namespace magic_namespace;
 
 use CrCms\Repository\Contracts\Eloquent\QueryMagic;
-use CrCms\Repository\Contracts\Repository;
+use repository_namespace as Repository;
 use Illuminate\Database\Eloquent\Builder;
 
 /**

@@ -94,6 +94,10 @@ class RepositoryCreator
         $this->setRepository($repository);
         $this->setModel($model);
 
+        if ($this->checkFileExists()) {
+            throw new \Exception('repository file is exists');
+        }
+
         //create directory
         $this->createDirectory();
 
@@ -142,7 +146,7 @@ class RepositoryCreator
      */
     protected function getStubFilePath() : string
     {
-        return __DIR__.'../../../resource/stubs/repository.stub';
+        return __DIR__.'../../../../../resource/stubs/repository.stub';
     }
 
 
@@ -183,5 +187,15 @@ class RepositoryCreator
     {
         $this->fileSystem->put($this->getRepositoryPath(),$content);
     }
+
+
+    /**
+     * @return bool
+     */
+    protected function checkFileExists() : bool
+    {
+        return $this->fileSystem->exists($this->getRepositoryPath());
+    }
+
 }
 

@@ -31,6 +31,11 @@ class MagicCreator
      */
     protected $magicNamespace = '';
 
+    /**
+     * @var string
+     */
+    protected $repository = '';
+
 
     /**
      * MagicCreator constructor.
@@ -66,12 +71,29 @@ class MagicCreator
 
 
     /**
+     * @param string $repository
+     * @return MagicCreator
+     */
+    public function setRepository(string $repository) : self
+    {
+        //$this->repository = $repository ? : 'CrCms\Repository\Contracts\Repository';
+        $this->repository = 'CrCms\Repository\Contracts\Repository';
+        return $this;
+    }
+
+
+    /**
      * @param string $magic
      */
-    public function create(string $magic)
+    public function create(string $magic,string $repository = '')
     {
         //set and format arguments
         $this->setMagic($magic);
+        $this->setRepository($repository);
+
+        if ($this->checkFileExists()) {
+            throw new \Exception('magic file is exists');
+        }
 
         //create directory
         $this->createDirectory();
@@ -121,7 +143,7 @@ class MagicCreator
      */
     protected function getStubFilePath() : string
     {
-        return __DIR__.'../../../resource/stubs/magic.stub';
+        return __DIR__.'../../../../../resource/stubs/magic.stub';
     }
 
 
@@ -146,9 +168,11 @@ class MagicCreator
         return str_replace([
             'magic_namespace',
             'magic_class',
+            'repository_namespace',
         ],[
             $magicNamespace,
             $this->magic,
+            $this->repository
         ],$this->getStubFileContent());
     }
 
@@ -160,5 +184,15 @@ class MagicCreator
     {
         $this->fileSystem->put($this->getRepositoryPath(),$content);
     }
+
+
+    /**
+     * @return bool
+     */
+    protected function checkFileExists() : bool
+    {
+        return $this->fileSystem->exists($this->getRepositoryPath());
+    }
+
 }
 

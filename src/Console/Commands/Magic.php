@@ -4,6 +4,7 @@ namespace CrCms\Repository\Console\Commands;
 use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class Magic
@@ -46,8 +47,9 @@ class Magic extends Command
     {
         //
         $arguments = $this->arguments();
+        $options = $this->options();
 
-        $this->creator->create($arguments['magic']);
+        $this->creator->create($arguments['magic'],$options['repository'] ?? '');
 
         //update composer autoload
         app('composer')->dumpAutoloads();
@@ -63,6 +65,17 @@ class Magic extends Command
     {
         return [
             ['magic',InputArgument::REQUIRED,'The magic name.'],
+        ];
+    }
+
+
+    /**
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['repository', '',InputOption::VALUE_OPTIONAL, 'The repository name.', ''],
         ];
     }
 
