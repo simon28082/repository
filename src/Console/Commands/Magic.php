@@ -1,37 +1,38 @@
 <?php
 namespace CrCms\Repository\Console\Commands;
 
-use CrCms\Repository\Console\Commands\Creator\RepositoryCreator;
+use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
- * Class Repository
+ * Class Magic
  * @package CrCms\Repository\Console\Commands
  */
-class Repository extends Command
+class Magic extends Command
 {
-    /**
-     * @var string
-     */
-    protected $name = 'make:repository';
 
     /**
      * @var string
      */
-    protected $description = 'Create a new repository class';
+    protected $name = 'make:magic';
 
     /**
-     * @var RepositoryCreator|null
+     * @var string
+     */
+    protected $description = 'Create a new magic class';
+
+    /**
+     * @var MagicCreator|null
      */
     protected $creator = null;
 
 
     /**
-     * Repository constructor.
-     * @param RepositoryCreator $creator
+     * Magic constructor.
+     * @param MagicCreator $creator
      */
-    public function __construct(RepositoryCreator $creator)
+    public function __construct(MagicCreator $creator)
     {
         parent::__construct();
         $this->creator = $creator;
@@ -46,12 +47,12 @@ class Repository extends Command
         //
         $arguments = $this->arguments();
 
-        $this->creator->create($arguments['repository'],$arguments['model']);
+        $this->creator->create($arguments['magic']);
 
         //update composer autoload
         app('composer')->dumpAutoloads();
 
-        $this->info("Successfully created the repository class");
+        $this->info("Successfully created the magic class");
     }
 
 
@@ -61,8 +62,7 @@ class Repository extends Command
     protected function getArguments()
     {
         return [
-            ['repository',InputArgument::REQUIRED,'The repository name.'],
-            ['model',InputArgument::REQUIRED,'The model name.']
+            ['magic',InputArgument::REQUIRED,'The magic name.'],
         ];
     }
 

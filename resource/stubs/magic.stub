@@ -1,0 +1,25 @@
+<?php
+namespace magic_namespace;
+
+use CrCms\Repository\Contracts\Eloquent\QueryMagic;
+use CrCms\Repository\Contracts\Repository;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * Class magic_class
+ * @package magic_namespace
+ */
+class magic_class implements QueryMagic
+{
+
+    /**
+     * @param Builder $query
+     * @param Repository $repository
+     * @return Builder
+     */
+    public function magic(Builder $query, Repository $repository) : Builder
+    {
+
+        return $query;
+    }
+}
