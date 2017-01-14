@@ -41,6 +41,15 @@ abstract class AbstractRepository implements Repository,Eloquent
     /**
      * @return Model
      */
+    public function newModel()
+    {
+        return $this->model();
+    }
+
+
+    /**
+     * @return Model
+     */
     public function getModel() : Model
     {
         if (!$this->model) {
