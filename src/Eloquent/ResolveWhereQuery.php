@@ -55,6 +55,29 @@ class ResolveWhereQuery
      */
     public function getQuery(array $wheres, Builder $query) : Builder
     {
-        return $this->handle($wheres,$query);
+        return $this->handle($this->resolve($wheres),$query);
+    }
+
+
+    /**
+     * 简写方法解析
+     * @param array $wheres
+     * @return array
+     */
+    protected function resolve(array $wheres) : array
+    {
+        $whereRecursiveCount = count($wheres,COUNT_RECURSIVE);
+
+        //['id',1] => [['where','id',=,1]]
+        if ($whereRecursiveCount === 2) {
+            return ['where',[$wheres[0],'=',$wheres[1]]];
+        }
+
+        //['id',>,1] => [['where','id',>,1]]
+        if ($whereRecursiveCount === 3) {
+            return [array_unshift($wheres,'where')];
+        }
+
+        return $wheres;
     }
 }
