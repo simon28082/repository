@@ -26,25 +26,17 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     protected $model = null;
 
+
     /**
      * @var array
      */
-    protected $guards = [];
+    protected $fillable = [];
 
 
     /**
      * @return Model
      */
-    abstract protected function model() : Model;
-
-
-    /**
-     * @return Model
-     */
-    public function newModel()
-    {
-        return $this->model();
-    }
+    abstract public function newModel() : Model;
 
 
     /**
@@ -53,29 +45,27 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function getModel() : Model
     {
         if (!$this->model) {
-            $this->model = $this->model();
+            $this->model = $this->newModel();
         }
         return $this->model;
     }
 
 
     /**
-     * @param array $guards
-     * @return AbstractRepository
-     */
-    public function setGuards(array $guards) : AbstractRepository
-    {
-        $this->guards = $guards;
-        return $this;
-    }
-
-
-    /**
      * @return array
      */
-    public function getGuards() : array
+    public function getFillable(): array
     {
-        return $this->guards;
+        return $this->fillable;
+    }
+
+    /**
+     * @param array $fillable
+     */
+    public function setFillable(array $fillable) : AbstractRepository
+    {
+        $this->fillable = $fillable;
+        return $this;
     }
 
 
@@ -111,12 +101,12 @@ abstract class AbstractRepository implements Repository,Eloquent
      * @param array $data
      * @return array
      */
-    protected function guardFilter(array $data) : array
+    protected function fillableFilter(array $data) : array
     {
-        if (empty($this->guards)) return $data;
+        if (empty($this->fillable)) return $data;
 
         return array_filter($data,function($key) {
-            return in_array($key,$this->guards,true);
+            return in_array($key,$this->fillable,true);
         },ARRAY_FILTER_USE_KEY);
     }
 
@@ -127,7 +117,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function create(array $data): Model
     {
-        $data = $this->guardFilter($data);
+        $data = $this->fillableFilter($data);
 
         return $this->getModel()->create($data);
     }
@@ -140,7 +130,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function update(array $data, int $id): Model
     {
-        $data = $this->guardFilter($data);
+        $data = $this->fillableFilter($data);
 
         $model = $this->byId($id);
         foreach ($data as $key=>$value) {
@@ -186,23 +176,12 @@ abstract class AbstractRepository implements Repository,Eloquent
 
 
     /**
-     * @param QueryMagic $queryMagic
-     * @return Repository
-     */
-    public function byMagic(QueryMagic $queryMagic): Repository
-    {
-        $this->query = $queryMagic->magic($this->getCurrentOrNewQuery(),$this);
-        return $this;
-    }
-
-
-    /**
      * @param array $columns
      * @return Collection
      */
     public function all(array $columns = ['*']): Collection
     {
-        return $this->getNewQuery()->select($columns)->orderBy($this->getModel()->getKeyName(),'desc')->get();
+        return $this->getCurrentOrNewQuery()->select($columns)->orderBy($this->getModel()->getKeyName(),'desc')->get();
     }
 
 
@@ -211,7 +190,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function count(): int
     {
-        return $this->getNewQuery()->count();
+        return $this->getCurrentOrNewQuery()->count();
     }
 
 
@@ -222,7 +201,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator
     {
-        return $this->getNewQuery()->select($columns)->orderBy($this->getModel()->getKeyName(),'desc')->paginate($perPage);
+        return $this->getCurrentOrNewQuery()->select($columns)->orderBy($this->getModel()->getKeyName(),'desc')->paginate($perPage);
     }
 
 
@@ -235,6 +214,17 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function by(string $field, string $value, array $columns = ['*']): Collection
     {
         return $this->getNewQuery()->select($columns)->where($field,$value)->orderBy($this->getModel()->getKeyName(),'desc')->get();
+    }
+
+
+    /**
+     * @param QueryMagic $queryMagic
+     * @return Repository
+     */
+    public function byMagic(QueryMagic $queryMagic): Repository
+    {
+        $this->query = $queryMagic->magic($this->getCurrentOrNewQuery(),$this);
+        return $this;
     }
 
 
