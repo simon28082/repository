@@ -11,7 +11,6 @@ use CrCms\Repository\Contracts\Repository;
  */
 abstract class AbstractMagic implements QueryMagic
 {
-
     /**
      * @var array
      */
@@ -21,6 +20,16 @@ abstract class AbstractMagic implements QueryMagic
      * @var array
      */
     protected $guards = [];
+
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data) : self
+    {
+        $this->data = $data;
+        return $this;
+    }
 
 
     /**
