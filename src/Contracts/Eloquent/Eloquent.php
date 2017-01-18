@@ -1,7 +1,6 @@
 <?php
 namespace CrCms\Repository\Contracts\Eloquent;
 
-use CrCms\Repository\Contracts\Repository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,8 +16,7 @@ interface Eloquent
      * @param array $columns
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15, array $columns = ['*']) : LengthAwarePaginator;
-
+    public function paginate(int $perPage = 15) : LengthAwarePaginator;
 
 
     /**
@@ -48,7 +46,7 @@ interface Eloquent
      * @param array $columns
      * @return Model
      */
-    public function byId(int $id, array $columns = ['*']) : Model;
+    public function byId(int $id) : Model;
 
 
     /**
@@ -57,13 +55,19 @@ interface Eloquent
      * @param array $columns
      * @return Model
      */
-    public function oneBy(string $field, string $value, array $columns = ['*']) : Model;
+    public function oneBy(string $field, string $value) : Model;
+
+
+    /**
+     * @return Model
+     */
+    public function first() : Model;
 
 
     /**
      * @param QueryMagic $queryMagic
-     * @return Repository
+     * @return Eloquent
      */
-    public function byMagic(QueryMagic $queryMagic) : Repository;
+    public function magic(QueryMagic $queryMagic) : Eloquent;
 
 }

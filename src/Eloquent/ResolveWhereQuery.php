@@ -70,7 +70,7 @@ class ResolveWhereQuery
 
         //['id',1] => [['where','id',=,1]]
         if ($whereRecursiveCount === 2) {
-            return ['where',[$wheres[0],'=',$wheres[1]]];
+            return [['where',$wheres[0],'=',$wheres[1]]];
         }
 
         //['id',>,1] => [['where','id',>,1]]

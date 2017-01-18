@@ -13,13 +13,21 @@ interface Repository
      * @param array $columns
      * @return Collection
      */
-    public function all(array $columns = ['*']) : Collection;
+    public function all() : Collection;
 
 
     /**
-     * @return int
+     * @return Collection
      */
-    public function count() : int;
+    public function get() : Collection;
+
+
+    /**
+     * @param string $column
+     * @param string $key
+     * @return Collection
+     */
+    public function pluck(string $column, string $key = '') : Collection;
 
 
     /**
@@ -28,20 +36,26 @@ interface Repository
      * @param array $columns
      * @return Collection
      */
-    public function by(string $field, string $value, array $columns = ['*']) : Collection;
+    public function by(string $field, string $value) : Collection;
 
 
     /**
-     * @param callable $callable
-     * @return Repository
+     * @param string $column
+     * @return int
      */
-    public function byCallable(callable $callable) : Repository;
+    public function max(string $column) : int;
 
 
     /**
-     * @param array $wheres
-     * @param array $columns
-     * @return Collection
+     * @return int
      */
-    public function byWhere(array $wheres, array $columns = ['*']) : Collection;
+    public function count(string $column) : int;
+
+
+    /**
+     * @param string $column
+     * @return int
+     */
+    public function sum(string $column) : int;
+
 }
