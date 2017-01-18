@@ -392,4 +392,13 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
         return $this;
     }
 
+
+    /**
+     * @param QueryMagic $queryMagic
+     * @return Eloquent
+     */
+    public function byMagic(QueryMagic $queryMagic): Eloquent
+    {
+        return $this->magic($queryMagic);
+    }
 }
