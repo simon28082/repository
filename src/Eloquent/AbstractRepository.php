@@ -347,7 +347,7 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
     public function byId(int $id): Model
     {
         try {
-            return $this->query->where($this->getModel()->getKeyName(),$id)->findOrFail();
+            return $this->query->findOrFail($id);
         } catch (ModelNotFoundException $exception) {
             throw new ResourceNotFoundException();
         }
@@ -394,6 +394,7 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
 
 
     /**
+     * 兼容方法，下个版本删除
      * @param QueryMagic $queryMagic
      * @return Eloquent
      */
