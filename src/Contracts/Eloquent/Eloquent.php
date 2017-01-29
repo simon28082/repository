@@ -1,6 +1,7 @@
 <?php
 namespace CrCms\Repository\Contracts\Eloquent;
 
+use CrCms\Repository\Exceptions\ResourceNotFoundException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,6 @@ interface Eloquent
 
     /**
      * @param int $perPage
-     * @param array $columns
      * @return LengthAwarePaginator
      */
     public function paginate(int $perPage = 15) : LengthAwarePaginator;
@@ -43,31 +43,78 @@ interface Eloquent
 
     /**
      * @param int $id
-     * @param array $columns
+     * @return Model or null
+     */
+    public function byIntId(int $id);
+
+
+    /**
+     * @param string $id
+     * @return Model or null
+     */
+    public function byStringId(string $id);
+
+
+    /**
+     * @param int $id
+     * @throws ResourceNotFoundException
      * @return Model
      */
-    public function byId(int $id) : Model;
+    public function byIntIdOrFail(int $id) : Model;
+
+
+    /**
+     * @param string $id
+     * @throws ResourceNotFoundException
+     * @return Model
+     */
+    public function byStringIdOrFail(string $id) : Model;
 
 
     /**
      * @param string $field
      * @param string $value
-     * @param array $columns
-     * @return Model
+     * @return Model or null
      */
-    public function oneBy(string $field, string $value) : Model;
+    public function oneByString(string $field, string $value);
 
 
     /**
-     * @return Model
+     * @param string $field
+     * @param int $value
+     * @return Model or null
      */
-    public function first() : Model;
+    public function oneByInt(string $field, int $value);
 
 
     /**
-     * @param QueryMagic $queryMagic
-     * @return Eloquent
+     * @param string $field
+     * @param string $value
+     * @throws ResourceNotFoundException
+     * @return Model
      */
-    public function magic(QueryMagic $queryMagic) : Eloquent;
+    public function oneByStringOrFail(string $field, string $value) : Model;
+
+
+    /**
+     * @param string $field
+     * @param int $value
+     * @throws ResourceNotFoundException
+     * @return Model
+     */
+    public function oneByIntOrFail(string $field, int $value) : Model;
+
+
+    /**
+     * @return Model or null
+     */
+    public function first();
+
+
+    /**
+     * @throws ResourceNotFoundException
+     * @return Model
+     */
+    public function firstOrFail() : Model;
 
 }

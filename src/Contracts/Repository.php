@@ -31,15 +31,6 @@ interface Repository
 
 
     /**
-     * @param string $field
-     * @param string $value
-     * @param array $columns
-     * @return Collection
-     */
-    public function by(string $field, string $value) : Collection;
-
-
-    /**
      * @param string $column
      * @return int
      */
@@ -49,7 +40,14 @@ interface Repository
     /**
      * @return int
      */
-    public function count(string $column) : int;
+    public function count(string $column = '*') : int;
+
+
+    /**
+     * @param $column
+     * @return int
+     */
+    public function avg($column) : int;
 
 
     /**
@@ -58,4 +56,36 @@ interface Repository
      */
     public function sum(string $column) : int;
 
+
+    /**
+     * @param $limit
+     * @param callable $callback
+     * @return void
+     */
+    public function chunk(int $limit, callable $callback) ;
+
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function value(string $key);
+
+
+    /**
+     * @param string $column
+     * @param int $amount
+     * @param array $extra
+     * @return mixed
+     */
+    public function increment(string $column, int $amount = 1, array $extra = []);
+
+
+    /**
+     * @param string $column
+     * @param int $amount
+     * @param array $extra
+     * @return mixed
+     */
+    public function decrement(string $column, int $amount = 1, array $extra = []);
 }

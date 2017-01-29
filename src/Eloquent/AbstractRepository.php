@@ -2,9 +2,7 @@
 namespace CrCms\Repository\Eloquent;
 
 use CrCms\Repository\Contracts\Eloquent\Eloquent;
-use CrCms\Repository\Contracts\Eloquent\QueryMagic;
 use CrCms\Repository\Contracts\Repository;
-use CrCms\Repository\Contracts\RepositoryQuery;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
 use CrCms\Repository\Exceptions\ResourceStoreException;
@@ -12,19 +10,10 @@ use CrCms\Repository\Exceptions\ResourceUpdateException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
-/**
- * Class AbstractRepository
- * @package CrCms\Repository\Repositories
- */
-abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
+abstract class AbstractRepository implements Repository,Eloquent
 {
-    /**
-     * @var Builder
-     */
-    protected $query = null;
 
     /**
      * @var Model
@@ -36,21 +25,45 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
      */
     protected $fillable = [];
 
+    /**
+     * @var null
+     */
+    protected $queryRelate = null;
+
+
+
+    public function __construct()
+    {
+        $this->queryRelate = $this->newQueryRelate($this->newQuery());
+    }
 
     /**
      * @return Model
      */
     abstract public function newModel() : Model;
 
-
-    /**
-     * AbstractRepository constructor.
-     */
-    public function __construct()
+    public function newQuery() : Builder
     {
-        $this->query = $this->newQuery();
+        return $this->getModel()->newQuery();
     }
 
+//    public function setQuery(Builder $query) : AbstractRepository
+//    {
+//        $this->query = $query;
+//        return $this;
+//    }
+
+
+    public function newQueryRelate(Builder $query) : QueryRelate
+    {
+        return new QueryRelate($query,$this);
+    }
+
+
+    public function getQueryRelate() : QueryRelate
+    {
+        return $this->queryRelate;
+    }
 
     /**
      * @return Model
@@ -63,227 +76,24 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
         return $this->model;
     }
 
-
-    /**
-     * @return Builder
-     */
-    public function getQuery()
+    public function setFillable(array $fillable) : AbstractRepository
     {
-        return $this->query;
-    }
-
-
-     /**
-      * @return Builder
-      */
-     protected function newQuery() : Builder
-     {
-         return $this->getModel()->newQuery();
-     }
-
-
-    /**
-     * 兼容方法，下个版本删除
-     * @return Builder
-     */
-     protected function getNewQuery() : Builder
-     {
-         return $this->newQuery();
-     }
-
-
-    /**
-     * 兼容方法，下个版本删除
-     * @return Builder
-     */
-    protected function getCurrentOrNewQuery() : Builder
-    {
-        $this->query ? : $this->query = $this->getNewQuery();
-        return $this->query;
-    }
-
-
-     /**
-      * @param array $fillable
-      */
-     public function setFillable(array $fillable) : AbstractRepository
-     {
-         $this->fillable = $fillable;
-         return $this;
-     }
-
-
-     /**
-      * @param array $data
-      * @return array
-      */
-     protected function fillableFilter(array $data) : array
-     {
-         if (empty($this->fillable)) return $data;
-
-         return array_filter($data,function($key) {
-             return in_array($key,$this->fillable,true);
-         },ARRAY_FILTER_USE_KEY);
-     }
-
-
-    /**
-     * @return Collection
-     */
-    public function all(): Collection
-    {
-        return $this->get();
-    }
-
-
-    /**
-     * @return Collection
-     */
-    public function get(): Collection
-    {
-        return $this->query->get();
-    }
-
-
-    /**
-     * @param string $column
-     * @param string $key
-     * @return Collection
-     */
-    public function pluck(string $column, string $key = ''): Collection
-    {
-        return $this->query->pluck($column,$key);
-    }
-
-
-    /**
-     * @param string $field
-     * @param string $value
-     * @return Collection
-     */
-    public function by(string $field, string $value): Collection
-    {
-        return $this->query->where($field,$value)->get();
-    }
-
-
-    /**
-     * @param string $column
-     * @return int
-     */
-    public function max(string $column): int
-    {
-        return $this->query->max($column);
-    }
-
-
-    /**
-     * @param string $column
-     * @return int
-     */
-    public function count(string $column): int
-    {
-        return $this->query->count($column);
-    }
-
-
-    /**
-     * @param string $column
-     * @return int
-     */
-    public function sum(string $column): int
-    {
-        return $this->query->sum($column);
-    }
-
-
-    /**
-     * @param array $column
-     * @return RepositoryQuery
-     */
-    public function column(array $column = ['*']): RepositoryQuery
-    {
-        $this->query->select($column);
+        $this->fillable = $fillable;
         return $this;
     }
 
-
     /**
-     * @param int $limit
-     * @return RepositoryQuery
+     * @param array $data
+     * @return array
      */
-    public function skip(int $limit): RepositoryQuery
+    protected function fillableFilter(array $data) : array
     {
-        $this->query->skip($limit);
-        return $this;
+        if (empty($this->fillable)) return $data;
+
+        return array_filter($data,function($key) {
+            return in_array($key,$this->fillable,true);
+        },ARRAY_FILTER_USE_KEY);
     }
-
-
-    /**
-     * @param int $limit
-     * @return RepositoryQuery
-     */
-    public function take(int $limit): RepositoryQuery
-    {
-        $this->query->take($limit);
-        return $this;
-    }
-
-
-    /**
-     * @param string $column
-     * @return RepositoryQuery
-     */
-    public function groupBy(string $column): RepositoryQuery
-    {
-        $this->query->groupBy($column);
-        return $this;
-    }
-
-
-    /**
-     * @param string $column
-     * @param string $sort
-     * @return RepositoryQuery
-     */
-    public function orderBy(string $column, string $sort = 'desc'): RepositoryQuery
-    {
-        $this->query->orderBy($column,$sort);
-        return $this;
-    }
-
-
-    /**
-     * @param callable $callable
-     * @return RepositoryQuery
-     */
-    public function callable(callable $callable): RepositoryQuery
-    {
-        $this->query = call_user_func($callable,$this->query);
-        return $this;
-    }
-
-
-    /**
-     * @param array $wheres
-     * @return RepositoryQuery
-     */
-    public function wheres(array $wheres): RepositoryQuery
-    {
-        $this->query = (new ResolveWhereQuery)->getQuery($wheres,$this->query);
-        return $this;
-    }
-
-
-    /**
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
-    public function paginate(int $perPage = 15): LengthAwarePaginator
-    {
-        return $this->query->paginate($perPage);
-    }
-
 
     /**
      * @param array $data
@@ -340,66 +150,171 @@ abstract class AbstractRepository implements Repository,RepositoryQuery,Eloquent
     }
 
 
-    /**
-     * @param int $id
-     * @return Model
-     */
-    public function byId(int $id): Model
+
+    public function getQuery(Builder $query = null) : Builder
     {
-        try {
-            return $this->query->findOrFail($id);
-        } catch (ModelNotFoundException $exception) {
+        return $query ? $query : $this->query;
+    }
+
+//    public function setQuery(Builder $query) : AbstractRepository
+//    {
+//        $this->query = $query;
+//        return $this;
+//    }
+
+
+    public function paginate(int $perPage = 15): LengthAwarePaginator
+     {
+         return $this->queryRelate->getQuery()->paginate($perPage);
+     }
+
+
+
+
+    protected function byId($id)
+    {
+        return $this->newQueryRelate($this->newQuery())->where($this->getModel()->getKeyName(),$id)->getQuery()->first();
+    }
+
+    protected function byIdOrFail($id)
+    {
+        $model = $this->byId($id);
+        if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+        return $model;
+    }
+
+    public function byIntId(int $id)
+    {
+        return $this->byId($id);
+    }
+
+    public function byStringId(string $id)
+    {
+        return $this->byId($id);
+    }
+
+    public function byIntIdOrFail(int $id): Model
+    {
+        return $this->byIdOrFail($id);
+    }
+
+    public function byStringIdOrFail(string $id): Model
+    {
+        return $this->byIdOrFail($id);
+    }
+
+    public function oneByString(string $field, string $value)
+    {
+        return $this->oneBy($field,$value);
+    }
+
+    public function oneByInt(string $field, int $value)
+    {
+        return $this->oneBy($field,$value);
+    }
+
+    public function oneByStringOrFail(string $field, string $value): Model
+    {
+        return $this->oneByOrFail($field,$value);
+    }
+
+    public function oneByIntOrFail(string $field, int $value): Model
+    {
+        return $this->oneByOrFail($field,$value);
     }
 
 
-    /**
-     * @param string $field
-     * @param string $value
-     * @return Model
-     */
-    public function oneBy(string $field, string $value): Model
+
+     public function oneBy(string $field,  $value)
+     {
+         return $this->newQueryRelate($this->newQuery())->where($field,$value)->getQuery()->first();
+     }
+
+     public function oneByOrFail(string $field,  $value): Model
+     {
+         $model = $this->oneBy($field,$value);
+         if (empty($model)) {
+             throw new ResourceNotFoundException();
+         }
+         return $model;
+     }
+
+     public function first()
+     {
+         $this->queryRelate->getQuery()->first();
+     }
+
+     public function firstOrFail(): Model
+     {
+         $model = $this->queryRelate->getQuery()->first();
+         if (empty($model)) {
+             throw new ResourceNotFoundException();
+         }
+     }
+
+     public function all(): Collection
+     {
+         return $this->queryRelate->getQuery()->all();
+     }
+
+     public function get(): Collection
+     {
+        return $this->queryRelate->getQuery()->get();
+     }
+
+     public function pluck(string $column, string $key = ''): Collection
+     {
+         return $this->queryRelate->getQuery()->pluck($column,$key);
+     }
+
+     public function max(string $column): int
+     {
+         return $this->queryRelate->getQuery()->max($column);
+     }
+
+     public function count(string $column = '*'): int
+     {
+         return $this->queryRelate->getQuery()->count($column);
+     }
+
+     public function avg($column): int
+     {
+         return $this->queryRelate->getQuery()->avg($column);
+     }
+
+     public function sum(string $column): int
+     {
+         return $this->queryRelate->getQuery()->sum($column);
+     }
+
+     public function chunk(int $limit, callable $callback)
+     {
+         return $this->queryRelate->getQuery()->chunk($limit,$callback);
+     }
+
+     public function value(string $key)
+     {
+         return $this->queryRelate->getQuery()->value($key);
+     }
+
+     public function increment(string $column, int $amount = 1, array $extra = [])
+     {
+         return $this->queryRelate->getQuery()->increment($column,$amount,$extra);
+     }
+
+     public function decrement(string $column, int $amount = 1, array $extra = [])
+     {
+         return $this->queryRelate->getQuery()->decrement($column,$amount,$extra);
+     }
+
+
+
+     public function __call($name, $arguments)
     {
-        try {
-            return $this->query->where($field,$value)->firstOrFail();
-        } catch (ModelNotFoundException $exception) {
-            throw new ResourceNotFoundException();
+        if (!method_exists($this,$name)) {
+            $this->queryRelate = call_user_func_array([$this->queryRelate,$name],$arguments);
         }
-    }
-
-
-    /**
-     * @return Model
-     */
-    public function first(): Model
-    {
-        try {
-            return $this->query->first();
-        } catch (ModelNotFoundException $exception) {
-            throw new ResourceNotFoundException();
-        }
-    }
-
-
-    /**
-     * @param QueryMagic $queryMagic
-     * @return Eloquent
-     */
-    public function magic(QueryMagic $queryMagic): Eloquent
-    {
-        $this->query = $queryMagic->magic($this->query,$this);
-        return $this;
-    }
-
-
-    /**
-     * 兼容方法，下个版本删除
-     * @param QueryMagic $queryMagic
-     * @return Eloquent
-     */
-    public function byMagic(QueryMagic $queryMagic): Eloquent
-    {
-        return $this->magic($queryMagic);
     }
 }
