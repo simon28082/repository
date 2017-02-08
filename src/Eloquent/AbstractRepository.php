@@ -60,6 +60,12 @@ abstract class AbstractRepository implements Repository,Eloquent
     }
 
 
+    public function newDefaultQueryRelate() : QueryRelate
+    {
+        return $this->newQueryRelate($this->newQuery());
+    }
+
+
     public function getQueryRelate() : QueryRelate
     {
         return $this->queryRelate;
@@ -106,7 +112,7 @@ abstract class AbstractRepository implements Repository,Eloquent
         try {
             return $this->getModel()->create($data);
         } catch (\Exception $exception) {
-            throw new ResourceStoreException();
+            throw new ResourceStoreException($exception->getMessage());
         }
     }
 
@@ -129,7 +135,7 @@ abstract class AbstractRepository implements Repository,Eloquent
         try {
             $model->save();
         } catch (\Exception $exception) {
-            throw new ResourceUpdateException();
+            throw new ResourceUpdateException($exception->getMessage());
         }
 
         return $model;
@@ -143,17 +149,24 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function delete(int $id): int
     {
         try {
-            return $this->query->where('id',$id)->delete();
+            return $this->newQueryRelate($this->newQuery())->where('id',$id)->delete();
         } catch (\Exception $exception) {
-            throw new ResourceDeleteException();
+            throw new ResourceDeleteException($exception->getMessage());
         }
     }
 
 
-
-    public function getQuery(Builder $query = null) : Builder
+    /**
+     * @param array $ids
+     * @return int
+     */
+    public function deleteByArray(array $ids) : int
     {
-        return $query ? $query : $this->query;
+        try {
+            return $this->newQueryRelate($this->newQuery())->whereIn('id',$ids)->delete();
+        } catch (\Exception $exception) {
+            throw new ResourceDeleteException($exception->getMessage());
+        }
     }
 
 //    public function setQuery(Builder $query) : AbstractRepository
@@ -165,7 +178,7 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     public function paginate(int $perPage = 15): LengthAwarePaginator
      {
-         return $this->queryRelate->getQuery()->paginate($perPage);
+         return $this->queryRelate->orderBy($this->getModel()->getKeyName(),'desc')->getQuery()->paginate($perPage);
      }
 
 
@@ -243,12 +256,12 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function first()
      {
-         $this->queryRelate->getQuery()->first();
+         $this->queryRelate->first();
      }
 
      public function firstOrFail(): Model
      {
-         $model = $this->queryRelate->getQuery()->first();
+         $model = $this->queryRelate->first();
          if (empty($model)) {
              throw new ResourceNotFoundException();
          }
@@ -256,65 +269,70 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function all(): Collection
      {
-         return $this->queryRelate->getQuery()->all();
+         return $this->newQueryRelate($this->newQuery())->get();
      }
 
      public function get(): Collection
      {
-        return $this->queryRelate->getQuery()->get();
+        return $this->queryRelate->get();
      }
 
      public function pluck(string $column, string $key = ''): Collection
      {
-         return $this->queryRelate->getQuery()->pluck($column,$key);
+         return $this->queryRelate->pluck($column,$key);
      }
 
      public function max(string $column): int
      {
-         return $this->queryRelate->getQuery()->max($column);
+         return $this->queryRelate->max($column);
      }
 
      public function count(string $column = '*'): int
      {
-         return $this->queryRelate->getQuery()->count($column);
+         return $this->queryRelate->count($column);
      }
 
      public function avg($column): int
      {
-         return $this->queryRelate->getQuery()->avg($column);
+         return $this->queryRelate->avg($column);
      }
 
      public function sum(string $column): int
      {
-         return $this->queryRelate->getQuery()->sum($column);
+         return $this->queryRelate->sum($column);
      }
 
      public function chunk(int $limit, callable $callback)
      {
-         return $this->queryRelate->getQuery()->chunk($limit,$callback);
+         return $this->queryRelate->chunk($limit,$callback);
      }
 
      public function value(string $key)
      {
-         return $this->queryRelate->getQuery()->value($key);
+         return $this->queryRelate->value($key);
      }
 
      public function increment(string $column, int $amount = 1, array $extra = [])
      {
-         return $this->queryRelate->getQuery()->increment($column,$amount,$extra);
+         return $this->queryRelate->increment($column,$amount,$extra);
      }
 
      public function decrement(string $column, int $amount = 1, array $extra = [])
      {
-         return $this->queryRelate->getQuery()->decrement($column,$amount,$extra);
+         return $this->queryRelate->decrement($column,$amount,$extra);
      }
 
 
 
      public function __call($name, $arguments)
     {
-        if (!method_exists($this,$name)) {
-            $this->queryRelate = call_user_func_array([$this->queryRelate,$name],$arguments);
+        if (method_exists($this->queryRelate,$name)) {
+            $result = call_user_func_array([$this->queryRelate,$name],$arguments);
+            if ($result instanceof $this->queryRelate) {
+                $this->queryRelate = $result;
+                return $this;
+            }
+            return $result;
         }
     }
 }

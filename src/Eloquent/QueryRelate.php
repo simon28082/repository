@@ -274,4 +274,39 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
     }
 
 
+    public function __call($name, $arguments)
+    {
+//        if ($name === 'count') {
+//            dd($this->query);
+//            $result = call_user_func_array([$this->query,$name],$arguments);
+//            dd($result);
+//            if ($result instanceof $this->query) {
+//                dd(3);
+//                $this->query = $result;
+//                return $this;
+//            }
+//        }
+        if (method_exists($this->query,$name)) {
+            $result = call_user_func_array([$this->query,$name],$arguments);
+            if ($result instanceof $this->query) {
+                $this->query = $result;
+                return $this;
+            }
+            return $result;
+        }
+
+        $className = static::class;
+        throw new \Exception("Call to undefined method {$className}::{$name}()");
+
+//        if (method_exists($this->repository,$name)) {
+//            return call_user_func_array([$this->repository,$name],$arguments);
+//        }
+
+//        if (method_exists($this->query->getQuery(),$name)) {
+//            return call_user_func_array([$this->query->getQuery(),$name],$arguments);
+//        }
+
+
+    }
+
 }
