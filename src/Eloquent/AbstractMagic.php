@@ -16,11 +16,6 @@ abstract class AbstractMagic implements QueryMagic
      */
     protected $data = [];
 
-    /**
-     * @var array
-     */
-    protected $guards = [];
-
 
     /**
      * @param array $data
@@ -28,17 +23,6 @@ abstract class AbstractMagic implements QueryMagic
     public function setData(array $data) : self
     {
         $this->data = $data;
-        return $this;
-    }
-
-
-    /**
-     * @param array $prohibited
-     * @return AbstractMagic
-     */
-    public function setGuards(array $guards) : self
-    {
-        $this->guards = $guards;
         return $this;
     }
 
@@ -61,19 +45,7 @@ abstract class AbstractMagic implements QueryMagic
      */
     protected function magicSearch(array $data, Builder $query) : Builder
     {
-        return $this->dispatch($this->filter($data),$query);
-    }
-
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function filter(array $data) : array
-    {
-        return array_filter($data,function($item,$key){
-            return !empty($item) && !in_array($key,$this->guards,true);
-        },ARRAY_FILTER_USE_BOTH);
+        return $this->dispatch($data,$query);
     }
 
 
@@ -86,9 +58,11 @@ abstract class AbstractMagic implements QueryMagic
     {
         foreach ($data as $key=>$item) {
             $method = 'by'.studly_case($key);
-            $query = call_user_func_array([$this,$method],[$item,$query]);
-        }
 
+            if (method_exists($this,$method)) {
+                $query = call_user_func_array([$this,$method],[$item,$query]);
+            }
+        }
         return $query;
     }
 }
