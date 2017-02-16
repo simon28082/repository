@@ -2,6 +2,7 @@
 namespace CrCms\Repository\Eloquent;
 
 use CrCms\Repository\Contracts\Eloquent\Eloquent;
+use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
@@ -34,7 +35,7 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     public function __construct()
     {
-        $this->queryRelate = $this->newQueryRelate($this->newQuery());
+        $this->setQueryRelate($this->newDefaultQueryRelate());
     }
 
     /**
@@ -56,10 +57,16 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     public function newQueryRelate(Builder $query) : QueryRelate
     {
-        return new QueryRelate($query,$this);
+        return new \CrCms\Repository\Eloquent\QueryRelate($query,$this);
     }
 
 
+    /**
+     * 此方法适用于 一直执行QueryRelate中的方法，直到获取结果
+     * $this->newDefaultQueryRelate()->where()->where()->pluck()
+     * 注：并不适用于执行了QueryRelate中的方法再次执行$this中的方法
+     * @return QueryRelate
+     */
     public function newDefaultQueryRelate() : QueryRelate
     {
         return $this->newQueryRelate($this->newQuery());
@@ -69,6 +76,18 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function getQueryRelate() : QueryRelate
     {
         return $this->queryRelate;
+    }
+
+    public function setQueryRelate(QueryRelate $queryRelate) : AbstractRepository
+    {
+        $this->queryRelate = $queryRelate;
+        return $this;
+    }
+
+    public function setNewQueryRelate()
+    {
+        $this->queryRelate = $this->newDefaultQueryRelate();
+        return $this;
     }
 
     /**
@@ -119,10 +138,10 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     /**
      * @param array $data
-     * @param int $id
+     * @param int|string $id
      * @return Model
      */
-    public function update(array $data, int $id): Model
+    public function update(array $data, $id): Model
     {
         $data = $this->fillableFilter($data);
 
@@ -141,18 +160,38 @@ abstract class AbstractRepository implements Repository,Eloquent
         return $model;
     }
 
+    public function updateByIntId(array $data, int $id): Model
+    {
+        return $this->update($data,$id);
+    }
+
+    public function updateByStringId(array $data, string $id): Model
+    {
+        return $this->update($data,$id);
+    }
+
 
     /**
      * @param int $id
      * @return int
      */
-    public function delete(int $id): int
+    public function delete( $id): int
     {
         try {
-            return $this->newQueryRelate($this->newQuery())->where('id',$id)->delete();
+            return $this->newDefaultQueryRelate()->where('id',$id)->delete();
         } catch (\Exception $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         }
+    }
+
+    public function deleteByStringId(string $id): int
+    {
+        return $this->delete($id);
+    }
+
+    public function deleteByIntId(int $id): int
+    {
+        return $this->delete($id);
     }
 
 
@@ -163,11 +202,17 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function deleteByArray(array $ids) : int
     {
         try {
-            return $this->newQueryRelate($this->newQuery())->whereIn('id',$ids)->delete();
+            return $this->newDefaultQueryRelate()->whereIn('id',$ids)->delete();
         } catch (\Exception $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         }
     }
+
+
+//    public function getQuery(Builder $query = null) : Builder
+//    {
+//        return $query ? $query : $this->query;
+//    }
 
 //    public function setQuery(Builder $query) : AbstractRepository
 //    {
@@ -186,7 +231,8 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     protected function byId($id)
     {
-        return $this->newQueryRelate($this->newQuery())->where($this->getModel()->getKeyName(),$id)->getQuery()->first();
+        //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
+        return $this->newDefaultQueryRelate()->where($this->getModel()->getKeyName(),$id)->getQuery()->first();
     }
 
     protected function byIdOrFail($id)
@@ -242,7 +288,7 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function oneBy(string $field,  $value)
      {
-         return $this->newQueryRelate($this->newQuery())->where($field,$value)->getQuery()->first();
+         return $this->newDefaultQueryRelate()->where($field,$value)->getQuery()->first();
      }
 
      public function oneByOrFail(string $field,  $value): Model
@@ -256,20 +302,21 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function first()
      {
-         $this->queryRelate->first();
+         return $this->queryRelate->first();
      }
 
      public function firstOrFail(): Model
      {
-         $model = $this->queryRelate->first();
+         $model = $this->first();
          if (empty($model)) {
              throw new ResourceNotFoundException();
          }
+         return $model;
      }
 
      public function all(): Collection
      {
-         return $this->newQueryRelate($this->newQuery())->get();
+         return $this->newDefaultQueryRelate()->get();
      }
 
      public function get(): Collection
@@ -284,22 +331,22 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function max(string $column): int
      {
-         return $this->queryRelate->max($column);
+         return $this->queryRelate->getQuery()->max($column);
      }
 
      public function count(string $column = '*'): int
      {
-         return $this->queryRelate->count($column);
+         return $this->queryRelate->getQuery()->count($column);
      }
 
      public function avg($column): int
      {
-         return $this->queryRelate->avg($column);
+         return $this->queryRelate->getQuery()->avg($column);
      }
 
      public function sum(string $column): int
      {
-         return $this->queryRelate->sum($column);
+         return $this->queryRelate->getQuery()->sum($column);
      }
 
      public function chunk(int $limit, callable $callback)
@@ -324,12 +371,14 @@ abstract class AbstractRepository implements Repository,Eloquent
 
 
 
-     public function __call($name, $arguments)
+    public function __call($name, $arguments)
     {
+        //当直接调用QueryRelate时，则开启新的
+        //$this->setNewQueryRelate();
         if (method_exists($this->queryRelate,$name)) {
             $result = call_user_func_array([$this->queryRelate,$name],$arguments);
             if ($result instanceof $this->queryRelate) {
-                $this->queryRelate = $result;
+                $this->setQueryRelate($result);
                 return $this;
             }
             return $result;

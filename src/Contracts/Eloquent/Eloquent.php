@@ -31,14 +31,27 @@ interface Eloquent
      * @param int $id
      * @return Model
      */
-    public function update(array $data, int $id) : Model;
+    public function updateByIntId(array $data, int $id) : Model;
+
+
+    /*
+     *
+     */
+    public function updateByStringId(array $data,string $id) : Model;
 
 
     /**
      * @param int $id
      * @return int
      */
-    public function delete(int $id) : int;
+    public function deleteByStringId(string $id) : int;
+
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function deleteByIntId(int $id) : int;
 
 
     /**
