@@ -286,6 +286,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
 //                return $this;
 //            }
 //        }
+
         if (method_exists($this->query,$name)) {
             $result = call_user_func_array([$this->query,$name],$arguments);
             if ($result instanceof $this->query) {
