@@ -324,7 +324,7 @@ abstract class AbstractRepository implements Repository,Eloquent
         return $this->queryRelate->get();
      }
 
-     public function pluck(string $column, string $key = ''): Collection
+     public function pluck(string $column, string $key = null): Collection
      {
          return $this->queryRelate->pluck($column,$key);
      }
