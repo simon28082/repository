@@ -17,14 +17,32 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
 
     public function __construct(Builder $query,Repository $repository)
     {
-        $this->query = $query;
+        $this->setQuery($query);
+        $this->setRepository($repository);
+    }
+
+
+    public function setRepository(Repository $repository) : BaseQueryRelate
+    {
         $this->repository = $repository;
+        return $this;
+    }
+
+    public function getRepository() : Repository
+    {
+        return $this->repository;
     }
 
 
     public function getQuery() : Builder
     {
         return $this->query;
+    }
+
+    public function setQuery(Builder $query) : BaseQueryRelate
+    {
+        $this->query = $query;
+        return $this;
     }
 
 
@@ -287,21 +305,23 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
 //            }
 //        }
 
-        if (method_exists($this->query,$name)) {
+        /*if (method_exists($this->query,$name)) {
             $result = call_user_func_array([$this->query,$name],$arguments);
             if ($result instanceof $this->query) {
                 $this->query = $result;
                 return $this;
             }
             return $result;
+        }*/
+
+        if (method_exists($this->repository,$name)) {
+            return call_user_func_array([$this->repository,$name],$arguments);
         }
 
         $className = static::class;
         throw new \Exception("Call to undefined method {$className}::{$name}()");
 
-//        if (method_exists($this->repository,$name)) {
-//            return call_user_func_array([$this->repository,$name],$arguments);
-//        }
+
 
 //        if (method_exists($this->query->getQuery(),$name)) {
 //            return call_user_func_array([$this->query->getQuery(),$name],$arguments);

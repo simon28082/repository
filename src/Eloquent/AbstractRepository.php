@@ -84,6 +84,13 @@ abstract class AbstractRepository implements Repository,Eloquent
         return $this;
     }
 
+
+    public function resetQueryRelate() : AbstractRepository
+    {
+        return $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
+    }
+
+
     public function setNewQueryRelate()
     {
         $this->queryRelate = $this->newDefaultQueryRelate();
@@ -178,10 +185,14 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function delete( $id): int
     {
         try {
-            return $this->newDefaultQueryRelate()->where('id',$id)->delete();
+            $rows = $this->queryRelate->where('id',$id)->delete();
         } catch (\Exception $exception) {
             throw new ResourceDeleteException($exception->getMessage());
+        } finally {
+            $this->resetQueryRelate();
         }
+
+        return $rows;
     }
 
     public function deleteByStringId(string $id): int
@@ -209,21 +220,13 @@ abstract class AbstractRepository implements Repository,Eloquent
     }
 
 
-//    public function getQuery(Builder $query = null) : Builder
-//    {
-//        return $query ? $query : $this->query;
-//    }
-
-//    public function setQuery(Builder $query) : AbstractRepository
-//    {
-//        $this->query = $query;
-//        return $this;
-//    }
-
-
     public function paginate(int $perPage = 15): LengthAwarePaginator
      {
-         return $this->queryRelate->orderBy($this->getModel()->getKeyName(),'desc')->getQuery()->paginate($perPage);
+         $paginate = $this->queryRelate->orderBy($this->getModel()->getKeyName(),'desc')->getQuery()->paginate($perPage);
+
+         $this->resetQueryRelate();
+
+         return $paginate;
      }
 
 
@@ -232,7 +235,11 @@ abstract class AbstractRepository implements Repository,Eloquent
     protected function byId($id)
     {
         //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
-        return $this->newDefaultQueryRelate()->where($this->getModel()->getKeyName(),$id)->getQuery()->first();
+        $model = $this->queryRelate->where($this->getModel()->getKeyName(),$id)->getQuery()->first();
+
+        $this->resetQueryRelate();
+
+        return $model;
     }
 
     protected function byIdOrFail($id)
@@ -288,7 +295,11 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function oneBy(string $field,  $value)
      {
-         return $this->newDefaultQueryRelate()->where($field,$value)->getQuery()->first();
+         $model =  $this->queryRelate->where($field,$value)->getQuery()->first();
+
+         $this->resetQueryRelate();
+
+         return $model;
      }
 
      public function oneByOrFail(string $field,  $value): Model
@@ -302,7 +313,11 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function first()
      {
-         return $this->queryRelate->first();
+         $model = $this->queryRelate->getQuery()->first();
+
+         $this->resetQueryRelate();
+
+         return $model;
      }
 
      public function firstOrFail(): Model
@@ -316,57 +331,97 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function all(): Collection
      {
-         return $this->newDefaultQueryRelate()->get();
+         $models = $this->queryRelate->getQuery()->all();
+
+         $this->resetQueryRelate();
+
+         return $models;
      }
 
      public function get(): Collection
      {
-        return $this->queryRelate->get();
+        $models = $this->queryRelate->getQuery()->get();
+
+        $this->resetQueryRelate();
+
+        return $models;
      }
 
      public function pluck(string $column, string $key = null): Collection
      {
-         return $this->queryRelate->pluck($column,$key);
+         $models = $this->queryRelate->getQuery()->pluck($column,$key);
+
+         $this->resetQueryRelate();
+
+         return $models;
      }
 
      public function max(string $column): int
      {
-         return $this->queryRelate->getQuery()->max($column);
+         $max = $this->queryRelate->getQuery()->max($column);
+
+         $this->resetQueryRelate();
+
+         return $max;
      }
 
      public function count(string $column = '*'): int
      {
-         return $this->queryRelate->getQuery()->count($column);
+         $count = $this->queryRelate->getQuery()->count($column);
+
+         $this->resetQueryRelate();
+
+         return $count;
      }
 
      public function avg($column): int
      {
-         return $this->queryRelate->getQuery()->avg($column);
+         $avg = $this->queryRelate->getQuery()->avg($column);
+         $this->resetQueryRelate();
+         return $avg;
      }
 
      public function sum(string $column): int
      {
-         return $this->queryRelate->getQuery()->sum($column);
+         $sum = $this->queryRelate->getQuery()->sum($column);
+
+         $this->resetQueryRelate();
+
+         return $sum;
      }
 
+    /**
+     * chunk reset model有问题需要尝试
+     * @param int $limit
+     * @param callable $callback
+     * @return mixed
+     */
      public function chunk(int $limit, callable $callback)
      {
-         return $this->queryRelate->chunk($limit,$callback);
+         return $this->queryRelate->getQuery()->chunk($limit,$callback);
      }
 
      public function value(string $key)
      {
-         return $this->queryRelate->value($key);
+         $value = $this->queryRelate->getQuery()->value($key);
+
+         $this->resetQueryRelate();
+
+         return $value;
      }
 
-     public function increment(string $column, int $amount = 1, array $extra = [])
+     public function increment(string $column, int $amount = 1, array $extra = []) : int
      {
-         return $this->queryRelate->increment($column,$amount,$extra);
+         $rows = $this->queryRelate->getQuery()->increment($column,$amount,$extra);
+         $this->resetQueryRelate();
+         return $rows;
      }
 
-     public function decrement(string $column, int $amount = 1, array $extra = [])
+     public function decrement(string $column, int $amount = 1, array $extra = []) : int
      {
-         return $this->queryRelate->decrement($column,$amount,$extra);
+         $rows = $this->queryRelate->getQuery()->decrement($column,$amount,$extra);
+         $this->resetQueryRelate();
+         return $rows;
      }
 
 
