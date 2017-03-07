@@ -8,6 +8,7 @@ use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
 use CrCms\Repository\Exceptions\ResourceStoreException;
 use CrCms\Repository\Exceptions\ResourceUpdateException;
+use CrCms\Repository\Listener\RepositoryListener;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -96,6 +97,13 @@ abstract class AbstractRepository implements Repository,Eloquent
         $this->queryRelate = $this->newDefaultQueryRelate();
         return $this;
     }
+
+
+    protected function eventDispatcher(string $event)
+    {
+        new RepositoryListener();
+    }
+
 
     /**
      * @return Model
