@@ -339,7 +339,7 @@ abstract class AbstractRepository implements Repository,Eloquent
 
      public function all(): Collection
      {
-         $models = $this->queryRelate->getQuery()->all();
+         $models = $this->getModel()->all();
 
          $this->resetQueryRelate();
 
