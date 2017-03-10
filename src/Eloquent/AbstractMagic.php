@@ -78,7 +78,8 @@ abstract class AbstractMagic implements QueryMagic
             if (is_array($item)) {
                 return $this->filter($item);
             }
-            return !empty(trim($item));
+            $item = trim($item);
+            return !empty($item);
         });
     }
 }
