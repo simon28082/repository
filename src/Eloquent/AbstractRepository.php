@@ -33,6 +33,9 @@ abstract class AbstractRepository implements Repository,Eloquent
     protected $queryRelate = null;
 
 
+    protected $events = [];
+
+
 
     public function __construct()
     {
@@ -405,9 +408,13 @@ abstract class AbstractRepository implements Repository,Eloquent
      * @param callable $callback
      * @return mixed
      */
-     public function chunk(int $limit, callable $callback)
+     public function chunk(int $limit, callable $callback) : bool
      {
-         return $this->queryRelate->getQuery()->chunk($limit,$callback);
+         $result = $this->queryRelate->getQuery()->chunk($limit,$callback);
+
+         $this->resetQueryRelate();
+
+         return $result;
      }
 
      public function value(string $key)
@@ -431,6 +438,55 @@ abstract class AbstractRepository implements Repository,Eloquent
          $rows = $this->queryRelate->getQuery()->decrement($column,$amount,$extra);
          $this->resetQueryRelate();
          return $rows;
+     }
+
+
+    protected function fireEvent(string $event)
+    {
+        $result = $this->fireCustomEvent($event);
+
+        if ($result === false) {
+            return false;
+        }
+
+        if (empty($result)) {
+            $className = static::class.'Event';
+            if (class_exists($className)) {
+                $eventObject = new $className($this);
+                if (method_exists($eventObject,$event)) {
+                    $result = $eventObject->{$event}();
+                    if ($result === false) {
+                        return false;
+                    }
+                }
+            } else {
+                //$eventObject = new RepositoryEvent($this);
+
+            }
+        }
+
+        return $result;
+    }
+
+
+    protected function fireCustomEvent(string $event)
+    {
+        if (! isset($this->events[$event])) {
+            return;
+        }
+
+        $result = event(new $this->events[$event]($this));
+
+        if (! is_null($result)) {
+            return $result;
+        }
+
+        return;
+    }
+
+     protected function event()
+     {
+         $allEvent = ['creating','created','updating','updated','deleting','deleted'];
      }
 
 
