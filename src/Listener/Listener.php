@@ -1,12 +1,17 @@
 <?php
 namespace CrCms\Repository\Listener;
 
-class RepositoryListener
+class Listener
 {
+
+    public function testCreate($repository)
+    {
+        echo 1;
+    }
 
     public function creating()
     {
-
+        echo 2;
     }
 
 

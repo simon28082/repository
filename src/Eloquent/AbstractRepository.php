@@ -4,11 +4,12 @@ namespace CrCms\Repository\Eloquent;
 use CrCms\Repository\Contracts\Eloquent\Eloquent;
 use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Facades\Event;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
 use CrCms\Repository\Exceptions\ResourceStoreException;
 use CrCms\Repository\Exceptions\ResourceUpdateException;
-use CrCms\Repository\Listener\RepositoryListener;
+use CrCms\Repository\Listener\Listener;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -32,14 +33,53 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     protected $queryRelate = null;
 
+    protected $data = [];
 
-    protected $events = [];
 
+    protected $events = [
+        'created'=>Listener::class,
+        'creating'=>[Listener::class],
+        'updated'=>[
+            Listener::class,
+        ]
+    ];
+
+
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+
+    public function getData() : array
+    {
+        return $this->data;
+    }
 
 
     public function __construct()
     {
         $this->setQueryRelate($this->newDefaultQueryRelate());
+//        $this->events = $this->events();
+        $this->eventListen();
+    }
+
+    protected function events()
+    {
+
+        $this->events['creating'][] = function(){
+            return 123;
+        };
+
+
+    }
+
+
+    protected function eventListen()
+    {
+        $this->events();
+        Event::currentListenByArray($this->events);
     }
 
     /**
@@ -144,10 +184,16 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function create(array $data): Model
     {
-        $data = $this->fillableFilter($data);
+        $this->setData($this->fillableFilter($data));
+
+        //这里是中断，要不要返回一个空模型，要思考
+        if ($this->fireEvent('creating') === false) {
+            return $this->getModel();
+        }
+
 
         try {
-            return $this->getModel()->create($data);
+            return $this->getModel()->create($this->data);
         } catch (\Exception $exception) {
             throw new ResourceStoreException($exception->getMessage());
         }
@@ -161,7 +207,15 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     public function update(array $data, $id): Model
     {
-        $data = $this->fillableFilter($data);
+        $this->setData($this->fillableFilter($data));
+
+        //这里是中断，要不要返回一个空模型，要思考
+        if ($this->fireEvent('updating') === false) {
+            return $this->getModel();
+        }
+
+        //==========================================只做到此处======================sudo
+
 
         $model = $this->byId($id);
 
@@ -443,46 +497,35 @@ abstract class AbstractRepository implements Repository,Eloquent
 
     protected function fireEvent(string $event)
     {
-        $result = $this->fireCustomEvent($event);
 
-        if ($result === false) {
-            return false;
-        }
+        Event::dispatch($event,$this);
 
-        if (empty($result)) {
-            $className = static::class.'Event';
-            if (class_exists($className)) {
-                $eventObject = new $className($this);
-                if (method_exists($eventObject,$event)) {
-                    $result = $eventObject->{$event}();
-                    if ($result === false) {
-                        return false;
-                    }
-                }
-            } else {
-                //$eventObject = new RepositoryEvent($this);
-
-            }
-        }
-
-        return $result;
+//        $result = $this->fireCustomEvent($event);
+//
+//        if ($result === false) {
+//            return false;
+//        }
+//
+//        if (empty($result)) {
+//            $className = static::class.'Event';
+//            if (class_exists($className)) {
+//                $eventObject = new $className($this);
+//                if (method_exists($eventObject,$event)) {
+//                    $result = $eventObject->{$event}();
+//                    if ($result === false) {
+//                        return false;
+//                    }
+//                }
+//            } else {
+//                //$eventObject = new RepositoryEvent($this);
+//
+//            }
+//        }
+//
+//        return $result;
     }
 
 
-    protected function fireCustomEvent(string $event)
-    {
-        if (! isset($this->events[$event])) {
-            return;
-        }
-
-        $result = event(new $this->events[$event]($this));
-
-        if (! is_null($result)) {
-            return $result;
-        }
-
-        return;
-    }
 
      protected function event()
      {
