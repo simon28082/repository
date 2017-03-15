@@ -67,9 +67,18 @@ interface Repository
 
     /**
      * @param string $key
+     * @param string $default
      * @return mixed
      */
-    public function value(string $key);
+    public function valueOfString(string $key,string $default = '');
+
+
+    /**
+     * @param string $key
+     * @param int $default
+     * @return mixed
+     */
+    public function valueOfInt(string $key,int $default = 0);
 
 
     /**

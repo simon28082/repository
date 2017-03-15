@@ -58,30 +58,30 @@ interface Eloquent
      * @param int $id
      * @return Model or null
      */
-    public function byIntId(int $id);
+    public function byIntId(int $id) : Model;
 
 
     /**
      * @param string $id
      * @return Model or null
      */
-    public function byStringId(string $id);
+    public function byStringId(string $id) : Model;
 
 
-    /**
-     * @param int $id
-     * @throws ResourceNotFoundException
-     * @return Model
-     */
-    public function byIntIdOrFail(int $id) : Model;
-
-
-    /**
-     * @param string $id
-     * @throws ResourceNotFoundException
-     * @return Model
-     */
-    public function byStringIdOrFail(string $id) : Model;
+//    /**
+//     * @param int $id
+//     * @throws ResourceNotFoundException
+//     * @return Model
+//     */
+//    public function byIntIdOrFail(int $id) : Model;
+//
+//
+//    /**
+//     * @param string $id
+//     * @throws ResourceNotFoundException
+//     * @return Model
+//     */
+//    public function byStringIdOrFail(string $id) : Model;
 
 
     /**
@@ -89,7 +89,7 @@ interface Eloquent
      * @param string $value
      * @return Model or null
      */
-    public function oneByString(string $field, string $value);
+    public function oneByString(string $field, string $value): Model;
 
 
     /**
@@ -97,7 +97,7 @@ interface Eloquent
      * @param int $value
      * @return Model or null
      */
-    public function oneByInt(string $field, int $value);
+    public function oneByInt(string $field, int $value): Model;
 
 
     /**
@@ -106,7 +106,7 @@ interface Eloquent
      * @throws ResourceNotFoundException
      * @return Model
      */
-    public function oneByStringOrFail(string $field, string $value) : Model;
+    //public function oneByStringOrFail(string $field, string $value) : Model;
 
 
     /**
@@ -115,19 +115,19 @@ interface Eloquent
      * @throws ResourceNotFoundException
      * @return Model
      */
-    public function oneByIntOrFail(string $field, int $value) : Model;
+    //public function oneByIntOrFail(string $field, int $value) : Model;
 
 
     /**
      * @return Model or null
      */
-    public function first();
+    public function first() : Model;
 
 
     /**
      * @throws ResourceNotFoundException
      * @return Model
      */
-    public function firstOrFail() : Model;
+    //public function firstOrFail() : Model;
 
 }
