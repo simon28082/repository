@@ -61,7 +61,7 @@ abstract class AbstractMagic implements QueryMagic
             $method = 'by'.studly_case($key);
 
             if (method_exists($this,$method) && !empty($item)) {
-                $query = call_user_func_array([$this,$method],[$item,$query]);
+                $query = call_user_func_array([$this,$method],[$query,$item]);
             }
         }
         return $query;
