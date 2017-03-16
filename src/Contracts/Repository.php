@@ -70,7 +70,7 @@ interface Repository
      * @param string $default
      * @return mixed
      */
-    public function valueOfString(string $key,string $default = '');
+    public function valueOfString(string $key,string $default = '') : string;
 
 
     /**
@@ -78,7 +78,7 @@ interface Repository
      * @param int $default
      * @return mixed
      */
-    public function valueOfInt(string $key,int $default = 0);
+    public function valueOfInt(string $key,int $default = 0) : int;
 
 
     /**
@@ -87,7 +87,7 @@ interface Repository
      * @param array $extra
      * @return mixed
      */
-    public function increment(string $column, int $amount = 1, array $extra = []);
+    public function increment(string $column, int $amount = 1, array $extra = []) : int;
 
 
     /**
@@ -96,5 +96,5 @@ interface Repository
      * @param array $extra
      * @return mixed
      */
-    public function decrement(string $column, int $amount = 1, array $extra = []);
+    public function decrement(string $column, int $amount = 1, array $extra = []) : int;
 }

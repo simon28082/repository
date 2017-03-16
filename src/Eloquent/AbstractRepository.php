@@ -4,6 +4,7 @@ namespace CrCms\Repository\Eloquent;
 use CrCms\Repository\Contracts\Eloquent\Eloquent;
 use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Facades\Event;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
@@ -190,11 +191,15 @@ abstract class AbstractRepository implements Repository,Eloquent
 
         //这里是中断，要不要返回一个空模型，要思考
         if ($this->fireEvent('creating') === false) {
-            return $this->getModel();
+            return $this->newModel();
         }
 
         try {
-            return $this->getModel()->create($this->data);
+            $model =  $this->getModel()->create($this->data);
+
+            $this->fireEvent('created',$model);
+
+            return $model;
         } catch (\Exception $exception) {
             throw new ResourceStoreException($exception->getMessage());
         }
@@ -206,30 +211,28 @@ abstract class AbstractRepository implements Repository,Eloquent
      * @param int|string $id
      * @return Model
      */
-    public function update(array $data, $id): Model
+    protected function update(array $data, $id): Model
     {
         $this->setData($this->fillableFilter($data));
 
-        //这里是中断，要不要返回一个空模型，要思考
         if ($this->fireEvent('updating') === false) {
             return $this->getModel();
         }
 
-        //==========================================只做到此处======================sudo
-
-
         $model = $this->byId($id);
 
-        foreach ($data as $key=>$value) {
+        array_walk($this->data,function ($value,$key) use ($model){
             $model->{$key} = $value;
-        }
+        });
 
         try {
             $model->save();
+
+            $this->fireEvent('updated',$model);
+
         } catch (\Exception $exception) {
             throw new ResourceUpdateException($exception->getMessage());
         }
-
         return $model;
     }
 
@@ -260,10 +263,21 @@ abstract class AbstractRepository implements Repository,Eloquent
      */
     protected function delete($id): int
     {
+        $id = (array)$id;
+        $this->setData($id);
+
         $rows = 0;
 
         try {
+
+            if ($this->fireEvent('deleting') === false) {
+                return $rows;
+            }
+
             $rows = $this->queryRelate->whereIn('id',$id)->getQuery()->delete();
+
+            $this->fireEvent('deleted');
+
         } catch (\Exception $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         } finally {
@@ -339,7 +353,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      * @param int $id
      * @return Model
      */
-    public function byIntId(int $id)
+    public function byIntId(int $id) : Model
     {
         return $this->byId($id);
     }
@@ -348,7 +362,7 @@ abstract class AbstractRepository implements Repository,Eloquent
      * @param string $id
      * @return Model
      */
-    public function byStringId(string $id)
+    public function byStringId(string $id) : Model
     {
         return $this->byId($id);
     }
@@ -448,14 +462,14 @@ abstract class AbstractRepository implements Repository,Eloquent
     /**
      * @return Model
      */
-    public function firstOrFail(): Model
-    {
-         $model = $this->first();
-         if (empty($model)) {
-             throw new ResourceNotFoundException();
-         }
-         return $model;
-    }
+//    public function firstOrFail(): Model
+//    {
+//         $model = $this->first();
+//         if (empty($model)) {
+//             throw new ResourceNotFoundException();
+//         }
+//         return $model;
+//    }
 
 
     /**
@@ -644,9 +658,9 @@ abstract class AbstractRepository implements Repository,Eloquent
     /**
      * @param string $event
      */
-    protected function fireEvent(string $event)
+    protected function fireEvent(string $event,...$params)
     {
-        Event::dispatch($event,$this);
+        Event::dispatch($event,$this,...$params);
     }
 
 
@@ -677,6 +691,9 @@ abstract class AbstractRepository implements Repository,Eloquent
     public function __call($name, $arguments)
     {
         //queryRelate call
+
+        //$forbidden = ['paginate','get','all','first','update','create','delete','find','value','pluck','chunk','sum','avg','count','max','min','increment','decrement'];
+        //&& !in_array($name,$forbidden,true)
         if (method_exists($this->queryRelate,$name)) {
             $result = call_user_func_array([$this->queryRelate,$name],$arguments);
             if ($result instanceof $this->queryRelate) {
@@ -685,5 +702,7 @@ abstract class AbstractRepository implements Repository,Eloquent
             }
             return $result;
         }
+
+        throw new MethodNotFoundException("method {{$name}} not found");
     }
 }
