@@ -62,7 +62,7 @@ interface Repository
      * @param callable $callback
      * @return void
      */
-    public function chunk(int $limit, callable $callback) ;
+    public function chunk(int $limit, callable $callback) : bool ;
 
 
     /**
@@ -97,4 +97,27 @@ interface Repository
      * @return mixed
      */
     public function decrement(string $column, int $amount = 1, array $extra = []) : int;
+
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function deleteByStringId(string $id) : int;
+
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function deleteByIntId(int $id) : int;
+
+
+    /**
+     * deleteByArray
+     * @param array $ids
+     * @return int
+     */
+    public function deleteByArray(array $ids) : int;
+
 }
