@@ -5,6 +5,8 @@ use CrCms\Repository\Contracts\Eloquent\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate as BaseQueryRelate;
 use CrCms\Repository\Contracts\Eloquent\QueryRelate as BaseEloquentQueryRelate;
 use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Drives\RepositoryDriver;
+use CrCms\Repository\Exceptions\MethodNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -20,7 +22,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
     protected $query = null;
 
     /**
-     * @var null
+     * @var RepositoryDriver || null
      */
     protected $repository = null;
 
@@ -29,7 +31,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
      * @param Builder $query
      * @param Repository $repository
      */
-    public function __construct(Builder $query, Repository $repository)
+    public function __construct(Builder $query, RepositoryDriver $repository)
     {
         $this->setQuery($query);
         $this->setRepository($repository);
@@ -40,7 +42,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
      * @param Repository $repository
      * @return BaseQueryRelate
      */
-    public function setRepository(Repository $repository) : BaseQueryRelate
+    public function setRepository(RepositoryDriver $repository) : BaseQueryRelate
     {
         $this->repository = $repository;
         return $this;
@@ -49,7 +51,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
     /**
      * @return Repository
      */
-    public function getRepository() : Repository
+    public function getRepository() : RepositoryDriver
     {
         return $this->repository;
     }
@@ -501,7 +503,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
      */
     public function magic(QueryMagic $queryMagic): BaseEloquentQueryRelate
     {
-        $this->query = $queryMagic->magic($this->query,$this->repository);
+        $this->query = $queryMagic->magic($this->query,$this->repository->getRepository());
         return $this;
     }
 
@@ -518,8 +520,7 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
             return call_user_func_array([$this->repository,$name],$arguments);
         }
 
-        $className = static::class;
-        throw new \Exception("Call to undefined method {$className}::{$name}");
+        throw new MethodNotFoundException(static::class,$name);
     }
 
 }

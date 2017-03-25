@@ -54,20 +54,20 @@ interface Eloquent
     public function byStringId(string $id) : Model;
 
 
-//    /**
-//     * @param int $id
-//     * @throws ResourceNotFoundException
-//     * @return Model
-//     */
-//    public function byIntIdOrFail(int $id) : Model;
-//
-//
-//    /**
-//     * @param string $id
-//     * @throws ResourceNotFoundException
-//     * @return Model
-//     */
-//    public function byStringIdOrFail(string $id) : Model;
+    /**
+     * @param int $id
+     * @throws ResourceNotFoundException
+     * @return Model
+     */
+    public function byIntIdOrFail(int $id) : Model;
+
+
+    /**
+     * @param string $id
+     * @throws ResourceNotFoundException
+     * @return Model
+     */
+    public function byStringIdOrFail(string $id) : Model;
 
 
     /**
@@ -92,7 +92,7 @@ interface Eloquent
      * @throws ResourceNotFoundException
      * @return Model
      */
-    //public function oneByStringOrFail(string $field, string $value) : Model;
+    public function oneByStringOrFail(string $field, string $value) : Model;
 
 
     /**
@@ -101,7 +101,7 @@ interface Eloquent
      * @throws ResourceNotFoundException
      * @return Model
      */
-    //public function oneByIntOrFail(string $field, int $value) : Model;
+    public function oneByIntOrFail(string $field, int $value) : Model;
 
 
     /**
@@ -114,6 +114,6 @@ interface Eloquent
      * @throws ResourceNotFoundException
      * @return Model
      */
-    //public function firstOrFail() : Model;
+    public function firstOrFail() : Model;
 
 }
