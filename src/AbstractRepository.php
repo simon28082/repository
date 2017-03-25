@@ -4,8 +4,8 @@ namespace CrCms\Repository;
 use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasEvent;
 use CrCms\Repository\Concerns\HasGuard;
+use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drives\Eloquent\Eloquent;
-use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 
 abstract class AbstractRepository
@@ -30,7 +30,7 @@ abstract class AbstractRepository
 
     public function __construct()
     {
-        $this->driver = $this->driver()->setRepository($this);
+        $this->driver = $this->driver();
     }
 
 
@@ -45,9 +45,6 @@ abstract class AbstractRepository
 
 
 
-    /**
-     * @return Model
-     */
     abstract public function newModel();
 
 
@@ -61,7 +58,7 @@ abstract class AbstractRepository
             return $this->newModel();
         }
 
-        $model = $this->driver->setModel($this->newModel())->create($this->data);
+        $model = $this->driver->create($this->data);
 
         $this->fireEvent('created',$model);
 
@@ -77,7 +74,7 @@ abstract class AbstractRepository
             return $this->getModel();
         }
 
-        $model = $this->driver->setModel($this->newModel())->update($data,$id);
+        $model = $this->driver->update($data,$id);
 
         $this->fireEvent('updated',$model);
 
@@ -105,9 +102,9 @@ abstract class AbstractRepository
     }
 
 
-    public function driver() : RepositoryDriver
+    public function driver() : Repository
     {
-        return new Eloquent();
+        return (new Eloquent)->setRepository($this);
     }
 
 

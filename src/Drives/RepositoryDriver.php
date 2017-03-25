@@ -5,8 +5,8 @@ use CrCms\Repository\AbstractRepository;
 use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Contracts\RepositoryQueryRelate;
-use CrCms\Repository\Drives\Eloquent\Contracts\Eloquent as EloquentRepository;
-abstract class RepositoryDriver  implements Repository,EloquentRepository,RepositoryQueryRelate
+
+abstract class RepositoryDriver  implements Repository,RepositoryQueryRelate
 {
 
     protected $queryRelate = null;
@@ -28,9 +28,10 @@ abstract class RepositoryDriver  implements Repository,EloquentRepository,Reposi
     /**
      * @param null $repository
      */
-    public function setRepository($repository) : self
+    public function setRepository(AbstractRepository $repository) : self
     {
         $this->repository = $repository;
+        dd($repository);
         return $this;
     }
 

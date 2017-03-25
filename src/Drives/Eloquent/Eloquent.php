@@ -2,13 +2,10 @@
 namespace CrCms\Repository\Drives\Eloquent;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Contracts\Repository;
-use CrCms\Repository\Contracts\RepositoryQueryRelate;
 use CrCms\Repository\Drives\Eloquent\Contracts\Eloquent as EloquentRepository;
 use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
-use CrCms\Repository\Facades\Event;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
 use CrCms\Repository\Exceptions\ResourceStoreException;
@@ -17,12 +14,11 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-
 /**
  * Class AbstractRepository
  * @package CrCms\Repository\Eloquent
  */
-class Eloquent extends RepositoryDriver
+class Eloquent extends RepositoryDriver implements EloquentRepository
 {
 
     /**
@@ -59,9 +55,6 @@ class Eloquent extends RepositoryDriver
     }
 
 
-    /**
-     * @return Builder
-     */
     public function newQuery() : Builder
     {
         return $this->repository->getModel()->newQuery();

@@ -1,59 +1,21 @@
 <?php
 namespace CrCms\Repository\Eloquent;
 
-use CrCms\Repository\Contracts\Eloquent\QueryMagic;
-use CrCms\Repository\Contracts\QueryRelate as BaseQueryRelate;
-use CrCms\Repository\Contracts\Eloquent\QueryRelate as BaseEloquentQueryRelate;
+use CrCms\Repository\Drives\Eloquent\ResolveWhereQuery;
+use CrCms\Repository\Drives\QueryRelate as BaseQueryRelate;
+use CrCms\Repository\Contracts\QueryRelate as BaseQueryRelateContract;
+use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\Repository;
-use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * Class QueryRelate
- * @package CrCms\Repository\Eloquent
- */
-class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
+class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 {
 
-    /**
-     * @var null
-     */
-    protected $query = null;
-
-    /**
-     * @var RepositoryDriver || null
-     */
-    protected $repository = null;
-
-    /**
-     * QueryRelate constructor.
-     * @param Builder $query
-     * @param Repository $repository
-     */
-    public function __construct(Builder $query, RepositoryDriver $repository)
+    public function __construct(Builder $query, Repository $repository)
     {
         $this->setQuery($query);
         $this->setRepository($repository);
-    }
-
-
-    /**
-     * @param Repository $repository
-     * @return BaseQueryRelate
-     */
-    public function setRepository(RepositoryDriver $repository) : BaseQueryRelate
-    {
-        $this->repository = $repository;
-        return $this;
-    }
-
-    /**
-     * @return Repository
-     */
-    public function getRepository() : RepositoryDriver
-    {
-        return $this->repository;
     }
 
 
@@ -80,79 +42,49 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
      * @param array $column
      * @return BaseQueryRelate
      */
-    public function select(array $column = ['*']): BaseQueryRelate
+    public function select(array $column = ['*']): BaseQueryRelateContract
     {
         $this->query->select($column);
         return $this;
     }
 
-    /**
-     * @param string $expression
-     * @param array $bindings
-     * @return BaseQueryRelate
-     */
-    public function selectRaw(string $expression, array $bindings = []): BaseQueryRelate
+    public function selectRaw(string $expression, array $bindings = []): BaseQueryRelateContract
     {
         $this->query->selectRaw($expression,$bindings);
         return $this;
     }
 
-    /**
-     * @param int $limit
-     * @return BaseQueryRelate
-     */
-    public function skip(int $limit): BaseQueryRelate
+    public function skip(int $limit): BaseQueryRelateContract
     {
         $this->query->skip($limit);
         return $this;
     }
 
-    /**
-     * @param int $limit
-     * @return BaseQueryRelate
-     */
-    public function take(int $limit): BaseQueryRelate
+    public function take(int $limit): BaseQueryRelateContract
     {
         $this->query->take($limit);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @return BaseQueryRelate
-     */
-    public function groupBy(string $column): BaseQueryRelate
+    public function groupBy(string $column): BaseQueryRelateContract
     {
         $this->query->groupBy($column);
         return $this;
     }
 
-    /**
-     * @param array $columns
-     * @return BaseQueryRelate
-     */
-    public function groupByArray(array $columns): BaseQueryRelate
+    public function groupByArray(array $columns): BaseQueryRelateContract
     {
         $this->query->groupBy($columns);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param string $sort
-     * @return BaseQueryRelate
-     */
-    public function orderBy(string $column, string $sort = 'desc'): BaseQueryRelate
+    public function orderBy(string $column, string $sort = 'desc'): BaseQueryRelateContract
     {
         $this->query->orderBy($column,$sort);
         return $this;
     }
 
-    /**
-     * @param array $columns
-     * @return BaseQueryRelate
-     */
-    public function orderByArray(array $columns): BaseQueryRelate
+    public function orderByArray(array $columns): BaseQueryRelateContract
     {
         array_map(function($value,$key){
            $this->query->orderBy($key,$value);
@@ -160,350 +92,194 @@ class QueryRelate implements BaseQueryRelate,BaseEloquentQueryRelate
         return $this;
     }
 
-    /**
-     * @return BaseQueryRelate
-     */
-    public function distinct(): BaseQueryRelate
+    public function distinct(): BaseQueryRelateContract
     {
         // TODO: Implement distinct() method.
         $this->query->distinct();
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param string $operator
-     * @param string $value
-     * @return BaseQueryRelate
-     */
-    public function where(string $column, string $operator = '=', string $value = ''): BaseQueryRelate
+    public function where(string $column, string $operator = '=', string $value = ''): BaseQueryRelateContract
     {
         $this->query->where($column,$operator,$value);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param string $operator
-     * @param string $value
-     * @return BaseQueryRelate
-     */
-    public function orWhere(string $column, string $operator = '=', string $value = ''): BaseQueryRelate
+    public function orWhere(string $column, string $operator = '=', string $value = ''): BaseQueryRelateContract
     {
         $this->query->orWhere($column,$operator,$value);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $between
-     * @return BaseQueryRelate
-     */
-    public function whereBetween(string $column, array $between): BaseQueryRelate
+    public function whereBetween(string $column, array $between): BaseQueryRelateContract
     {
         $this->query->whereBetween($column,$between);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $between
-     * @return BaseQueryRelate
-     */
-    public function orWhereBetween(string $column, array $between): BaseQueryRelate
+    public function orWhereBetween(string $column, array $between): BaseQueryRelateContract
     {
         $this->query->orWhereBetween($column,$between);
         return $this;
     }
 
-    /**
-     * @param string $sql
-     * @param array $bindings
-     * @return BaseQueryRelate
-     */
-    public function whereRaw(string $sql, array $bindings = []): BaseQueryRelate
+    public function whereRaw(string $sql, array $bindings = []): BaseQueryRelateContract
     {
         $this->query->whereRaw($sql,$bindings);
         return $this;
     }
 
-    /**
-     * @param string $sql
-     * @param array $bindings
-     * @return BaseQueryRelate
-     */
-    public function orWhereRaw(string $sql, array $bindings = []): BaseQueryRelate
+    public function orWhereRaw(string $sql, array $bindings = []): BaseQueryRelateContract
     {
         $this->query->orWhereRaw($sql,$bindings);
         return $this;
     }
 
-    /**
-     * @param $column
-     * @param array $between
-     * @return BaseQueryRelate
-     */
-    public function orWhereNotBetween($column, array $between): BaseQueryRelate
+    public function orWhereNotBetween($column, array $between): BaseQueryRelateContract
     {
         $this->query->orWhereNotBetween($column,$between);
         return $this;
     }
 
-    /**
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function whereExists(\Closure $callback): BaseQueryRelate
+    public function whereExists(\Closure $callback): BaseQueryRelateContract
     {
         $this->query->whereExists($callback);
         return $this;
     }
-
-    /**
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function orWhereExists(\Closure $callback): BaseQueryRelate
+    public function orWhereExists(\Closure $callback): BaseQueryRelateContract
     {
         $this->query->orWhereExists($callback);
         return $this;
     }
 
-    /**
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function whereNotExists(\Closure $callback): BaseQueryRelate
+    public function whereNotExists(\Closure $callback): BaseQueryRelateContract
     {
         $this->query->whereNotExists($callback);
         return $this;
     }
 
-    /**
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function orWhereNotExists(\Closure $callback): BaseQueryRelate
+    public function orWhereNotExists(\Closure $callback): BaseQueryRelateContract
     {
         $this->query->orWhereNotExists($callback);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $values
-     * @return BaseQueryRelate
-     */
-    public function whereIn(string $column, array $values): BaseQueryRelate
+    public function whereIn(string $column, array $values): BaseQueryRelateContract
     {
         $this->query->whereIn($column,$values);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $values
-     * @return BaseQueryRelate
-     */
-    public function orWhereIn(string $column, array $values): BaseQueryRelate
+    public function orWhereIn(string $column, array $values): BaseQueryRelateContract
     {
         $this->query->orWhereIn($column,$values);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $values
-     * @return BaseQueryRelate
-     */
-    public function whereNotIn(string $column, array $values): BaseQueryRelate
+    public function whereNotIn(string $column, array $values): BaseQueryRelateContract
     {
         $this->query->whereNotIn($column,$values);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @param array $values
-     * @return BaseQueryRelate
-     */
-    public function orWhereNotIn(string $column, array $values): BaseQueryRelate
+    public function orWhereNotIn(string $column, array $values): BaseQueryRelateContract
     {
         $this->query->orWhereNotIn($column,$values);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @return BaseQueryRelate
-     */
-    public function whereNull(string $column): BaseQueryRelate
+    public function whereNull(string $column): BaseQueryRelateContract
     {
         $this->query->whereNull($column);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @return BaseQueryRelate
-     */
-    public function orWhereNull(string $column): BaseQueryRelate
+    public function orWhereNull(string $column): BaseQueryRelateContract
     {
         $this->query->orWhereNull($column);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @return BaseQueryRelate
-     */
-    public function whereNotNull(string $column): BaseQueryRelate
+    public function whereNotNull(string $column): BaseQueryRelateContract
     {
         $this->query->whereNotNull($column);
         return $this;
     }
 
-    /**
-     * @param string $column
-     * @return BaseQueryRelate
-     */
-    public function orWhereNotNull(string $column): BaseQueryRelate
+    public function orWhereNotNull(string $column): BaseQueryRelateContract
     {
         $this->query->orWhereNotNull($column);
         return $this;
     }
 
-
-    /**
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return BaseEloquentQueryRelate
-     */
-    public function union(\Illuminate\Database\Query\Builder $query): BaseEloquentQueryRelate
+    public function union(BaseQueryRelateContract $queryRelate): BaseQueryRelateContract
     {
-        $this->query->union($query);
+        $this->query = $this->query->union($queryRelate->getQuery());
         return $this;
     }
 
-
-    /**
-     * @param string $sql
-     * @return BaseQueryRelate
-     */
-    public function raw(string $sql): BaseQueryRelate
+    public function raw(string $sql): BaseQueryRelateContract
     {
         $this->query->raw($sql);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @return BaseQueryRelate
-     */
-    public function from(string $table): BaseQueryRelate
+    public function from(string $table): BaseQueryRelateContract
     {
         $this->query->raw($table);
         return $this;
     }
-
-    /**
-     * @param string $table
-     * @param string $one
-     * @param string $operator
-     * @param string $two
-     * @return BaseQueryRelate
-     */
-    public function join(string $table, string $one, string $operator = '=', string $two = ''): BaseQueryRelate
+    public function join(string $table, string $one, string $operator = '=', string $two = ''): BaseQueryRelateContract
     {
         $this->query->join($table,$one,$operator,$two);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function joinByClosure(string $table, \Closure $callback): BaseQueryRelate
+    public function joinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
         $this->query->join($table,$callback);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @param string $first
-     * @param string $operator
-     * @param string $two
-     * @return BaseQueryRelate
-     */
-    public function leftJoin(string $table, string $first, string $operator = '=', string $two = ''): BaseQueryRelate
+    public function leftJoin(string $table, string $first, string $operator = '=', string $two = ''): BaseQueryRelateContract
     {
         $this->query->leftjoin($table,$first,$operator,$two);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function leftJoinByClosure(string $table, \Closure $callback): BaseQueryRelate
+    public function leftJoinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
         $this->query->leftjoin($table,$callback);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @param string $first
-     * @param string $operator
-     * @param string $two
-     * @return BaseQueryRelate
-     */
-    public function rightJoin(string $table, string $first, string $operator = '=', string $two = ''): BaseQueryRelate
+    public function rightJoin(string $table, string $first, string $operator = '=', string $two = ''): BaseQueryRelateContract
     {
         $this->query->rightJoin($table,$first,$operator,$two);
         return $this;
     }
 
-    /**
-     * @param string $table
-     * @param \Closure $callback
-     * @return BaseQueryRelate
-     */
-    public function rightJoinByClosure(string $table, \Closure $callback): BaseQueryRelate
+    public function rightJoinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
         $this->query->rightJoinByClosure($table,$callback);
         return $this;
     }
 
-    /**
-     * @param callable $callable
-     * @return BaseQueryRelate
-     */
-    public function callable(callable $callable): BaseQueryRelate
+    public function callable(callable $callable): BaseQueryRelateContract
     {
         $this->query = call_user_func($callable,$this->query);
         return $this;
     }
 
-    /**
-     * @param array $wheres
-     * @return BaseQueryRelate
-     */
-    public function wheres(array $wheres): BaseQueryRelate
+    public function wheres(array $wheres): BaseQueryRelateContract
     {
         $this->query = (new ResolveWhereQuery)->getQuery($wheres,$this->query);
         return $this;
     }
 
-    /**
-     * @param QueryMagic $queryMagic
-     * @return BaseEloquentQueryRelate
-     */
-    public function magic(QueryMagic $queryMagic): BaseEloquentQueryRelate
+    public function magic(QueryMagic $queryMagic): BaseQueryRelateContract
     {
-        $this->query = $queryMagic->magic($this->query,$this->repository->getRepository());
+        $this->query = $queryMagic->magic($this->query,$this->repository->getRepository())->getQuery();
         return $this;
     }
 
