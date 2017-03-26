@@ -104,7 +104,7 @@ abstract class AbstractRepository
 
     public function driver() : Repository
     {
-        return (new Eloquent)->setRepository($this);
+        return (new Eloquent($this));
     }
 
 

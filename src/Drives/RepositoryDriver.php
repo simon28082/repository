@@ -17,6 +17,13 @@ abstract class RepositoryDriver  implements Repository,RepositoryQueryRelate
      */
     protected $repository = null;
 
+
+    public function __construct(AbstractRepository $repository)
+    {
+        $this->setRepository($repository);
+    }
+
+
     /**
      * @return null
      */
@@ -31,7 +38,6 @@ abstract class RepositoryDriver  implements Repository,RepositoryQueryRelate
     public function setRepository(AbstractRepository $repository) : self
     {
         $this->repository = $repository;
-        dd($repository);
         return $this;
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace CrCms\Repository\Eloquent;
+namespace CrCms\Repository\Drives\Eloquent;
 
 use CrCms\Repository\Drives\Eloquent\ResolveWhereQuery;
 use CrCms\Repository\Drives\QueryRelate as BaseQueryRelate;
