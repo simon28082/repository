@@ -111,11 +111,11 @@ abstract class AbstractRepository
 
     public function __call($name, $arguments)
     {
-        if (method_exists($this->driver,$name)) {
+//        if (method_exists($this->driver,$name)) {
             return $this->driver->$name(...$arguments);
-        }
+//        }
 
-        throw new MethodNotFoundException(static::class,$name);
+        //throw new MethodNotFoundException(static::class,$name);
     }
 
 

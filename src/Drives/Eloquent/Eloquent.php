@@ -147,7 +147,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator
      {
-         $paginate = $this->queryRelate->orderBy($this->model->getKeyName(),'desc')->getQuery()->paginate($perPage);
+         $paginate = $this->queryRelate->orderBy($this->repository->getModel()->getKeyName(),'desc')->getQuery()->paginate($perPage);
 
          $this->resetQueryRelate();
 
@@ -162,7 +162,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     protected function byId($id) : Model
     {
         //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
-        $model = $this->queryRelate->where($this->model->getKeyName(),$id)->getQuery()->first();
+        $model = $this->queryRelate->where($this->repository->getModel()->getKeyName(),$id)->getQuery()->first();
 
         $this->resetQueryRelate();
 

@@ -279,7 +279,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     public function magic(QueryMagic $queryMagic): BaseQueryRelateContract
     {
-        $this->query = $queryMagic->magic($this->query,$this->repository->getRepository())->getQuery();
+        $this->query = $queryMagic->magic($this,$this->repository->getRepository())->getQuery();
         return $this;
     }
 

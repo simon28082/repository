@@ -1,5 +1,5 @@
 <?php
-namespace CrCms\Repository\Eloquent;
+namespace CrCms\Repository;
 
 use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate;
@@ -32,7 +32,7 @@ use CrCms\Repository\Contracts\Repository;
      * @param Repository $repository
      * @return QueryRelate
      */
-    public function magic(QueryRelate $queryRelate, Repository $repository): QueryRelate
+    public function magic(QueryRelate $queryRelate, AbstractRepository $repository): QueryRelate
     {
         return $this->magicSearch($this->data,$queryRelate);
     }
