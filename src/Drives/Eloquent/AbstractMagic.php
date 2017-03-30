@@ -1,7 +1,7 @@
 <?php
 namespace CrCms\Repository\Eloquent;
 
-use CrCms\Repository\Contracts\Eloquent\QueryMagic;
+use CrCms\Repository\Drives\Eloquent\Contracts\QueryMagic;
 use Illuminate\Database\Eloquent\Builder;
 use CrCms\Repository\Contracts\Repository;
 
@@ -16,11 +16,6 @@ abstract class AbstractMagic implements QueryMagic
      */
     protected $data = [];
 
-    /**
-     * @var array
-     */
-    protected $guards = [];
-
 
     /**
      * @param array $data
@@ -28,17 +23,6 @@ abstract class AbstractMagic implements QueryMagic
     public function setData(array $data) : self
     {
         $this->data = $data;
-        return $this;
-    }
-
-
-    /**
-     * @param array $prohibited
-     * @return AbstractMagic
-     */
-    public function setGuards(array $guards) : self
-    {
-        $this->guards = $guards;
         return $this;
     }
 
@@ -67,28 +51,35 @@ abstract class AbstractMagic implements QueryMagic
 
     /**
      * @param array $data
-     * @return array
-     */
-    protected function filter(array $data) : array
-    {
-        return array_filter($data,function($item,$key){
-            return !empty($item) && !in_array($key,$this->guards,true);
-        },ARRAY_FILTER_USE_BOTH);
-    }
-
-
-    /**
-     * @param array $data
      * @param Builder $query
      * @return Builder
      */
     protected function dispatch(array $data, Builder $query) : Builder
     {
         foreach ($data as $key=>$item) {
+            $item = is_array($item) ? $item : trim($item);
             $method = 'by'.studly_case($key);
-            $query = call_user_func_array([$this,$method],[$item,$query]);
-        }
 
+            if (method_exists($this,$method) && !empty($item)) {
+                $query = call_user_func_array([$this,$method],[$query,$item]);
+            }
+        }
         return $query;
+    }
+
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function filter(array $data) : array
+    {
+        return array_filter($data,function($item){
+            if (is_array($item)) {
+                return $this->filter($item);
+            }
+            $item = trim($item);
+            return !empty($item);
+        });
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace CrCms\Repository\Eloquent;
+namespace CrCms\Repository\Drives\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 

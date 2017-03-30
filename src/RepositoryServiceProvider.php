@@ -3,6 +3,7 @@ namespace CrCms\Repository;
 
 use CrCms\Repository\Console\Commands\Magic;
 use CrCms\Repository\Console\Commands\Repository;
+use CrCms\Repository\Events\Event;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -11,7 +12,7 @@ class RepositoryServiceProvider extends ServiceProvider
     /**
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * @var string
@@ -33,6 +34,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->publishes([
             $this->packagePath.'config' => config_path(),
         ]);
+
+        $this->app->make('repository.event')->setListen(
+            $this->app->make('config')->get('repository.listen')
+        );
     }
 
 
@@ -44,6 +49,7 @@ class RepositoryServiceProvider extends ServiceProvider
         //bind commands
         $this->app->singleton('command.repository.make',Repository::class);
         $this->app->singleton('command.magic.make',Magic::class);
+        $this->app->singleton('repository.event',Event::class);
 
         // Register commands
         $this->commands(['command.repository.make', 'command.magic.make']);

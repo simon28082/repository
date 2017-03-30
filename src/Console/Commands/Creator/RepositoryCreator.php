@@ -146,7 +146,7 @@ class RepositoryCreator
      */
     protected function getStubFilePath() : string
     {
-        return __DIR__.'../../../../../resource/stubs/repository.stub';
+        return __DIR__.'/../../../../resource/stubs/repository.stub';
     }
 
 

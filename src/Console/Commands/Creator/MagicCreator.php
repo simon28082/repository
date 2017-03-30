@@ -143,7 +143,7 @@ class MagicCreator
      */
     protected function getStubFilePath() : string
     {
-        return __DIR__.'../../../../../resource/stubs/magic.stub';
+        return __DIR__.'/../../../../resource/stubs/magic.stub';
     }
 
 

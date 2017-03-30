@@ -12,7 +12,7 @@ class repository_class extends AbstractRepository
 {
 
     /**
-     * @return string
+     * @return Model
      */
     public function newModel() : Model
     {
