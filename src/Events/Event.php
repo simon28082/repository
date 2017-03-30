@@ -1,5 +1,6 @@
 <?php
 namespace CrCms\Repository\Events;
+use CrCms\Repository\AbstractRepository;
 
 /**
  * Class Event
@@ -89,13 +90,21 @@ class Event
      * @param array ...$params
      * @return bool
      */
-    public function dispatch(string $event,$repository,...$params) : bool
+    public function dispatch(string $event,AbstractRepository $repository,...$params) : bool
     {
         /*$listenArray = $this->collapse(
             array_merge((array)static::$listen[$event],$this->currentListen[$event])
         );*/
 
-        $listenArray = array_merge((array)static::$listen[$event],$this->currentListen[$event]);
+        if (!isset($this->currentListen[$event])) {
+            $this->currentListen[$event] = [];
+        }
+
+        if (!isset(static::$listen[$event])) {
+            static::$listen[$event] = [];
+        }
+
+        $listenArray = array_merge((array)static::$listen[$event],(array)$this->currentListen[$event]);
 
         return $this->dispatchHandle($event,$listenArray,$repository,...$params);
     }
@@ -124,7 +133,7 @@ class Event
      * @param array ...$params
      * @return bool
      */
-    protected function dispatchHandle(string $event,array $listenArray,$repository,...$params) : bool
+    protected function dispatchHandle(string $event,array $listenArray,AbstractRepository $repository,...$params) : bool
     {
         foreach ($listenArray as $listen) {
 
@@ -151,7 +160,7 @@ class Event
      * @param $repository
      * @return mixed
      */
-    protected function closureHandle(\Closure $listen,$repository)
+    protected function closureHandle(\Closure $listen,AbstractRepository $repository)
     {
         return call_user_func($listen,$repository);
     }
@@ -163,7 +172,7 @@ class Event
      * @param array ...$params
      * @return mixed
      */
-    protected function methodHandle(string $listen,$repository,...$params)
+    protected function methodHandle(string $listen,AbstractRepository $repository,...$params)
     {
         list($class,$method) = explode('@',$listen);
         array_unshift($params,$repository);
@@ -178,7 +187,7 @@ class Event
      * @param array ...$params
      * @return mixed
      */
-    protected function classHandle(string $listen,string $event,$repository,...$params)
+    protected function classHandle(string $listen,string $event,AbstractRepository $repository,...$params)
     {
         $class = new $listen($repository);
         if (method_exists($class,$event)) {
