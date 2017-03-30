@@ -60,7 +60,7 @@ use CrCms\Repository\Contracts\Repository;
             $item = is_array($item) ? $item : trim($item);
             $method = 'by'.studly_case($key);
 
-            if (method_exists($this,$method) && !empty($item)) {
+            if (method_exists($this,$method)) {
                 $queryRelate = call_user_func_array([$this,$method],[$queryRelate,$item]);
             }
         }
@@ -72,14 +72,15 @@ use CrCms\Repository\Contracts\Repository;
      * @param array $data
      * @return array
      */
-    protected function filter(array $data) : array
-    {
-        return array_filter($data,function($item){
-            if (is_array($item)) {
-                return $this->filter($item);
-            }
-            $item = trim($item);
-            return !empty($item);
-        });
-    }
+     protected function filter(array $data) : array
+     {
+         return array_filter($data,function($item){
+             if (is_array($item)) {
+                 return $this->filter($item);
+             }
+             $item = trim($item);
+             //防止字符串'0'
+             return (is_numeric($item) || !empty($item));
+         });
+     }
 }
