@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\Repository\Console\Commands\Creator;
 
 use Illuminate\Contracts\Config\Repository as Config;
@@ -10,7 +11,6 @@ use Illuminate\Filesystem\Filesystem;
  */
 class MagicCreator
 {
-
     /**
      * @var Filesystem|null
      */

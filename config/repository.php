@@ -9,19 +9,16 @@ return [
 
     'magic_path' => app_path('Repositories\Magic'),
 
-    'listen'=>[
-        'creating'=>[
-            \CrCms\Repository\Listener\Listener::class.'@testCreate',
+    'listen' => [
+        'creating' => [
+            //\CrCms\Repository\Listeners\RepositoryListener::class . '@creating',
         ],
-        'created'=>[
-
-        ],
-        'updating'=>[],
-        'updated'=>[],
-        'deleting'=>[],
-        'deleted'=>[],
-        'saving'=>[],
-        'saved'=>[],
+        'created' => [],
+        'updating' => [],
+        'updated' => [],
+        'deleting' => [],
+        'deleted' => [],
+        'saving' => [],
+        'saved' => [],
     ],
-
 ];

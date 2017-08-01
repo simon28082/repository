@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\Repository\Console\Commands;
 
 use CrCms\Repository\Console\Commands\Creator\MagicCreator;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class Magic extends Command
 {
-
     /**
      * @var string
      */
@@ -28,7 +28,6 @@ class Magic extends Command
      */
     protected $creator = null;
 
-
     /**
      * Magic constructor.
      * @param MagicCreator $creator
@@ -38,7 +37,6 @@ class Magic extends Command
         parent::__construct();
         $this->creator = $creator;
     }
-
 
     /**
      *
@@ -57,7 +55,6 @@ class Magic extends Command
         $this->info("Successfully created the magic class");
     }
 
-
     /**
      * @return array
      */
@@ -68,7 +65,6 @@ class Magic extends Command
         ];
     }
 
-
     /**
      * @return array
      */
@@ -78,5 +74,4 @@ class Magic extends Command
             ['repository', '',InputOption::VALUE_OPTIONAL, 'The repository name.', ''],
         ];
     }
-
 }

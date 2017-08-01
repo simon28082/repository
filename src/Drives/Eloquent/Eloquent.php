@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\Repository\Drives\Eloquent;
 
 use CrCms\Repository\AbstractRepository;
@@ -14,15 +15,17 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+
 /**
- * Class AbstractRepository
- * @package CrCms\Repository\Eloquent
+ * Class Eloquent
+ *
+ * @package CrCms\Repository\Drives\Eloquent
  */
 class Eloquent extends RepositoryDriver implements EloquentRepository
 {
-
     /**
-     * AbstractRepository constructor.
+     * Eloquent constructor.
+     * @param AbstractRepository $repository
      */
     public function __construct(AbstractRepository $repository)
     {
@@ -31,55 +34,62 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
-     * @return AbstractRepository
+     * @return $this
      */
     public function resetQueryRelate()
     {
         return $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     protected function byIdOrFail($id)
     {
         $model = $this->byId($id);
         if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+
         return $model;
     }
+
+    /**
+     * @param int $id
+     * @return Model
+     */
     public function byIntIdOrFail(int $id): Model
     {
         return $this->byIdOrFail($id);
     }
+
+    /**
+     * @param string $id
+     * @return Model
+     */
     public function byStringIdOrFail(string $id): Model
     {
         return $this->byIdOrFail($id);
     }
 
 
-    public function newQuery() : Builder
+    /**
+     * @return Builder
+     */
+    public function newQuery(): Builder
     {
         return $this->repository->getModel()->newQuery();
     }
-
 
     /**
      * @param Builder $query
      * @return QueryRelate
      */
-    public function newQueryRelate(Builder $query) : QueryRelate
+    public function newQueryRelate(Builder $query): QueryRelate
     {
-        return new \CrCms\Repository\Drives\Eloquent\QueryRelate($query,$this);
+        return new \CrCms\Repository\Drives\Eloquent\QueryRelate($query, $this);
     }
-
-
-
-
-
-
-
-
-
-
 
     /**
      * @param array $data
@@ -88,24 +98,23 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     public function create(array $data): Model
     {
         try {
-            $model =  $this->repository->newModel()->create($data);
+            $model = $this->repository->newModel()->create($data);
             return $model;
         } catch (\Exception $exception) {
             throw new ResourceStoreException($exception->getMessage());
         }
     }
 
-
     /**
      * @param array $data
-     * @param int|string $id
+     * @param $id
      * @return Model
      */
     public function update(array $data, $id): Model
     {
         $model = $this->byId($id);
 
-        array_walk($data,function ($value,$key) use ($model){
+        array_walk($data, function ($value, $key) use ($model) {
             $model->{$key} = $value;
         });
 
@@ -124,7 +133,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function updateByIntId(array $data, int $id): Model
     {
-        return $this->update($data,$id);
+        return $this->update($data, $id);
     }
 
     /**
@@ -134,51 +143,41 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function updateByStringId(array $data, string $id): Model
     {
-        return $this->update($data,$id);
+        return $this->update($data, $id);
     }
-
-
-
-
 
     /**
      * @param int $perPage
      * @return LengthAwarePaginator
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator
-     {
-         $paginate = $this->queryRelate->orderBy($this->repository->getModel()->getKeyName(),'desc')->getQuery()->paginate($perPage);
-
-         $this->resetQueryRelate();
-
-         return $paginate;
-     }
-
-
-    /**
-     * @param $id
-     * @return Model
-     */
-    protected function byId($id) : Model
     {
-        //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
-        $model = $this->queryRelate->where($this->repository->getModel()->getKeyName(),$id)->getQuery()->first();
+        $paginate = $this->queryRelate->orderBy($this->repository->getModel()->getKeyName(), 'desc')->getQuery()->paginate($perPage);
 
         $this->resetQueryRelate();
 
-        if (empty($model)) {
-            return $this->repository->newModel();
-        }
+        return $paginate;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    protected function byId($id)
+    {
+        //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
+        $model = $this->queryRelate->where($this->repository->getModel()->getKeyName(), $id)->getQuery()->first();
+
+        $this->resetQueryRelate();
 
         return $model;
     }
-
 
     /**
      * @param int $id
      * @return Model
      */
-    public function byIntId(int $id) : Model
+    public function byIntId(int $id): Model
     {
         return $this->byId($id);
     }
@@ -187,7 +186,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param string $id
      * @return Model
      */
-    public function byStringId(string $id) : Model
+    public function byStringId(string $id): Model
     {
         return $this->byId($id);
     }
@@ -195,21 +194,21 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     /**
      * @param string $field
      * @param string $value
-     * @return mixed
+     * @return Model
      */
-    public function oneByString(string $field, string $value) : Model
+    public function oneByString(string $field, string $value): Model
     {
-        return $this->oneBy($field,$value);
+        return $this->oneBy($field, $value);
     }
 
     /**
      * @param string $field
      * @param int $value
-     * @return mixed
+     * @return Model
      */
-    public function oneByInt(string $field, int $value) : Model
+    public function oneByInt(string $field, int $value): Model
     {
-        return $this->oneBy($field,$value);
+        return $this->oneBy($field, $value);
     }
 
     /**
@@ -219,7 +218,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function oneByStringOrFail(string $field, string $value): Model
     {
-        return $this->oneByOrFail($field,$value);
+        return $this->oneByOrFail($field, $value);
     }
 
     /**
@@ -229,9 +228,8 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function oneByIntOrFail(string $field, int $value): Model
     {
-        return $this->oneByOrFail($field,$value);
+        return $this->oneByOrFail($field, $value);
     }
-
 
     /**
      * @param string $field
@@ -240,17 +238,12 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function oneBy(string $field, $value)
     {
-        $model =  $this->queryRelate->where($field,$value)->getQuery()->first();
+        $model = $this->queryRelate->where($field, $value)->getQuery()->first();
 
         $this->resetQueryRelate();
 
-        if (empty($model)) {
-            $model = $this->repository->newModel();
-        }
-
         return $model;
     }
-
 
     /**
      * @param string $field
@@ -259,30 +252,24 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function oneByOrFail(string $field, $value): Model
     {
-         $model = $this->oneBy($field,$value);
-         if (empty($model)) {
-             throw new ResourceNotFoundException();
-         }
-         return $model;
+        $model = $this->oneBy($field, $value);
+        if (empty($model)) {
+            throw new ResourceNotFoundException();
+        }
+        return $model;
     }
-
 
     /**
-     * @return Model
+     * @return mixed
      */
-    public function first() : Model
+    public function first()
     {
-         $model = $this->queryRelate->getQuery()->first();
+        $model = $this->queryRelate->getQuery()->first();
 
-         $this->resetQueryRelate();
+        $this->resetQueryRelate();
 
-         if (empty($model)) {
-             return $this->repository->newModel();
-         }
-
-         return $model;
+        return $model;
     }
-
 
     /**
      * @return Collection
@@ -297,7 +284,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $models;
     }
 
-
     /**
      * @return Collection
      */
@@ -310,7 +296,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $models;
     }
 
-
     /**
      * @param string $column
      * @param string|null $key
@@ -318,25 +303,22 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function pluck(string $column, string $key = null): Collection
     {
-        $models = $this->queryRelate->getQuery()->pluck($column,$key);
+        $models = $this->queryRelate->getQuery()->pluck($column, $key);
 
         $this->resetQueryRelate();
 
         return $models;
     }
 
-
-
-
     /**
-     * @param int $id
+     * @param $id
      * @return int
      */
     public function delete($id): int
     {
         $rows = 0;
         try {
-            $rows = $this->queryRelate->whereIn('id',(array)$id)->getQuery()->delete();
+            $rows = $this->queryRelate->whereIn('id', (array)$id)->getQuery()->delete();
         } catch (\Exception $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         } finally {
@@ -345,8 +327,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
         return $rows;
     }
-
-
 
     /**
      * @param string $column
@@ -361,7 +341,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $max;
     }
 
-
     /**
      * @param string $column
      * @return int
@@ -374,7 +353,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
         return $count;
     }
-
 
     /**
      * @param $column
@@ -389,7 +367,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $avg;
     }
 
-
     /**
      * @param string $column
      * @return int
@@ -403,49 +380,44 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $sum;
     }
 
-
     /**
-     * chunk reset model有问题需要尝试
      * @param int $limit
      * @param callable $callback
-     * @return mixed
+     * @return bool
      */
-    public function chunk(int $limit, callable $callback) : bool
+    public function chunk(int $limit, callable $callback): bool
     {
-        $result = $this->queryRelate->getQuery()->chunk($limit,$callback);
+        $result = $this->queryRelate->getQuery()->chunk($limit, $callback);
 
         $this->resetQueryRelate();
 
         return $result;
     }
 
-
     /**
      * @param string $key
      * @param string $default
      * @return string
      */
-    public function valueOfString(string $key, string $default = '') : string
+    public function valueOfString(string $key, string $default = ''): string
     {
-        return $this->value($key,$default);
+        return $this->value($key, $default);
     }
-
 
     /**
      * @param string $key
      * @param int $default
      * @return int
      */
-    public function valueOfInt(string $key, int $default = 0) : int
+    public function valueOfInt(string $key, int $default = 0): int
     {
-        return $this->value($key,$default);
+        return $this->value($key, $default);
     }
-
 
     /**
      * @param string $key
-     * @param null $default
-     * @return null
+     * @param $default
+     * @return mixed
      */
     protected function value(string $key, $default)
     {
@@ -460,6 +432,18 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $value;
     }
 
+    /**
+     * @param string $column
+     * @param int $amount
+     * @param array $extra
+     * @return int
+     */
+    public function increment(string $column, int $amount = 1, array $extra = []): int
+    {
+        $rows = $this->queryRelate->getQuery()->increment($column, $amount, $extra);
+        $this->resetQueryRelate();
+        return $rows;
+    }
 
     /**
      * @param string $column
@@ -467,38 +451,23 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param array $extra
      * @return int
      */
-    public function increment(string $column, int $amount = 1, array $extra = []) : int
+    public function decrement(string $column, int $amount = 1, array $extra = []): int
     {
-        $rows = $this->queryRelate->getQuery()->increment($column,$amount,$extra);
+        $rows = $this->queryRelate->getQuery()->decrement($column, $amount, $extra);
         $this->resetQueryRelate();
         return $rows;
     }
-
-
-    /**
-     * @param string $column
-     * @param int $amount
-     * @param array $extra
-     * @return int
-     */
-    public function decrement(string $column, int $amount = 1, array $extra = []) : int
-    {
-        $rows = $this->queryRelate->getQuery()->decrement($column,$amount,$extra);
-        $this->resetQueryRelate();
-        return $rows;
-    }
-
 
     /**
      * @return Model
      */
     public function firstOrFail(): Model
     {
-         $model = $this->first();
-         if (empty($model)) {
-             throw new ResourceNotFoundException();
-         }
-         return $model;
+        $model = $this->first();
+        if (empty($model)) {
+            throw new ResourceNotFoundException();
+        }
+        return $model;
     }
 
     /**
@@ -519,17 +488,14 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $this->delete($id);
     }
 
-
     /**
      * @param array $ids
      * @return int
      */
-    public function deleteByArray(array $ids) : int
+    public function deleteByArray(array $ids): int
     {
         return $this->delete($ids);
     }
-
-
 
     /**
      * @param $name
@@ -538,12 +504,10 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function __call($name, $arguments)
     {
-        //queryRelate call
-
         //$forbidden = ['paginate','get','all','first','update','create','delete','find','value','pluck','chunk','sum','avg','count','max','min','increment','decrement'];
         //&& !in_array($name,$forbidden,true)
-        if (method_exists($this->queryRelate,$name)) {
-            $result = call_user_func_array([$this->queryRelate,$name],$arguments);
+        if (method_exists($this->queryRelate, $name)) {
+            $result = call_user_func_array([$this->queryRelate, $name], $arguments);
             if ($result instanceof $this->queryRelate) {
                 $this->setQueryRelate($result);
                 return $this;
@@ -551,6 +515,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
             return $result;
         }
 
-        throw new MethodNotFoundException(static::class,$name);
+        throw new MethodNotFoundException(static::class, $name);
     }
 }
