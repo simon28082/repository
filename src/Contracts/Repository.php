@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\Repository\Contracts;
 
 use Illuminate\Support\Collection;

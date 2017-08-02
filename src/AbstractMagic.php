@@ -13,21 +13,6 @@ use CrCms\Repository\Contracts\QueryRelate;
 class AbstractMagic implements QueryMagic
 {
     use HasData;
-//    /**
-//     * @var array
-//     */
-//    protected $data = [];
-//
-//    /**
-//     * @param array $data
-//     * @return AbstractMagic
-//     */
-//    public function setData(array $data): self
-//    {
-//        $this->data = $data;
-//
-//        return $this;
-//    }
 
     /**
      * @param QueryRelate $queryRelate
@@ -64,6 +49,7 @@ class AbstractMagic implements QueryMagic
                 $queryRelate = call_user_func_array([$this, $method], [$queryRelate, $item]);
             }
         }
+
         return $queryRelate;
     }
 

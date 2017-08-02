@@ -30,6 +30,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     public function __construct(AbstractRepository $repository)
     {
         parent::__construct($repository);
+
         $this->setQueryRelate($this->newQueryRelate($this->newQuery()));
     }
 

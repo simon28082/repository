@@ -90,7 +90,7 @@ interface Eloquent
     public function oneByIntOrFail(string $field, int $value) : Model;
 
     /**
-     * @return mixed
+     * @return Model|null
      */
     public function first();
 
