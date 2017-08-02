@@ -39,7 +39,7 @@ abstract class AbstractRepository
     {
         $this->driver = $this->driver();
 
-        $this->registerDefaultEvents();
+        //$this->registerDefaultEvents();
     }
 
     /**
