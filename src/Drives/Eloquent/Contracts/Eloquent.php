@@ -39,15 +39,15 @@ interface Eloquent
 
     /**
      * @param int $id
-     * @return Model
+     * @return Model|null
      */
-    public function byIntId(int $id) : Model;
+    public function byIntId(int $id);
 
     /**
      * @param string $id
-     * @return Model
+     * @return Model|null
      */
-    public function byStringId(string $id) : Model;
+    public function byStringId(string $id);
 
     /**
      * @param int $id
