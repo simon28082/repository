@@ -148,7 +148,7 @@ abstract class AbstractRepository
      */
     public function __call(string $name, array $arguments)
     {
-        if (method_exists($this->driver, $name)) {
+        if (method_exists($this->driver, $name) || method_exists($this->driver->getQueryRelate(), $name)) {
             return $this->driver->$name(...$arguments);
         }
 
