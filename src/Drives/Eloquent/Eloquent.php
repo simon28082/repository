@@ -312,14 +312,22 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      * @return int
      */
-    public function delete($id): int
+    public function delete($id, $key = 'id'): int
     {
         $rows = 0;
         try {
-            $rows = $this->queryRelate->whereIn('id', (array)$id)->getQuery()->delete();
+            if (is_callable($id)) {
+                $this->queryRelate = call_user_func($id, $this->queryRelate);
+            } elseif (is_array($id) && count($id) !== count($id, true)) {
+                $this->queryRelate->where($id);
+            } else {
+                $this->queryRelate->whereIn($key, (array)$id);
+            }
+
+            $rows = $this->queryRelate->getQuery()->delete();
         } catch (\RuntimeException $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         } finally {
@@ -475,27 +483,27 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param string $id
      * @return int
      */
-    public function deleteByStringId(string $id): int
+    public function deleteByStringId(string $id, string $key = 'id'): int
     {
-        return $this->delete($id);
+        return $this->delete($id, $key);
     }
 
     /**
      * @param int $id
      * @return int
      */
-    public function deleteByIntId(int $id): int
+    public function deleteByIntId(int $id, string $key = 'id'): int
     {
-        return $this->delete($id);
+        return $this->delete($id, $key);
     }
 
     /**
      * @param array $ids
      * @return int
      */
-    public function deleteByArray(array $ids): int
+    public function deleteByArray(array $ids, string $key = 'id'): int
     {
-        return $this->delete($ids);
+        return $this->delete($ids, $key);
     }
 
     /**
