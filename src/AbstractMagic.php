@@ -15,6 +15,15 @@ class AbstractMagic implements QueryMagic
     use HasData;
 
     /**
+     * AbstractMagic constructor.
+     * @param array $data
+     */
+    public function __construct(array $data = [])
+    {
+        $this->setData($data);
+    }
+
+    /**
      * @param QueryRelate $queryRelate
      * @param AbstractRepository $repository
      * @return QueryRelate
