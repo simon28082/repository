@@ -101,7 +101,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         try {
             $model = $this->repository->newModel()->create($data);
             return $model;
-        } catch (\Exception $exception) {
+        } catch (\RuntimeException $exception) {
             throw new ResourceStoreException($exception->getMessage());
         }
     }
@@ -121,7 +121,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
         try {
             $model->save();
-        } catch (\Exception $exception) {
+        } catch (\RuntimeException $exception) {
             throw new ResourceUpdateException($exception->getMessage());
         }
         return $model;
@@ -178,7 +178,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param int $id
      * @return Model
      */
-    public function byIntId(int $id): Model
+    public function byIntId(int $id)
     {
         return $this->byId($id);
     }
@@ -187,7 +187,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param string $id
      * @return Model
      */
-    public function byStringId(string $id): Model
+    public function byStringId(string $id)
     {
         return $this->byId($id);
     }
@@ -320,7 +320,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         $rows = 0;
         try {
             $rows = $this->queryRelate->whereIn('id', (array)$id)->getQuery()->delete();
-        } catch (\Exception $exception) {
+        } catch (\RuntimeException $exception) {
             throw new ResourceDeleteException($exception->getMessage());
         } finally {
             $this->resetQueryRelate();
