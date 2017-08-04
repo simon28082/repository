@@ -81,7 +81,7 @@ abstract class AbstractRepository
      * @param string|int $id
      * @return null
      */
-    protected function update(array $data, $id)
+    public function update(array $data, $id)
     {
         $this->setData($this->guard($data));
 
@@ -98,7 +98,7 @@ abstract class AbstractRepository
      * @param string|int $id
      * @return int
      */
-    protected function delete($id)
+    public function delete($id)
     {
         $this->setData((array)$id);
 
