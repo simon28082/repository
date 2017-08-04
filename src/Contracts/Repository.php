@@ -89,6 +89,12 @@ interface Repository
     public function decrement(string $column, int $amount = 1, array $extra = []): int;
 
     /**
+     * @param array $data
+     * @return int
+     */
+    public function updateByCondition(array $data): int;
+
+    /**
      * @param int $id
      * @return int
      */

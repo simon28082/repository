@@ -108,6 +108,19 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
     /**
      * @param array $data
+     * @return mixed
+     */
+    public function updateByCondition(array $data): int
+    {
+        $row = $this->queryRelate->getQuery()->update($data);
+
+        $this->resetQueryRelate();
+
+        return $row;
+    }
+
+    /**
+     * @param array $data
      * @param $id
      * @return Model
      */
