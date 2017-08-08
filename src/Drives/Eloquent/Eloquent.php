@@ -121,6 +121,19 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
     /**
      * @param array $data
+     * @return int
+     */
+    public function deleteByCondition(array $data): int
+    {
+        $row = $this->queryRelate->getQuery()->delete($data);
+
+        $this->resetQueryRelate();
+
+        return $row;
+    }
+
+    /**
+     * @param array $data
      * @param $id
      * @return Model
      */

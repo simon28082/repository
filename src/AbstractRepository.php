@@ -104,7 +104,9 @@ abstract class AbstractRepository
 
         if ($this->fireEvent('deleting') === false) return false;
 
-        $rows = $this->driver->delete($this->getData());
+        $models = $this->driver->whereIn('id',$this->getData())->get();
+
+        $rows = $this->driver->delete($this->getData(),$models);
 
         $this->fireEvent('deleted', $rows);
 

@@ -95,6 +95,12 @@ interface Repository
     public function updateByCondition(array $data): int;
 
     /**
+     * @param array $data
+     * @return int
+     */
+    public function deleteByCondition(array $data): int;
+
+    /**
      * @param int $id
      * @return int
      */
