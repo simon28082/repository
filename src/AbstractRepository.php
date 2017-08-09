@@ -87,7 +87,9 @@ abstract class AbstractRepository
 
         if ($this->fireEvent('updating') === false) return false;
 
-        $model = $this->driver->update($this->getData(), $id);
+        $model = is_numeric($id) ?
+            $this->driver->updateByIntId($this->getData(), $id) :
+            $this->driver->updateByStringId($this->getData(), $id);
 
         $this->fireEvent('updated', $model);
 
@@ -104,11 +106,13 @@ abstract class AbstractRepository
 
         if ($this->fireEvent('deleting') === false) return false;
 
-        $models = $this->driver->whereIn('id',$this->getData())->get();
+        $key = $this->getModel()->getKeyName();
 
-        $rows = $this->driver->delete($this->getData(),$models);
+        $models = $this->driver->whereIn($key, $this->getData())->get();
 
-        $this->fireEvent('deleted', $rows);
+        $rows = $this->driver->whereIn($key, $this->getData())->delete();
+
+        $this->fireEvent('deleted', $models);
 
         return $rows;
     }

@@ -258,10 +258,10 @@ interface QueryRelate
     public function callable(callable $callable): QueryRelate;
 
     /**
-     * @param array $wheres
+     * @param array $array
      * @return QueryRelate
      */
-    public function wheres(array $wheres): QueryRelate;
+    public function whereArray(array $array): QueryRelate;
 
     /**
      * @param QueryRelate $queryRelate

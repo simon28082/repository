@@ -74,7 +74,6 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         return $this->byIdOrFail($id);
     }
 
-
     /**
      * @return Builder
      */
@@ -110,7 +109,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param array $data
      * @return mixed
      */
-    public function updateByCondition(array $data): int
+    public function update(array $data): int
     {
         $row = $this->queryRelate->getQuery()->update($data);
 
@@ -120,27 +119,12 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
+     * @param Model $model
      * @param array $data
-     * @return int
-     */
-    public function deleteByCondition(array $data): int
-    {
-        $row = $this->queryRelate->getQuery()->delete($data);
-
-        $this->resetQueryRelate();
-
-        return $row;
-    }
-
-    /**
-     * @param array $data
-     * @param $id
      * @return Model
      */
-    public function update(array $data, $id): Model
+    protected function updateByModel(Model $model, array $data): Model
     {
-        $model = $this->byId($id);
-
         array_walk($data, function ($value, $key) use ($model) {
             $model->{$key} = $value;
         });
@@ -160,7 +144,9 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function updateByIntId(array $data, int $id): Model
     {
-        return $this->update($data, $id);
+        $model = $this->byIntIdOrFail($id);
+
+        return $this->updateByModel($model, $data);
     }
 
     /**
@@ -170,7 +156,9 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      */
     public function updateByStringId(array $data, string $id): Model
     {
-        return $this->update($data, $id);
+        $model = $this->byStringIdOrFail($id);
+
+        return $this->updateByModel($model, $data);
     }
 
     /**
@@ -188,7 +176,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
 
     /**
      * @param $id
-     * @return mixed
+     * @return Model
      */
     protected function byId($id)
     {
@@ -223,7 +211,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param string $value
      * @return Model
      */
-    public function oneByString(string $field, string $value): Model
+    public function oneByString(string $field, string $value)
     {
         return $this->oneBy($field, $value);
     }
@@ -233,7 +221,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param int $value
      * @return Model
      */
-    public function oneByInt(string $field, int $value): Model
+    public function oneByInt(string $field, int $value)
     {
         return $this->oneBy($field, $value);
     }
@@ -261,7 +249,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     /**
      * @param string $field
      * @param $value
-     * @return mixed
+     * @return Model|null
      */
     public function oneBy(string $field, $value)
     {
@@ -287,7 +275,7 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
-     * @return mixed
+     * @return Model|null
      */
     public function first()
     {
@@ -341,18 +329,10 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
      * @param mixed $id
      * @return int
      */
-    public function delete($id, $key = 'id'): int
+    public function delete(): int
     {
         $rows = 0;
         try {
-            if (is_callable($id)) {
-                $this->queryRelate = call_user_func($id, $this->queryRelate);
-            } elseif (is_array($id) && count($id) !== count($id, true)) {
-                $this->queryRelate->where($id);
-            } else {
-                $this->queryRelate->whereIn($key, (array)$id);
-            }
-
             $rows = $this->queryRelate->getQuery()->delete();
         } catch (\RuntimeException $exception) {
             throw new ResourceDeleteException($exception->getMessage());
@@ -361,6 +341,54 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
         }
 
         return $rows;
+    }
+
+    /**
+     * @param $id
+     * @param string|null $key
+     * @return int
+     */
+    protected function deleteByKey($id, string $key = null): int
+    {
+        $key = empty($key) ? $this->repository->getModel()->getKeyName() : $key;
+
+        $row = 0;
+        try {
+            $row = $this->queryRelate->whereIn($key, (array)$id)->getQuery()->delete();
+        } catch (\RuntimeException $exception) {
+            throw new ResourceDeleteException($exception->getMessage());
+        } finally {
+            $this->resetQueryRelate();
+        }
+
+        return $row;
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    public function deleteByStringId(string $id, string $key = null): int
+    {
+        return $this->deleteByKey($id, $key);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function deleteByIntId(int $id, string $key = null): int
+    {
+        return $this->deleteByKey($id, $key);
+    }
+
+    /**
+     * @param array $ids
+     * @return int
+     */
+    public function deleteByArray(array $ids, string $key = null): int
+    {
+        return $this->deleteByKey($ids, $key);
     }
 
     /**
@@ -506,30 +534,47 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
-     * @param string $id
-     * @return int
+     * @param int $id
+     * @return Model
      */
-    public function deleteByStringId(string $id, string $key = 'id'): int
+    public function findByInt(int $id)
     {
-        return $this->delete($id, $key);
+        return $this->getRepository()->getModel()->find($id);
     }
 
     /**
      * @param int $id
-     * @return int
+     * @return Model
      */
-    public function deleteByIntId(int $id, string $key = 'id'): int
+    public function findByIntOrFail(int $id): Model
     {
-        return $this->delete($id, $key);
+        $model = $this->findByInt($id);
+        if (empty($model)) {
+            throw new ResourceNotFoundException();
+        }
+        return $model;
     }
 
     /**
-     * @param array $ids
-     * @return int
+     * @param string $id
+     * @return Model
      */
-    public function deleteByArray(array $ids, string $key = 'id'): int
+    public function findByString(string $id)
     {
-        return $this->delete($ids, $key);
+        return $this->getRepository()->getModel()->find($id);
+    }
+
+    /**
+     * @param string $id
+     * @return Model
+     */
+    public function findByStringOrFail(string $id): Model
+    {
+        $model = $this->findByString($id);
+        if (empty($model)) {
+            throw new ResourceNotFoundException();
+        }
+        return $model;
     }
 
     /**

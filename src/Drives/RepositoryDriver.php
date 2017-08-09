@@ -15,12 +15,12 @@ use CrCms\Repository\Contracts\RepositoryQueryRelate;
 abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
 {
     /**
-     * @var null
+     * @var QueryRelate
      */
     protected $queryRelate = null;
 
     /**
-     * @var null
+     * @var AbstractRepository
      */
     protected $repository = null;
 

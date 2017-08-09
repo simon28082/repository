@@ -455,12 +455,12 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param array $wheres
+     * @param array $array
      * @return BaseQueryRelateContract
      */
-    public function wheres(array $wheres): BaseQueryRelateContract
+    public function whereArray(array $array): BaseQueryRelateContract
     {
-        $this->query = (new ResolveWhereQuery)->getQuery($wheres, $this->query);
+        $this->query = (new ResolveWhereQuery)->getQuery($array, $this->query);
         return $this;
     }
 

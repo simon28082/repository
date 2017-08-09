@@ -19,7 +19,7 @@ abstract class QueryRelate implements QueryRelateContract
     protected $query = null;
 
     /**
-     * @var null
+     * @var Repository
      */
     protected $repository = null;
 

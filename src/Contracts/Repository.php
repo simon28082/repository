@@ -29,6 +29,49 @@ interface Repository
     public function pluck(string $column, string $key = ''): Collection;
 
     /**
+     * @return mixed
+     */
+    public function first();
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function findByInt(int $id);
+
+    /**
+     * @param string $id
+     * @return mixed
+     */
+    public function findByString(string $id);
+
+    /**
+     * @param string $field
+     * @param int $value
+     * @return mixed
+     */
+    public function oneByInt(string $field, int $value);
+
+    /**
+     * @param string $field
+     * @param string $value
+     * @return mixed
+     */
+    public function oneByString(string $field, string $value);
+
+    /**
+     * @param string $id
+     * @return mixed
+     */
+    public function byStringId(string $id);
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function byIntId(int $id);
+
+    /**
      * @param string $column
      * @return int
      */
@@ -92,13 +135,7 @@ interface Repository
      * @param array $data
      * @return int
      */
-    public function updateByCondition(array $data): int;
-
-    /**
-     * @param array $data
-     * @return int
-     */
-    public function deleteByCondition(array $data): int;
+    public function update(array $data): int;
 
     /**
      * @param int $id
@@ -118,4 +155,9 @@ interface Repository
      * @return int
      */
     public function deleteByArray(array $ids): int;
+
+    /**
+     * @return int
+     */
+    public function delete(): int;
 }
