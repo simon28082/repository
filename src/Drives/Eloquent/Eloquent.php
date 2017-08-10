@@ -3,7 +3,7 @@
 namespace CrCms\Repository\Drives\Eloquent;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Drives\Eloquent\Contracts\Eloquent as EloquentRepository;
+use CrCms\Repository\Drives\Eloquent\Contracts\Eloquent as EloquentContract;
 use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
  *
  * @package CrCms\Repository\Drives\Eloquent
  */
-class Eloquent extends RepositoryDriver implements EloquentRepository
+class Eloquent extends RepositoryDriver implements EloquentContract
 {
     /**
      * Eloquent constructor.
@@ -35,11 +35,12 @@ class Eloquent extends RepositoryDriver implements EloquentRepository
     }
 
     /**
-     * @return $this
+     * @return void
      */
     public function resetQueryRelate()
     {
-        return $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
+        $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
+        return ;
     }
 
     /**
