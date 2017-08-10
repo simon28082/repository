@@ -21,7 +21,7 @@ interface RepositoryQueryRelate
     public function getQueryRelate(): QueryRelate;
 
     /**
-     * @return mixed
+     * @return void
      */
     public function resetQueryRelate();
 }
