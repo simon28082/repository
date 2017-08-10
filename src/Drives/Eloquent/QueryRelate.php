@@ -39,7 +39,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param Builder $query
      * @return BaseQueryRelate
      */
-    public function setQuery(Builder $query): BaseQueryRelate
+    public function setQuery(Builder $query): QueryRelate
     {
         $this->query = $query;
         return $this;
