@@ -81,6 +81,18 @@ interface QueryRelate
     public function orWhere(string $column, string $operator = '=', string $value = ''): QueryRelate;
 
     /**
+     * @param \Closure $callback
+     * @return QueryRelate
+     */
+    public function whereClosure(\Closure $callback): QueryRelate;
+
+    /**
+     * @param \Closure $callback
+     * @return QueryRelate
+     */
+    public function orWhereClosure(\Closure $callback): QueryRelate;
+
+    /**
      * @param string $column
      * @param array $between
      * @return QueryRelate
@@ -217,7 +229,7 @@ interface QueryRelate
      * @param \Closure $callback
      * @return QueryRelate
      */
-    public function joinByClosure(string $table, \Closure $callback): QueryRelate;
+    public function joinClosure(string $table, \Closure $callback): QueryRelate;
 
     /**
      * @param string $table
@@ -233,7 +245,7 @@ interface QueryRelate
      * @param \Closure $callback
      * @return QueryRelate
      */
-    public function leftJoinByClosure(string $table, \Closure $callback): QueryRelate;
+    public function leftJoinClosure(string $table, \Closure $callback): QueryRelate;
 
     /**
      * @param string $table
@@ -249,7 +261,7 @@ interface QueryRelate
      * @param \Closure $callback
      * @return QueryRelate
      */
-    public function rightJoinByClosure(string $table, \Closure $callback): QueryRelate;
+    public function rightJoinClosure(string $table, \Closure $callback): QueryRelate;
 
     /**
      * @param callable $callable

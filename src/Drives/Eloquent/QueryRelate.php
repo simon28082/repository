@@ -164,6 +164,26 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param \Closure $callback
+     * @return BaseQueryRelateContract
+     */
+    public function whereClosure(\Closure $callback): BaseQueryRelateContract
+    {
+        $this->query->where($callback);
+        return $this;
+    }
+
+    /**
+     * @param \Closure $callback
+     * @return BaseQueryRelateContract
+     */
+    public function orWhereClosure(\Closure $callback): BaseQueryRelateContract
+    {
+        $this->query->orWhere($callback);
+        return $this;
+    }
+
+    /**
      * @param string $column
      * @param array $between
      * @return BaseQueryRelateContract
@@ -390,7 +410,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param \Closure $callback
      * @return BaseQueryRelateContract
      */
-    public function joinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
+    public function joinClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
         $this->query->join($table, $callback);
         return $this;
@@ -414,7 +434,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param \Closure $callback
      * @return BaseQueryRelateContract
      */
-    public function leftJoinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
+    public function leftJoinClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
         $this->query->leftjoin($table, $callback);
         return $this;
@@ -438,9 +458,9 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param \Closure $callback
      * @return BaseQueryRelateContract
      */
-    public function rightJoinByClosure(string $table, \Closure $callback): BaseQueryRelateContract
+    public function rightJoinClosure(string $table, \Closure $callback): BaseQueryRelateContract
     {
-        $this->query->rightJoinByClosure($table, $callback);
+        $this->query->rightJoin($table, $callback);
         return $this;
     }
 
