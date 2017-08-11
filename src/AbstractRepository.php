@@ -7,6 +7,7 @@ use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drives\Eloquent\Eloquent;
+use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 
 /**
@@ -129,11 +130,15 @@ abstract class AbstractRepository
     }
 
     /**
-     * @return Repository
+     * @return RepositoryDriver
      */
-    public function driver(): Repository
+    public function driver(string $driver = null): RepositoryDriver
     {
-        return (new Eloquent($this));
+        if (empty($driver)) {
+            return (new Eloquent($this));
+        }
+
+        return new $driver($this);
     }
 
     /**
