@@ -31,4 +31,18 @@ trait HasData
     {
         return $this->data;
     }
+
+    /**
+     * @param array|string $key
+     * @param null $value
+     * @return HasData
+     */
+    public function addData($key, $value = null): self
+    {
+        is_array($key) ?
+            $this->data = array_merge($this->data,$key) :
+            (!empty($value) && $this->data[$key] = $value);
+
+        return $this;
+    }
 }
