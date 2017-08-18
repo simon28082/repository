@@ -9,116 +9,157 @@ namespace CrCms\Repository\Drives\ElasticSearch;
  */
 class Builder
 {
-
-    public $bindings = [
-        'select' => [],
-        'join'   => [],
-        'where'  => [],
-        'having' => [],
-        'order'  => [],
-        'union'  => [],
-    ];
-
     public $wheres = [];
-
-    public $operators = [
-        '='=>'eq',
-        '>'=>'gt',
-        '>='=>'gte',
-        '<'=>'lt',
-        '<='=>'lte',
-//        '=', '<', '>', '<=', '>=', '<>', '!=',
-//        'like', 'like binary', 'not like', 'between', 'ilike',
-//        '&', '|', '^', '<<', '>>',
-//        'rlike', 'regexp', 'not regexp',
-//        '~', '~*', '!~', '!~*', 'similar to',
-//        'not similar to', 'not ilike', '~~*', '!~~*',
-    ];
 
     public $columns = [];
 
-    public $size = 0;
+    public $operators = [
+        '=' => 'eq',
+        '>' => 'gt',
+        '>=' => 'gte',
+        '<' => 'lt',
+        '<=' => 'lte',
+    ];
 
-    public function select(array $columns)
+    public $offset = null;
+
+    public $limit = null;
+
+    public $orders = [];
+
+    public $aggs = [];
+
+    public $index = '';
+
+    public $type = '';
+
+    protected $grammar = null;
+
+    public function __construct()
+    {
+        $this->grammar =new Grammar();
+    }
+
+
+    public function limit(int $value)
+    {
+        $this->limit = $value;
+        return $this;
+    }
+
+    public function offset(int $value)
+    {
+        $this->offset = $value;
+        return $this;
+    }
+
+    public function orderBy(string $field,$sort)
+    {
+        $this->orders[$field] = $sort;
+        return $this;
+    }
+
+    public function agg($field,$type)
+    {
+        is_array($field) ?
+            $this->aggs[] = $field :
+            $this->aggs[$field] = $type;
+        return $this;
+    }
+
+    public function select( $columns)
     {
         $this->columns = is_array($columns) ? $columns : func_get_args();
-
         return $this;
     }
 
 
-    public function whereMatch($field,$value,$boolean = 'and')
+    public function whereMatch($field, $value, $boolean = 'and')
     {
-        return $this->where($field,'=',$value,'match',$boolean);
+        return $this->where($field, '=', $value, 'match', $boolean);
     }
 
-    public function orWhereMatch($field,$value,$boolean = 'and')
+    public function orWhereMatch($field, $value, $boolean = 'and')
     {
-        return $this->whereMatch($field,$value,$boolean);
-    }
-
-
-    public function whereTerm($field,$value,$boolean = 'and')
-    {
-        return $this->where($field,'=',$value,'term',$boolean);
-    }
-
-    public function orWhereTerm($field,$value,$boolean = 'or')
-    {
-        return $this->whereTerm($field,$value,$boolean);
+        return $this->whereMatch($field, $value, $boolean);
     }
 
 
-    public function whereRange($field,$operator = null,$value = null,$boolean = 'and')
+    public function whereTerm($field, $value, $boolean = 'and')
     {
-        return $this->where($field,$operator,$value,'range',$boolean);
+        return $this->where($field, '=', $value, 'term', $boolean);
     }
 
-    public function orWhereRange($field,$operator = null,$value = null)
+    public function orWhereTerm($field, $value, $boolean = 'or')
     {
-        return $this->where($field,$operator,$value,'or');
+        return $this->whereTerm($field, $value, $boolean);
     }
 
-    public function whereBetween($field,array $values,$boolean = 'and')
+
+    public function whereRange($field, $operator = null, $value = null, $boolean = 'and')
     {
-        return $this->where($field,'=',$values,'range',$boolean);
+        return $this->where($field, $operator, $value, 'range', $boolean);
     }
 
-    public function orWhereBetween($field,array $values)
+    public function orWhereRange($field, $operator = null, $value = null)
     {
-        return $this->whereBetween($field,$values,'or');
+        return $this->where($field, $operator, $value, 'or');
     }
 
-    public function where($field,$operator = null,$value = null,$leaf = 'term',$boolean = 'and')
+    public function whereBetween($field, array $values, $boolean = 'and')
+    {
+        return $this->where($field, null, $values, 'range', $boolean);
+    }
+
+    public function orWhereBetween($field, array $values)
+    {
+        return $this->whereBetween($field, $values, 'or');
+    }
+
+    public function where($column, $operator = null, $value = null, $leaf = 'term', $boolean = 'and')
     {
 
-        if ($field instanceof \Closure) {
-            return $this->whereNested($field,$boolean);
+        if ($column instanceof \Closure) {
+            return $this->whereNested($column, $boolean);
         }
 
         if (func_num_args() == 2) {
-            list($value, $operator) = [$operator,'='];
+            list($value, $operator) = [$operator, '='];
         }
 
+        if ($operator !== '=') {
+            $leaf = 'range';
+        }
+
+        if (is_array($value) && $leaf === 'range') {
+            $value = [
+                $this->operators['>='] => $value[0],
+                $this->operators['<='] => $value[1],
+            ];
+        }
 
         $type = 'Basic';
-        $column = $field;
+//        $column = $field;
 
 
+        $operator = $operator ? $this->operators[$operator] : $operator;
 
         $this->wheres[] = compact(
-            'type', 'column','leaf' ,'value', 'boolean','operator'
+            'type', 'column', 'leaf', 'value', 'boolean', 'operator'
         );
 
         return $this;
     }
 
-    public function orWhere($field,$operator = null,$value = null,$leaf = 'term')
+    public function orWhere($field, $operator = null, $value = null, $leaf = 'term')
     {
-        return $this->where($field,$operator,$value,$leaf,'or');
+        if (func_num_args() === 2) {
+            list($value, $operator) = [$operator, '='];
+        }
+        return $this->where($field, $operator, $value, $leaf, 'or');
     }
 
-    public function whereNested(\Closure $callback,$boolean)
+    public function whereNested(\Closure $callback, $boolean)
     {
         $query = $this->newQuery();
 
@@ -143,249 +184,53 @@ class Builder
         return new static();
     }
 
-    protected $bool = [];
-
-    protected function resolveWhere(self $object,$result = [])
-    {$must = $should = [];
-        foreach ($object->wheres as $where) {
 
 
-//            if ($where['type'] === 'Basic') {
-//                if ($where['boolean'] === 'and') {
-//                    $result['must'][] = [$where['leaf'] => [$where['column'] => $where['value']]];
-//                } elseif ($where['boolean'] === 'or') {
-//                    $result['should'][] = [$where['leaf']=>[$where['column'] => $where['value']]] ;
-//                }
-//            } else {
-//                /*if ($where['boolean'] === 'and') {
-//                    $result = $this->resolveWhere($where['query'],$result);
-//                } else {
-//                    $result = $this->resolveWhere($where['query'],$result);
-//                }*/
-//                //$result['bool'] = $this->resolveWhere($where['query'],$result);
-//                $result[] = $this->resolveWhere($where['query'],$result);
-//            }
-
-
-
-            if ($where['type'] === 'Basic') {
-                if ($where['boolean'] === 'and') {
-                    $must[] = [$where['leaf'] => [$where['column'] => $where['value']]];
-                } elseif ($where['boolean'] === 'or') {
-                    $should[] = [$where['leaf']=>[$where['column'] => $where['value']]] ;
-                }
-            } else {
-
-                if ($where['boolean'] === 'and') {
-                    $must[] = $this->resolveWhere($where['query'],$result);
-                } else {
-                    $should[] = $this->resolveWhere($where['query'],$result);
-                }
-            }
-
-
-        }
-
-//        return $result;
-//        dump($result);
-        $bool = [];
-        if (!empty($must)) {
-            $bool['must'] = $must;
-        }
-        if (!empty($should)) {
-            $bool['should'] = $should;
-        }
-        return ['bool'=>
-            $bool
-        ];
-    }
-
-    protected $result = [];
-
-    protected function resolveWhere2(self $object,$wheres = [])
-    {
-//        dd($object->wheres);
-        $booleans = array_map(function($where){
-            return $where['boolean'];
-        },$object->wheres);
-//
-        $orIndex = (array)array_keys($booleans,'or');
-        //$orIndex = last($orIndex);
-//
-        //$wheres = [];
-        $initIndex = 0;
-        $lastIndex = 0;
-        foreach ($orIndex as $index)
-        {
-            $wheres[] = array_slice($object->wheres,$initIndex,$index-$initIndex);
-            $initIndex = $index;
-            $lastIndex = $index;
-        }
-
-        $wheres[] = array_slice($object->wheres,$lastIndex);
-
-
-        foreach ($wheres as $k1=>&$where) {
-            foreach ($where as $k2=>&$w) {
-                if ($w['type'] === 'Nested') {
-                    $this->result[$k1][$k2] = $this->resolveWhere2($w['query'],[]);
-                } else {
-                    $this->result[$k1][$k2] = $w;
-                }
-            }
-        }
-
-/*        foreach ($object->wheres as $where) {
-            if ($where['type'] == 'Nested') {
-                $wheres = $this->resolveWhere2($where['query']);
-            }
-        }*/
-
-        return $wheres;
-
-dd($wheres);
-        $must = [];
-
-        $musts = [];
-
-        $shoulds = [];
-
-        $lastIndex = 0;
-
-        foreach ($object->wheres as $key=>$where)
-        {
-
-            /*if ($where['type'] == 'Nested') {
-                $musts = $this->resolveWhere2($where['query'],$result);
-            }
-
-            if ($where['boolean'] === 'and') {
-                $must[] = $where;
-            } elseif ($where['boolean'] === 'or')
-            {
-                $lastIndex = $key;
-                $musts[] = $must;
-                //$musts[] = [$where];
-                $must = [$where];
-                //$shoulds
-            }*/
-
-
-
-//            if ($where['type'] === 'Nested') {
-//                $musts[] = $this->resolveWhere2($where['query'],$musts);
-//            }
-//
-//            if ($where['boolean'] === 'and') {
-//                $must[] = $where;
-//            } elseif ($where['boolean'] === 'or' )
-//            {
-//                $lastIndex = $key;
-//                $musts[] = $must;
-//                //$musts[] = [$where];
-//                $must = [$where];
-//                //$shoulds
-//            }
-
-
-//
-//            if ($where['boolean'] === 'or') {
-//                $musts = array_splice($object->wheres,0,$key);
-//            } elseif ($where['type'] === 'Nested') {
-//                $this->result[] = array_splice($object->wheres,0,$key);
-//                $this->resolveWhere2($where['query']);
-//            } else {
-//                $this->result[] = [$where];
-//            }
-
-
-
-
-            /*if ($where['boolean'] === 'and' && $where['type'] === 'Basic') {
-                $must[] = $where;
-            } elseif ($where['boolean'] === 'and' && $where['type'] === 'Nested') {
-                $musts = $this->resolveWhere2($where['query'],$result);
-            } elseif ($where['boolean'] === 'or' && $where['type'] === 'Basic')
-            {
-                $lastIndex = $key;
-                $musts[] = $must;
-                //$musts[] = [$where];
-                $must = [$where];
-                //$shoulds
-            }*/
-
-
-
-
-
-
-        }
-
-//$this->result[] =             $musts[] = array_splice($object->wheres,$lastIndex);
-
-// $result[] = $musts;
-// return $result;
-
-return $musts;
-
-//        foreach ($object->wheres as $where) {
-//            collect()->expl
-//        }
-    }
-
-    protected function resolveWhere3(self $object)
-    {
-        $musts = [];
-
-        $must = [];
-
-        foreach ($object->wheres as $where)
-        {
-            if ($where['boolean'] === 'and') {
-                $must[] = $where;
-            } elseif ($where['boolean'] === 'or') {
-
-            }
-        }
-    }
 
 
     public function get()
     {
-        $a = $this->resolveWhere2($this);
+        $this->grammar->compileSelect($this);
+
+        exit();
+
+        $a = $this->resolveWhere($this);
+//        $a = $this->resolve($a);
 //        dd($a);
+
+        echo json_encode($a);
+        exit();
 //dd
 //;
         dd($this->result);
 //$a = $this->resolveBool($a);
 
-        echo json_encode($a);exit();
+        echo json_encode($a);
+        exit();
     }
 
 
-    protected function resolveBool(array $bool,$newBool = [])
+    protected function resolveBool(array $bool, $newBool = [])
     {
-        $isOr = collect($bool)->search(function($wheres){
+        $isOr = collect($bool)->search(function ($wheres) {
             return !collect($wheres)->where('boolean', 'or')->isEmpty();
         });
 
-            foreach ($bool as $wheres)
-            {
-                $must = [];
+        foreach ($bool as $wheres) {
+            $must = [];
 
-                foreach ($wheres as $where)
-                {
-                    $must[] = [$where['leaf'] => [$where['column'] => $where['value']]];
-                }
-
-                $newBool[]['bool']['must'] = $must;
-
+            foreach ($wheres as $where) {
+                $must[] = [$where['leaf'] => [$where['column'] => $where['value']]];
             }
+
+            $newBool[]['bool']['must'] = $must;
+
+        }
 
         if ($isOr === false) {
             return $newBool;
         } else {
-            return ['should'=>$newBool];
+            return ['should' => $newBool];
         }
 
     }
