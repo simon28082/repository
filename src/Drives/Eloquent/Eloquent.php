@@ -535,6 +535,20 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     }
 
     /**
+     * return run sql
+     *
+     * @return string
+     */
+    public function toSql(): string
+    {
+        $sql = $this->queryRelate->getQuery()->toSql();
+
+        $this->resetQueryRelate();
+
+        return $sql;
+    }
+
+    /**
      * @param int $id
      * @return Model
      */
