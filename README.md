@@ -118,7 +118,7 @@ TestListener {
 
 ## Repository Methods
 ```
- public function all(): Collection;
+public function all(): Collection;
 ```
 ```
 public function get(): Collection;
