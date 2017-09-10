@@ -45,9 +45,9 @@ class Magic extends Command
     {
         //
         $arguments = $this->arguments();
-        $options = $this->options();
+//        $options = $this->options();
 
-        $this->creator->create($arguments['magic'],$options['repository'] ?? '');
+        $this->creator->create($arguments['magic']);
 
         //update composer autoload
         app('composer')->dumpAutoloads();
@@ -61,7 +61,7 @@ class Magic extends Command
     protected function getArguments()
     {
         return [
-            ['magic',InputArgument::REQUIRED,'The magic name.'],
+            ['magic', InputArgument::REQUIRED, 'The magic name.'],
         ];
     }
 
@@ -71,7 +71,7 @@ class Magic extends Command
     protected function getOptions()
     {
         return [
-            ['repository', '',InputOption::VALUE_OPTIONAL, 'The repository name.', ''],
+            ['repository', '', InputOption::VALUE_OPTIONAL, 'The repository name.', ''],
         ];
     }
 }

@@ -36,7 +36,6 @@ class MagicCreator
      */
     protected $repository = '';
 
-
     /**
      * MagicCreator constructor.
      * @param Filesystem $filesystem
@@ -53,14 +52,14 @@ class MagicCreator
      * @param string $magic
      * @return MagicCreator
      */
-    public function setMagic(string $magic) : self
+    public function setMagic(string $magic): self
     {
         //
-        $repository = studly_case($magic);
+        $magic = studly_case($magic);
 
         //auto include namespace
-        if (strpos($magic,'\\')) {
-            $this->magicNamespace = str_replace(strrchr($magic,'\\'),'',$magic);
+        if (strpos($magic, '\\')) {
+            $this->magicNamespace = str_replace(strrchr($magic, '\\'), '', $magic);
             $magic = class_basename($magic);
         }
 
@@ -69,27 +68,25 @@ class MagicCreator
         return $this;
     }
 
-
     /**
      * @param string $repository
      * @return MagicCreator
      */
-    public function setRepository(string $repository) : self
+    public function setRepository(string $repository): self
     {
         //$this->repository = $repository ? : 'CrCms\Repository\Contracts\Repository';
         $this->repository = 'CrCms\Repository\Contracts\Repository';
         return $this;
     }
 
-
     /**
      * @param string $magic
      */
-    public function create(string $magic,string $repository = '')
+    public function create(string $magic, string $repository = '')
     {
         //set and format arguments
         $this->setMagic($magic);
-        $this->setRepository($repository);
+        //$this->setRepository($repository);
 
         if ($this->checkFileExists()) {
             throw new \Exception('magic file is exists');
@@ -121,45 +118,41 @@ class MagicCreator
     /**
      * @return string
      */
-    protected function getMagicDirectoryPath() : string
+    protected function getMagicDirectoryPath(): string
     {
         return $this->magicNamespace ?
-            str_replace('\\','/',$this->magicNamespace) :
+            str_replace('\\', '/', $this->magicNamespace) :
             $this->config->get('repository.magic_path');
     }
 
-
     /**
      * @return string
      */
-    protected function getRepositoryPath() : string
+    protected function getRepositoryPath(): string
     {
-        return $this->getMagicDirectoryPath().'/'.$this->magic.'.php';
+        return $this->getMagicDirectoryPath() . '/' . $this->magic . '.php';
     }
 
-
     /**
      * @return string
      */
-    protected function getStubFilePath() : string
+    protected function getStubFilePath(): string
     {
-        return __DIR__.'/../../../../resource/stubs/magic.stub';
+        return __DIR__ . '/../../../../resource/stubs/magic.stub';
     }
 
-
     /**
      * @return string
      */
-    protected function getStubFileContent() : string
+    protected function getStubFileContent(): string
     {
         return $this->fileSystem->get($this->getStubFilePath());
     }
 
-
     /**
      * @return string
      */
-    protected function getFormatStubFileContent() : string
+    protected function getFormatStubFileContent(): string
     {
         $magicNamespace = empty($this->magicNamespace) ?
             $this->config->get('repository.magic_namespace') :
@@ -169,30 +162,27 @@ class MagicCreator
             'magic_namespace',
             'magic_class',
             'repository_namespace',
-        ],[
+        ], [
             $magicNamespace,
             $this->magic,
             $this->repository
-        ],$this->getStubFileContent());
+        ], $this->getStubFileContent());
     }
-
 
     /**
      * @param string $content
      */
     protected function writeStubFile(string $content)
     {
-        $this->fileSystem->put($this->getRepositoryPath(),$content);
+        $this->fileSystem->put($this->getRepositoryPath(), $content);
     }
-
 
     /**
      * @return bool
      */
-    protected function checkFileExists() : bool
+    protected function checkFileExists(): bool
     {
         return $this->fileSystem->exists($this->getRepositoryPath());
     }
-
 }
 

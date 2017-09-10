@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\Repository\Console\Commands\Creator;
 
 use Illuminate\Contracts\Config\Repository as Config;
@@ -10,7 +11,6 @@ use Illuminate\Filesystem\Filesystem;
  */
 class RepositoryCreator
 {
-
     /**
      * @var Filesystem|null
      */
@@ -36,7 +36,6 @@ class RepositoryCreator
      */
     protected $model = '';
 
-
     /**
      * RepositoryCreator constructor.
      * @param Filesystem $filesystem
@@ -48,19 +47,18 @@ class RepositoryCreator
         $this->config = $config;
     }
 
-
     /**
      * @param string $repository
      * @return RepositoryCreator
      */
-    public function setRepository(string $repository) : self
+    public function setRepository(string $repository): self
     {
         //
         $repository = studly_case($repository);
 
         //auto include namespace
-        if (strpos($repository,'\\')) {
-            $this->repositoryNameSpace = str_replace(strrchr($repository,'\\'),'',$repository);
+        if (strpos($repository, '\\')) {
+            $this->repositoryNameSpace = str_replace(strrchr($repository, '\\'), '', $repository);
             $repository = class_basename($repository);
         }
 
@@ -69,12 +67,11 @@ class RepositoryCreator
         return $this;
     }
 
-
     /**
      * @param string $model
      * @return RepositoryCreator
      */
-    public function setModel(string $model) : self
+    public function setModel(string $model): self
     {
         $model = studly_case($model);
 
@@ -82,7 +79,6 @@ class RepositoryCreator
 
         return $this;
     }
-
 
     /**
      * @param string $repository
@@ -108,7 +104,6 @@ class RepositoryCreator
         $this->writeStubFile($content);
     }
 
-
     /**
      *
      */
@@ -124,78 +119,71 @@ class RepositoryCreator
     /**
      * @return string
      */
-    protected function getRepositoryDirectoryPath() : string
+    protected function getRepositoryDirectoryPath(): string
     {
         return $this->repositoryNameSpace ?
-                str_replace('\\','/',$this->repositoryNameSpace) :
-                $this->config->get('repository.repository_path');
+            str_replace('\\', '/', $this->repositoryNameSpace) :
+            $this->config->get('repository.repository_path');
     }
-
 
     /**
      * @return string
      */
-    protected function getRepositoryPath() : string
+    protected function getRepositoryPath(): string
     {
-        return $this->getRepositoryDirectoryPath().'/'.$this->repository.'.php';
+        return $this->getRepositoryDirectoryPath() . '/' . $this->repository . '.php';
     }
-
 
     /**
      * @return string
      */
-    protected function getStubFilePath() : string
+    protected function getStubFilePath(): string
     {
-        return __DIR__.'/../../../../resource/stubs/repository.stub';
+        return __DIR__ . '/../../../../resource/stubs/repository.stub';
     }
-
 
     /**
      * @return string
      */
-    protected function getStubFileContent() : string
+    protected function getStubFileContent(): string
     {
         return $this->fileSystem->get($this->getStubFilePath());
     }
 
-
     /**
      * @return string
      */
-    protected function getFormatStubFileContent() : string
+    protected function getFormatStubFileContent(): string
     {
         $repositoryNamespace = empty($this->repositoryNameSpace) ?
-                                $this->config->get('repository.repository_namespace') :
-                                $this->repositoryNameSpace;
+            $this->config->get('repository.repository_namespace') :
+            $this->repositoryNameSpace;
 
         return str_replace([
             'repository_namespace',
             'repository_class',
             'model_path',
-        ],[
+        ], [
             $repositoryNamespace,
             $this->repository,
             $this->model,
-        ],$this->getStubFileContent());
+        ], $this->getStubFileContent());
     }
-
 
     /**
      * @param string $content
      */
     protected function writeStubFile(string $content)
     {
-        $this->fileSystem->put($this->getRepositoryPath(),$content);
+        $this->fileSystem->put($this->getRepositoryPath(), $content);
     }
-
 
     /**
      * @return bool
      */
-    protected function checkFileExists() : bool
+    protected function checkFileExists(): bool
     {
         return $this->fileSystem->exists($this->getRepositoryPath());
     }
-
 }
 
