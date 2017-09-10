@@ -113,8 +113,6 @@ TestListener {
     public function deleted($repository,$model)
     {
     }
-    
-    
 }
 ```
 
@@ -243,7 +241,15 @@ public function orderByArray(array $columns): QueryRelate;
 public function distinct(): QueryRelate;
 ```
 ```
-    public function where(string $column, string $operator = '=', string $value = ''): QueryRelate;
+public function where(string $column, string $operator = '=', string $value = ''): QueryRelate;
+```
+```
+public function whereClosure(\Closure $callback): QueryRelate;
+
+```
+```
+public function orWhereClosure(\Closure $callback): QueryRelate;
+
 ```
 ```
 public function orWhere(string $column, string $operator = '=', string $value = ''): QueryRelate;
