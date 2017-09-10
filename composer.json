@@ -4,16 +4,9 @@
 	"keywords": ["crcms", "repository","laravel","php"],
 	"homepage": "https://github.com/crcms/repository",
     "license": "MIT",
-	"authors": [
-        {
-            "name": "simon",
-            "email": "28737164@qq.com",
-			"homepage": "http://crcms.cn"
-        }
-    ],
     "require": {
-        "php":">=7.0",
-        "illuminate/support":"^5.4"
+        "php":"7.0.*",
+        "illuminate/support":"^5.2"
     },
 	"autoload": {
         "files": [

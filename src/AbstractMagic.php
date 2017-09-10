@@ -8,7 +8,8 @@ use CrCms\Repository\Contracts\QueryRelate;
 
 /**
  * Class AbstractMagic
- * @package CrCms\Repository\Eloquent
+ *
+ * @package CrCms\Repository
  */
 class AbstractMagic implements QueryMagic
 {
