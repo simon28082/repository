@@ -364,3 +364,30 @@ public function union(QueryRelate $queryRelate): QueryRelate;
 public function magic(QueryMagic $queryMagic): QueryRelate;
 ```
     
+
+## Install
+
+You can install the package via composer:
+
+```
+composer require crcms/repository:2.0.x-dev
+```
+
+## Laravel
+
+Modify ``config / app.php``
+
+```
+'providers' => [
+    CrCms\Repository\RepositoryServiceProvider::class,
+]
+
+```
+
+If you'd like to make configuration changes in the configuration file you can pubish it with the following Aritsan command:
+```
+php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvider"
+```
+
+## License
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
