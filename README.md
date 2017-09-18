@@ -327,7 +327,7 @@ public function join(string $table, string $one, string $operator = '=', string 
 ```
 
 ```
-public function joinByClosure(string $table, \Closure $callback): QueryRelate;
+public function joinClosure(string $table, \Closure $callback): QueryRelate;
 ```
 
 ```
@@ -335,7 +335,7 @@ public function leftJoin(string $table, string $first, string $operator = '=', s
 ```
 
 ```
-public function leftJoinByClosure(string $table, \Closure $callback): QueryRelate;
+public function leftJoinClosure(string $table, \Closure $callback): QueryRelate;
 ```
 
 ```
@@ -343,7 +343,7 @@ public function rightJoin(string $table, string $first, string $operator = '=', 
 ```
 
 ```
-public function rightJoinByClosure(string $table, \Closure $callback): QueryRelate;
+public function rightJoinClosure(string $table, \Closure $callback): QueryRelate;
 ```
 
 ```
