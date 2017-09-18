@@ -249,7 +249,6 @@ public function whereClosure(\Closure $callback): QueryRelate;
 ```
 ```
 public function orWhereClosure(\Closure $callback): QueryRelate;
-
 ```
 ```
 public function orWhere(string $column, string $operator = '=', string $value = ''): QueryRelate;
@@ -390,4 +389,4 @@ php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvide
 ```
 
 ## License
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+[MIT license](https://opensource.org/licenses/MIT).
