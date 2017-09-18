@@ -188,6 +188,7 @@ abstract class AbstractRepository
     {
         if (empty($this->cache)) {
             $this->cache = new CacheService;
+            $this->cache->setRepository($this);
         }
 
         return $this->cache->setCacheMinute($minute);

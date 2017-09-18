@@ -89,7 +89,8 @@ class CacheService
         }
 
         $result = call_user_func_array([$this->repository, $name], $arguments);
-        if ($result instanceof ($this->repository->getDriver())) {
+        $driver = $this->repository->getDriver();
+        if ($result instanceof $driver) {
             return $result;
         }
 
