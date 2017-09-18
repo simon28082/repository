@@ -9,6 +9,7 @@ use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drives\Eloquent\Eloquent;
 use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
+use CrCms\Repository\Services\CacheService;
 
 /**
  * Class AbstractRepository
@@ -32,6 +33,11 @@ abstract class AbstractRepository
      * @var array
      */
     protected static $events = [];
+
+    /**
+     * @var CacheService
+     */
+    protected $cache;
 
     /**
      * AbstractRepository constructor.
@@ -142,6 +148,14 @@ abstract class AbstractRepository
     }
 
     /**
+     * @return RepositoryDriver
+     */
+    public function getDriver(): RepositoryDriver
+    {
+        return $this->driver;
+    }
+
+    /**
      * @return array
      */
     public static function events(): array
@@ -164,5 +178,18 @@ abstract class AbstractRepository
         }
 
         throw new MethodNotFoundException(static::class, $name);
+    }
+
+    /**
+     * @param int $minute
+     * @return CacheService
+     */
+    public function cache(int $minute = 1440): CacheService
+    {
+        if (empty($this->cache)) {
+            $this->cache = new CacheService;
+        }
+
+        return $this->cache->setCacheMinute($minute);
     }
 }
