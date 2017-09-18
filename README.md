@@ -245,7 +245,6 @@ public function where(string $column, string $operator = '=', string $value = ''
 ```
 ```
 public function whereClosure(\Closure $callback): QueryRelate;
-
 ```
 ```
 public function orWhereClosure(\Closure $callback): QueryRelate;
@@ -389,4 +388,4 @@ php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvide
 ```
 
 ## License
-[MIT license](https://opensource.org/licenses/MIT).
+[MIT license](https://opensource.org/licenses/MIT)
