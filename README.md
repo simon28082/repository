@@ -361,7 +361,36 @@ public function union(QueryRelate $queryRelate): QueryRelate;
 ```
 public function magic(QueryMagic $queryMagic): QueryRelate;
 ```
-    
+
+## Cache
+
+```
+class TestRepository {
+
+    public function do(User $user)
+    {
+        return $this->byIntId($user->id);
+    }
+}
+
+$repository = new TestRepository;
+
+```
+
+### store cache
+```
+$repository->cache()->do(new User);
+```
+
+### forget
+```
+$repository->cache()->forget('do')
+```
+
+### flush
+```
+$repository->cache()->flush()
+```
 
 ## Install
 
