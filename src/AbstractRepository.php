@@ -20,14 +20,14 @@ abstract class AbstractRepository
     use HasData, HasGuard, HasEvents;
 
     /**
-     * @var Repository|null
+     * @var Repository
      */
-    protected $driver = null;
+    protected $driver;
 
     /**
-     * @var object|null
+     * @var object
      */
-    protected $model = null;
+    protected $model;
 
     /**
      * @var array
@@ -50,7 +50,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @return object|null
+     * @return object
      */
     public function getModel()
     {
@@ -86,7 +86,7 @@ abstract class AbstractRepository
     /**
      * @param array $data
      * @param string|int $id
-     * @return null
+     * @return mixed
      */
     public function update(array $data, $id)
     {

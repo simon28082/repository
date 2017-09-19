@@ -12,7 +12,7 @@ class RepositoryServiceProvider extends ServiceProvider
     /**
      * @var bool
      */
-    protected $defer = false;
+    protected $defer = true;
 
     /**
      * @var string
@@ -25,7 +25,7 @@ class RepositoryServiceProvider extends ServiceProvider
     protected $packagePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
     /**
-     *
+     * @return void
      */
     public function boot()
     {
@@ -34,18 +34,18 @@ class RepositoryServiceProvider extends ServiceProvider
             $this->packagePath . 'config' => config_path(),
         ]);
 
+        //register dispatcher
         AbstractRepository::setDispatcher(new Dispatcher);
     }
 
     /**
-     *
+     * @return void
      */
     public function register()
     {
         //bind commands
         $this->app->singleton('command.repository.make', Repository::class);
         $this->app->singleton('command.magic.make', Magic::class);
-        $this->app->singleton('repository.event', Event::class);
 
         // Register commands
         $this->commands(['command.repository.make', 'command.magic.make']);
