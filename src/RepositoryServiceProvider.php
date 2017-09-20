@@ -12,7 +12,7 @@ class RepositoryServiceProvider extends ServiceProvider
     /**
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * @var string
