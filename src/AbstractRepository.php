@@ -74,7 +74,7 @@ abstract class AbstractRepository
     {
         $this->setData($this->guard($data));
 
-        if ($this->fireEvent('creating') === false) return false;
+        if ($this->fireEvent('creating', $data) === false) return false;
 
         $model = $this->driver->create($this->getData());
 
@@ -92,7 +92,7 @@ abstract class AbstractRepository
     {
         $this->setData($this->guard($data));
 
-        if ($this->fireEvent('updating') === false) return false;
+        if ($this->fireEvent('updating', $data) === false) return false;
 
         $model = is_numeric($id) ?
             $this->driver->updateByIntId($this->getData(), $id) :
@@ -109,9 +109,10 @@ abstract class AbstractRepository
      */
     public function delete($id)
     {
-        $this->setData((array)$id);
+        $id = (array)$id;
+        $this->setData($id);
 
-        if ($this->fireEvent('deleting') === false) return false;
+        if ($this->fireEvent('deleting', $id) === false) return false;
 
         $key = $this->getModel()->getKeyName();
 
