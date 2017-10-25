@@ -495,6 +495,31 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param bool $condition
+     * @param callable $trueCallable
+     * @param callable $falseCallable
+     * @return BaseQueryRelateContract
+     */
+    public function when(bool $condition, callable $trueCallable, callable $falseCallable): BaseQueryRelateContract
+    {
+        $this->query = call_user_func($condition ? $trueCallable : $falseCallable, $this)->getQuery();
+        return $this;
+    }
+
+    /**
+     * @param array $conditions
+     * @param array $callables
+     * @return BaseQueryRelateContract
+     */
+    public function whenMultiple(array $conditions, array $callables): BaseQueryRelateContract
+    {
+        array_map(function ($key) use ($callables) {
+            $this->query = call_user_func($callables[$key], $this)->getQuery();
+        }, array_intersect($conditions, array_keys($callables)));
+        return $this;
+    }
+
+    /**
      * @param $name
      * @param $arguments
      * @return mixed

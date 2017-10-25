@@ -286,4 +286,19 @@ interface QueryRelate
      * @return QueryRelate
      */
     public function magic(QueryMagic $queryMagic): QueryRelate;
+
+    /**
+     * @param bool $condition
+     * @param callable $trueCallable
+     * @param callable $falseCallable
+     * @return QueryRelate
+     */
+    public function when(bool $condition, callable $trueCallable, callable $falseCallable): QueryRelate;
+
+    /**
+     * @param array $conditions
+     * @param array $callables
+     * @return QueryRelate
+     */
+    public function whenMultiple(array $conditions, array $callables): QueryRelate;
 }
