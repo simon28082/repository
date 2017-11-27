@@ -5,6 +5,7 @@ namespace CrCms\Repository;
 use CrCms\Event\HasEvents;
 use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
+use CrCms\Repository\Concerns\HasOriginal;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drives\Eloquent\Eloquent;
 use CrCms\Repository\Drives\RepositoryDriver;
@@ -17,7 +18,7 @@ use CrCms\Repository\Services\CacheService;
  */
 abstract class AbstractRepository
 {
-    use HasData, HasGuard, HasEvents;
+    use HasData, HasGuard, HasEvents, HasOriginal;
 
     /**
      * @var Repository
@@ -45,8 +46,6 @@ abstract class AbstractRepository
     public function __construct()
     {
         $this->driver = $this->driver();
-
-        //$this->registerDefaultEvents();
     }
 
     /**
@@ -72,6 +71,8 @@ abstract class AbstractRepository
      */
     public function create(array $data)
     {
+        $this->setOriginal($data);
+
         $this->setData($this->guard($data));
 
         if ($this->fireEvent('creating', $data) === false) return false;
@@ -90,6 +91,8 @@ abstract class AbstractRepository
      */
     public function update(array $data, $id)
     {
+        $this->setOriginal($data);
+
         $this->setData($this->guard($data));
 
         if ($this->fireEvent('updating', $data) === false) return false;
@@ -110,6 +113,9 @@ abstract class AbstractRepository
     public function delete($id)
     {
         $id = (array)$id;
+
+        $this->setOriginal($id);
+
         $this->setData($id);
 
         if ($this->fireEvent('deleting', $id) === false) return false;
@@ -123,17 +129,6 @@ abstract class AbstractRepository
         $this->fireEvent('deleted', $models);
 
         return $rows;
-    }
-
-    /**
-     * @return void
-     */
-    protected function registerDefaultEvents()
-    {
-        $listeners = array_merge_recursive(config('repository.listen'), static::$events);
-        foreach ($listeners as $event => $listener) {
-            static::registerEvent($event, $listener);
-        }
     }
 
     /**
