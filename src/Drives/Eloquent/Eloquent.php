@@ -40,7 +40,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     public function resetQueryRelate()
     {
         $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
-        return ;
+        return;
     }
 
     /**
@@ -166,9 +166,9 @@ class Eloquent extends RepositoryDriver implements EloquentContract
      * @param int $perPage
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 1): LengthAwarePaginator
     {
-        $paginate = $this->queryRelate->getQuery()->paginate($perPage);
+        $paginate = $this->queryRelate->getQuery()->paginate($perPage, $columns, $pageName, $page);
 
         $this->resetQueryRelate();
 

@@ -13,9 +13,12 @@ interface Eloquent
 {
     /**
      * @param int $perPage
+     * @param array $columns
+     * @param string $pageName
+     * @param null $page
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15): LengthAwarePaginator;
+    public function paginate(int $perPage = 15,array $columns = ['*'], $pageName = 'page', int $page = 1): LengthAwarePaginator;
 
     /**
      * @param array $data
