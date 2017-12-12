@@ -277,9 +277,10 @@ interface QueryRelate
 
     /**
      * @param QueryRelate $queryRelate
+     * @param bool $unionAll
      * @return QueryRelate
      */
-    public function union(QueryRelate $queryRelate): QueryRelate;
+    public function union(QueryRelate $queryRelate, bool $unionAll = true): QueryRelate;
 
     /**
      * @param QueryMagic $queryMagic

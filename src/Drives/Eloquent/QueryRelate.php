@@ -364,11 +364,12 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param BaseQueryRelateContract $queryRelate
+     * @param bool $unionAll
      * @return BaseQueryRelateContract
      */
-    public function union(BaseQueryRelateContract $queryRelate): BaseQueryRelateContract
+    public function union(BaseQueryRelateContract $queryRelate, bool $unionAll = true): BaseQueryRelateContract
     {
-        $this->query = $this->query->union($queryRelate->getQuery());
+        $this->query = $this->query->union($queryRelate->getQuery(), $unionAll);
         return $this;
     }
 
