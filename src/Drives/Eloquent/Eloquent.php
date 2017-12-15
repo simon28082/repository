@@ -166,7 +166,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
      * @param int $perPage
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 1): LengthAwarePaginator
+    public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 0): LengthAwarePaginator
     {
         $paginate = $this->queryRelate->getQuery()->paginate($perPage, $columns, $pageName, $page);
 
