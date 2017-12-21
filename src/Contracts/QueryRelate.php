@@ -67,18 +67,18 @@ interface QueryRelate
     /**
      * @param string $column
      * @param string $operator
-     * @param string $value
+     * @param mixed $value
      * @return QueryRelate
      */
-    public function where(string $column, string $operator = '=', string $value = ''): QueryRelate;
+    public function where(string $column, $operator = null, $value = null): QueryRelate;
 
     /**
      * @param string $column
      * @param string $operator
-     * @param string $value
+     * @param mixed $value
      * @return QueryRelate
      */
-    public function orWhere(string $column, string $operator = '=', string $value = ''): QueryRelate;
+    public function orWhere(string $column, $operator = null, $value = null): QueryRelate;
 
     /**
      * @param \Closure $callback

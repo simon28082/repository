@@ -142,10 +142,10 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param string $value
+     * @param mixed $value
      * @return BaseQueryRelateContract
      */
-    public function where(string $column, string $operator = '=', string $value = ''): BaseQueryRelateContract
+    public function where(string $column, $operator = null, $value = null): BaseQueryRelateContract
     {
         $this->query->where($column, $operator, $value);
         return $this;
@@ -154,10 +154,10 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param string $value
+     * @param mixed $value
      * @return BaseQueryRelateContract
      */
-    public function orWhere(string $column, string $operator = '=', string $value = ''): BaseQueryRelateContract
+    public function orWhere(string $column, $operator = null, $value = null): BaseQueryRelateContract
     {
         $this->query->orWhere($column, $operator, $value);
         return $this;
