@@ -16,5 +16,14 @@
         "psr-4": {
             "CrCms\\Repository\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CrCms\\Repository\\RepositoryServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
     }
 }
