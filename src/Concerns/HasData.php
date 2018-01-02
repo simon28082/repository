@@ -41,7 +41,7 @@ trait HasData
     {
         is_array($key) ?
             $this->data = array_merge($this->data, $key) :
-            (!empty($value) && $this->data[$key] = $value);
+            $this->data[$key] = $value;
 
         return $this;
     }
