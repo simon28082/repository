@@ -123,9 +123,9 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      */
     public function orderByArray(array $columns): BaseQueryRelateContract
     {
-        array_map(function ($value, $key) {
+        array_walk($columns, function ($value, $key) {
             $this->query->orderBy($key, $value);
-        }, $columns);
+        });
         return $this;
     }
 
