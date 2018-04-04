@@ -471,7 +471,11 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      */
     public function callable(callable $callable): BaseQueryRelateContract
     {
-        $this->query = call_user_func($callable, $this->query);
+        $query = call_user_func($callable, $this->query);
+        if ($query instanceof Builder) {
+            $this->query = $query;
+        }
+
         return $this;
     }
 
