@@ -521,6 +521,46 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param array $relations
+     * @return BaseQueryRelateContract
+     */
+    public function withArray(array $relations): BaseQueryRelateContract
+    {
+        $this->query->with($relations);
+        return $this;
+    }
+
+    /**
+     * @param string $relation
+     * @return BaseQueryRelateContract
+     */
+    public function with(string $relation): BaseQueryRelateContract
+    {
+        $this->query->with($relation);
+        return $this;
+    }
+
+    /**
+     * @param array $relations
+     * @return BaseQueryRelateContract
+     */
+    public function withoutArray(array $relations): BaseQueryRelateContract
+    {
+        $this->query->without($relations);
+        return $this;
+    }
+
+    /**
+     * @param string $relation
+     * @return BaseQueryRelateContract
+     */
+    public function without(string $relation): BaseQueryRelateContract
+    {
+        $this->query->without($relation);
+        return $this;
+    }
+
+    /**
      * @param $name
      * @param $arguments
      * @return mixed

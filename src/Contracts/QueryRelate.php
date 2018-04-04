@@ -302,4 +302,28 @@ interface QueryRelate
      * @return QueryRelate
      */
     public function whenMultiple(array $conditions, array $callables): QueryRelate;
+
+    /**
+     * @param array $relations
+     * @return QueryRelate
+     */
+    public function withArray(array $relations): QueryRelate;
+
+    /**
+     * @param string $relation
+     * @return QueryRelate
+     */
+    public function with(string $relation): QueryRelate;
+
+    /**
+     * @param array $relations
+     * @return QueryRelate
+     */
+    public function withoutArray(array $relations): QueryRelate;
+
+    /**
+     * @param string $relation
+     * @return QueryRelate
+     */
+    public function without(string $relation): QueryRelate;
 }
