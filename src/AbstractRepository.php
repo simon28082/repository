@@ -11,6 +11,7 @@ use CrCms\Repository\Drives\Eloquent\Eloquent;
 use CrCms\Repository\Drives\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Services\CacheService;
+use UnexpectedValueException;
 
 /**
  * Class AbstractRepository
@@ -125,6 +126,10 @@ abstract class AbstractRepository
         $models = $this->driver->whereIn($key, $this->getData())->get();
 
         $rows = $this->driver->whereIn($key, $this->getData())->delete();
+
+        if ($rows <= 0) {
+            throw new UnexpectedValueException('Data deletion failed, Keys is:' . implode(',', $this->data));
+        }
 
         $this->fireEvent('deleted', $models);
 
