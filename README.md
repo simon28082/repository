@@ -1,3 +1,8 @@
+# CRCMS Repository
+
+[![Latest Stable Version](https://poser.pugx.org/crcms/repository/v/stable)](https://packagist.org/packages/crcms/repository)
+[![License](https://poser.pugx.org/crcms/repository/license)](https://packagist.org/packages/crcms/repository)
+
 ## Example
 ```
 class TestRepository extends AbstractRepository
