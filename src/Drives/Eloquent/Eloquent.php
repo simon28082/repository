@@ -31,7 +31,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     {
         parent::__construct($repository);
 
-        $this->setQueryRelate($this->newQueryRelate($this->newQuery()));
+        $this->setQueryRelate($this->newQueryRelate());
     }
 
     /**
@@ -39,7 +39,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
      */
     public function resetQueryRelate()
     {
-        $this->setQueryRelate($this->queryRelate->setQuery($this->newQuery()));
+        $this->setQueryRelate($this->newQueryRelate());
         return;
     }
 
@@ -84,12 +84,11 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     }
 
     /**
-     * @param Builder $query
      * @return QueryRelate
      */
-    public function newQueryRelate(Builder $query): QueryRelate
+    public function newQueryRelate(): QueryRelate
     {
-        return new \CrCms\Repository\Drives\Eloquent\QueryRelate($query, $this);
+        return new \CrCms\Repository\Drives\Eloquent\QueryRelate($this->newQuery(), $this);
     }
 
     /**

@@ -13,7 +13,7 @@ interface RepositoryQueryRelate
      * @param QueryRelate $queryRelate
      * @return mixed
      */
-    public function setQueryRelate(QueryRelate $queryRelate);
+//    public function setQueryRelate(QueryRelate $queryRelate);
 
     /**
      * @return QueryRelate
@@ -24,4 +24,9 @@ interface RepositoryQueryRelate
      * @return void
      */
     public function resetQueryRelate();
+
+    /**
+     * @return QueryRelate
+     */
+    public function newQueryRelate(): QueryRelate;
 }
