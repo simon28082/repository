@@ -17,9 +17,9 @@ class TestRepository extends AbstractRepository
     /**
      * @return \Illuminate\Foundation\Application|mixed
      */
-    public function newModel()
+    public function newModel(): TestModel
     {
-        return app(Test::class);
+        return app(TestModel::class);
     }
 
     /**
@@ -95,27 +95,32 @@ TestRepository::observer(TestListener::class);
 
 TestListener {
 
-    public function creating()
+    public function creating(TestRepository $repository, array $data)
     {
+		//append the value to be written
+		$repository->addData('append_data','value');
+		
+		//rewrite all values written
+		$repository->setData(['key'=>'value']);
     }    
     
-    public function created($repository,$model)
+    public function created(TestRepository $repository, TestModel $model)
     {
     }    
 
-    public function updating()
+    public function updating(TestRepository $repository, array $data)
     {
     }    
     
-    public function updated($repository,$model)
+    public function updated(TestRepository $repository, TestModel $model)
     {
     }
     
-    public function deleting()
+    public function deleting(TestRepository $repository, array $ids)
     {
     }
     
-    public function deleted($repository,$model)
+    public function deleted(TestRepository $repository, Collection $models)
     {
     }
 }
@@ -366,6 +371,23 @@ public function union(QueryRelate $queryRelate): QueryRelate;
 ```
 public function magic(QueryMagic $queryMagic): QueryRelate;
 ```
+
+```
+public function with(string $relation): QueryRelate;
+```
+
+```
+public function withArray(array $relations): QueryRelate;
+```
+
+```
+public function without(string $relation): QueryRelate;
+```
+
+```
+public function withoutArray(array $relations): QueryRelate;
+```
+
 
 ## Cache
 
