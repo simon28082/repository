@@ -424,7 +424,7 @@ $repository->cache()->flush()
 You can install the package via composer:
 
 ```
-composer require crcms/repository:2.0.x-dev
+composer require crcms/repository
 ```
 
 ## Laravel
