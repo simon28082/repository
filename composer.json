@@ -14,7 +14,8 @@
         "files": [
         ],
         "psr-4": {
-            "CrCms\\Repository\\": "src/"
+            "CrCms\\Repository\\": "src/",
+            "CrCms\\Repository\\Test\\": "tests/",
         }
     },
     "extra": {
