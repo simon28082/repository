@@ -3,20 +3,19 @@
 namespace repository_namespace;
 
 use CrCms\Repository\AbstractRepository;
-use Illuminate\Database\Eloquent\Model;
+use model_namespace;
 
 /**
  * Class repository_class
- *
  * @package repository_namespace
  */
 class repository_class extends AbstractRepository
 {
     /**
-     * @return Model
+     * @return model_class
      */
-    public function newModel(): Model
+    public function newModel(): model_class
     {
-        return app(model_path);
+        return app(model_class::class);
     }
 }
