@@ -7,10 +7,10 @@ use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Concerns\HasOriginal;
 use CrCms\Repository\Contracts\Repository;
-use CrCms\Repository\Drives\Eloquent\Eloquent;
-use CrCms\Repository\Drives\RepositoryDriver;
+use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Services\CacheService;
+use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use UnexpectedValueException;
 
 /**
@@ -42,11 +42,16 @@ abstract class AbstractRepository
     protected $cache;
 
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
      * AbstractRepository constructor.
      */
     public function __construct()
     {
-        $this->driver = $this->driver();
+        $this->driver = $this->driver('eloquent');
     }
 
     /**
@@ -139,13 +144,18 @@ abstract class AbstractRepository
     /**
      * @return RepositoryDriver
      */
-    public function driver(string $driver = null): RepositoryDriver
+    public function driver(string $driver = 'eloquent'): RepositoryDriver
     {
-        if (empty($driver)) {
-            return (new Eloquent($this));
-        }
+        return RepositoryFactory::driver($driver,$this);
+    }
 
-        return new $driver($this);
+    /**
+     * @param RepositoryDriver $repositoryDriver
+     * @return QueryRelateContract
+     */
+    public function newQueryRelate(RepositoryDriver $repositoryDriver): QueryRelateContract
+    {
+        return RepositoryFactory::query('eloquent',$repositoryDriver);
     }
 
     /**
@@ -162,7 +172,7 @@ abstract class AbstractRepository
     public static function events(): array
     {
         return array_merge(
-            array_keys(config('repository.listen')),
+            array_keys(config('repository.listener')),
             array_keys(static::$events)
         );
     }
