@@ -1,33 +1,79 @@
 <?php
+
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default filter driver
+    |--------------------------------------------------------------------------
+    |
+    */
 
     'default' => 'eloquent',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Supported drivers
+    |--------------------------------------------------------------------------
+    |
+    | Laravel:  eloquent
+    |
+    */
+
     'drivers' => [
-        'eloquent' => [
-            'driver' => \CrCms\Repository\Drives\Eloquent\Eloquent::class,
-            'query' => \CrCms\Repository\Drives\Eloquent\QueryRelate::class,
-        ],
+        'eloquent',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Repository default namespace
+    |--------------------------------------------------------------------------
+    |
+    */
 
     'repository_namespace' => 'App\Repositories',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Repository default load path
+    |--------------------------------------------------------------------------
+    |
+    */
+
     'repository_path' => app_path('Repositories'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Magic default namespace
+    |--------------------------------------------------------------------------
+    |
+    */
 
     'magic_namespace' => 'App\Repositories\Magic',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Magic default load path
+    |--------------------------------------------------------------------------
+    |
+    */
+
     'magic_path' => app_path('Repositories/Magic'),
 
-    'listen' => [
-        'creating' => [
-            //\CrCms\Repository\Listeners\RepositoryListener::class . '@creating',
-        ],
+    /*
+    |--------------------------------------------------------------------------
+    | Global event listener
+    |--------------------------------------------------------------------------
+    |
+    | The event listener added here takes effect globally
+    |
+    */
+    'listener' => [
+        'creating' => [],
         'created' => [],
         'updating' => [],
         'updated' => [],
         'deleting' => [],
         'deleted' => [],
-        'saving' => [],
-        'saved' => [],
     ],
 ];
