@@ -1,6 +1,6 @@
 <?php
 
-namespace CrCms\Repository\Drives\Eloquent\Contracts;
+namespace CrCms\Repository\Drivers\Eloquent\Contracts;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;

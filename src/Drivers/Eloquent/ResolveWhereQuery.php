@@ -1,6 +1,6 @@
 <?php
 
-namespace CrCms\Repository\Drives\Eloquent;
+namespace CrCms\Repository\Drivers\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 

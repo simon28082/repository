@@ -1,6 +1,6 @@
 <?php
 
-namespace CrCms\Repository\Drives;
+namespace CrCms\Repository\Drivers;
 
 use CrCms\Repository\AbstractRepository;
 use CrCms\Repository\Contracts\QueryRelate;
@@ -10,19 +10,19 @@ use CrCms\Repository\Contracts\RepositoryQueryRelate;
 /**
  * Class RepositoryDriver
  *
- * @package CrCms\Repository\Drives
+ * @package CrCms\Repository\Drivers
  */
 abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
 {
     /**
      * @var QueryRelate
      */
-    protected $queryRelate = null;
+    protected $queryRelate;
 
     /**
      * @var AbstractRepository
      */
-    protected $repository = null;
+    protected $repository;
 
     /**
      * RepositoryDriver constructor.
@@ -58,7 +58,6 @@ abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
     public function setQueryRelate(QueryRelate $queryRelate)
     {
         $this->queryRelate = $queryRelate;
-
         return $this;
     }
 

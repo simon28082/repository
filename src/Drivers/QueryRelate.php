@@ -1,6 +1,6 @@
 <?php
 
-namespace CrCms\Repository\Drives;
+namespace CrCms\Repository\Drivers;
 
 use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use CrCms\Repository\Contracts\Repository;
@@ -9,19 +9,19 @@ use CrCms\Repository\Exceptions\MethodNotFoundException;
 /**
  * Class QueryRelate
  *
- * @package CrCms\Repository\Drives
+ * @package CrCms\Repository\Drivers
  */
 abstract class QueryRelate implements QueryRelateContract
 {
     /**
-     * @var null
+     * @var object
      */
-    protected $query = null;
+    protected $query;
 
     /**
      * @var Repository
      */
-    protected $repository = null;
+    protected $repository;
 
     /**
      * @param Repository $repository
