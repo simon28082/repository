@@ -142,11 +142,12 @@ abstract class AbstractRepository
     }
 
     /**
+     * @param string $driver
      * @return RepositoryDriver
      */
-    public function driver(string $driver = 'eloquent'): RepositoryDriver
+    public function driver(string $driver): RepositoryDriver
     {
-        return RepositoryFactory::driver($driver,$this);
+        return RepositoryFactory::driver($driver, $this);
     }
 
     /**
@@ -155,7 +156,7 @@ abstract class AbstractRepository
      */
     public function newQueryRelate(RepositoryDriver $repositoryDriver): QueryRelateContract
     {
-        return RepositoryFactory::query('eloquent',$repositoryDriver);
+        return RepositoryFactory::query('eloquent', $repositoryDriver);
     }
 
     /**
