@@ -51,6 +51,9 @@ class MagicCreator
 
     /**
      * @param string $magic
+     * @param string $path
+     * @param string $namespace
+     * @throws Exception
      */
     public function create(string $magic, string $path = '', string $namespace = '')
     {

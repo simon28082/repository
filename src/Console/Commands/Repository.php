@@ -52,7 +52,7 @@ class Repository extends Command
             exit();
         }
 
-        $this->creator->create($arguments['repository'], $options['model']);
+        $this->creator->create($arguments['repository'], $options['model'], $options['path'], $options['namespace']);
 
         //update composer autoload
         $this->getLaravel()->make('composer')->dumpAutoloads();
@@ -76,7 +76,9 @@ class Repository extends Command
     protected function getOptions(): array
     {
         return [
-            ['model', null, InputOption::VALUE_REQUIRED, 'The model name.']
+            ['model', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_REQUIRED, 'The model name.'],
+            ['path', $this->app->make('config')->get('repository.repository_path'), InputOption::VALUE_OPTIONAL, 'File storage location.', ''],
+            ['namespace', $this->app->make('config')->get('repository.repository_namespace'), InputOption::VALUE_OPTIONAL, 'File loaded namespace.', ''],
         ];
     }
 }
