@@ -4,6 +4,8 @@ namespace CrCms\Repository\Console\Commands\Creator;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
+use Exception;
+use Illuminate\Support\Str;
 
 /**
  * Class MagicCreator
@@ -12,14 +14,14 @@ use Illuminate\Filesystem\Filesystem;
 class MagicCreator
 {
     /**
-     * @var Filesystem|null
+     * @var Filesystem
      */
-    protected $fileSystem = null;
+    protected $fileSystem;
 
     /**
-     * @var Config|null
+     * @var Config
      */
-    protected $config = null;
+    protected $config;
 
     /**
      * @var string
@@ -29,12 +31,12 @@ class MagicCreator
     /**
      * @var string
      */
-    protected $magicNamespace = '';
+    protected $namespace = '';
 
     /**
      * @var string
      */
-    protected $repository = '';
+    protected $path;
 
     /**
      * MagicCreator constructor.
@@ -47,71 +49,63 @@ class MagicCreator
         $this->config = $config;
     }
 
-
-    /**
-     * @param string $magic
-     * @return MagicCreator
-     */
-    public function setMagic(string $magic): self
-    {
-        //
-        $magic = studly_case($magic);
-
-        //auto include namespace
-        if (strpos($magic, '\\')) {
-            $this->magicNamespace = str_replace(strrchr($magic, '\\'), '', $magic);
-            $magic = class_basename($magic);
-        }
-
-        $this->magic = $magic;
-
-        return $this;
-    }
-
-    /**
-     * @param string $repository
-     * @return MagicCreator
-     */
-    public function setRepository(string $repository): self
-    {
-        //$this->repository = $repository ? : 'CrCms\Repository\Contracts\Repository';
-        $this->repository = 'CrCms\Repository\Contracts\Repository';
-        return $this;
-    }
-
     /**
      * @param string $magic
      */
-    public function create(string $magic, string $repository = '')
+    public function create(string $magic, string $path = '', string $namespace = '')
     {
-        //set and format arguments
+        $this->setNamespace($namespace);
+
         $this->setMagic($magic);
-        //$this->setRepository($repository);
 
-        if ($this->checkFileExists()) {
-            throw new \Exception('magic file is exists');
+        $this->setPath($path);
+
+        //check file exists
+        if ($this->fileSystem->exists($this->magicFilePath())) {
+            throw new Exception("File {$this->magicFilePath()} exists");
         }
 
         //create directory
-        $this->createDirectory();
-
-        //get stub file content
-        $content = $this->getFormatStubFileContent();
+        $this->autoCreateDirectory();
 
         //write file
-        $this->writeStubFile($content);
+        $this->writeStubFile($this->getFormatStubFileContent());
     }
 
+    /**
+     * @param string $namespace
+     */
+    protected function setNamespace(string $namespace)
+    {
+        //auto include namespace
+        $this->namespace = $namespace ? $namespace : $this->config->get('repository.magic_namespace');
+    }
+
+    /**
+     * @param string $magic
+     */
+    protected function setMagic(string $magic)
+    {
+        $this->magic = class_basename($magic);
+    }
+
+    /**
+     * @param string $path
+     */
+    protected function setPath(string $path)
+    {
+        $this->path = $path ? $path : $this->config->get('repository.magic_path');
+    }
 
     /**
      *
      */
-    protected function createDirectory()
+    protected function autoCreateDirectory()
     {
-        $repositoryDirectory = $this->getMagicDirectoryPath();
+        $magicDirectory = $this->getMagicDirectoryPath();
 
-        if (!$this->fileSystem->isDirectory($repositoryDirectory)) {
-            $this->fileSystem->makeDirectory($repositoryDirectory);
+        if (!$this->fileSystem->isDirectory($magicDirectory)) {
+            $this->fileSystem->makeDirectory($magicDirectory, 0755, true);
         }
     }
 
@@ -120,17 +114,7 @@ class MagicCreator
      */
     protected function getMagicDirectoryPath(): string
     {
-        return $this->magicNamespace ?
-            str_replace('\\', '/', $this->magicNamespace) :
-            $this->config->get('repository.magic_path');
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRepositoryPath(): string
-    {
-        return $this->getMagicDirectoryPath() . '/' . $this->magic . '.php';
+        return $this->path;
     }
 
     /**
@@ -154,18 +138,12 @@ class MagicCreator
      */
     protected function getFormatStubFileContent(): string
     {
-        $magicNamespace = empty($this->magicNamespace) ?
-            $this->config->get('repository.magic_namespace') :
-            $this->magicNamespace;
-
         return str_replace([
             'magic_namespace',
             'magic_class',
-            'repository_namespace',
         ], [
-            $magicNamespace,
+            $this->namespace,
             $this->magic,
-            $this->repository
         ], $this->getStubFileContent());
     }
 
@@ -174,15 +152,15 @@ class MagicCreator
      */
     protected function writeStubFile(string $content)
     {
-        $this->fileSystem->put($this->getRepositoryPath(), $content);
+        $this->fileSystem->put($this->magicFilePath(), $content);
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    protected function checkFileExists(): bool
+    protected function magicFilePath(): string
     {
-        return $this->fileSystem->exists($this->getRepositoryPath());
+        return $this->getMagicDirectoryPath() . '/' . $this->magic . '.php';
     }
 }
 

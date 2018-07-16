@@ -6,9 +6,9 @@ use CrCms\Repository\AbstractMagic;
 
 /**
  * Class magic_class
-
  * @package magic_namespace
  */
 class magic_class extends AbstractMagic
 {
+
 }

@@ -16,7 +16,7 @@ return [
 
     'magic_namespace' => 'App\Repositories\Magic',
 
-    'magic_path' => app_path('Repositories\Magic'),
+    'magic_path' => app_path('Repositories/Magic'),
 
     'listen' => [
         'creating' => [

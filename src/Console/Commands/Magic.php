@@ -45,12 +45,13 @@ class Magic extends Command
     {
         //
         $arguments = $this->arguments();
-//        $options = $this->options();
 
-        $this->creator->create($arguments['magic']);
+        $options = $this->options();
+
+        $this->creator->create($arguments['magic'], $options['path'] ?? '', $options['namespace'] ?? '');
 
         //update composer autoload
-        app('composer')->dumpAutoloads();
+        $this->getLaravel()->make('composer')->dumpAutoloads();
 
         $this->info("Successfully created the magic class");
     }
@@ -58,7 +59,7 @@ class Magic extends Command
     /**
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['magic', InputArgument::REQUIRED, 'The magic name.'],
@@ -68,10 +69,11 @@ class Magic extends Command
     /**
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
-            ['repository', '', InputOption::VALUE_OPTIONAL, 'The repository name.', ''],
+            ['path', '', InputOption::VALUE_OPTIONAL, 'File storage location.', ''],
+            ['namespace', '', InputOption::VALUE_OPTIONAL, 'File loaded namespace.', ''],
         ];
     }
 }
