@@ -8,10 +8,9 @@ use CrCms\Repository\Contracts\QueryRelate;
 
 /**
  * Class AbstractMagic
- *
  * @package CrCms\Repository
  */
-class AbstractMagic implements QueryMagic
+abstract class AbstractMagic implements QueryMagic
 {
     use HasData;
 
