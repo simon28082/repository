@@ -289,6 +289,12 @@ interface QueryRelate
     public function magic(QueryMagic $queryMagic): QueryRelate;
 
     /**
+     * @param QueryMagic|null $queryMagic
+     * @return QueryRelate
+     */
+    public function whenMagic(?QueryMagic $queryMagic = null): QueryRelate;
+
+    /**
      * @param bool $condition
      * @param callable $trueCallable
      * @param callable $falseCallable

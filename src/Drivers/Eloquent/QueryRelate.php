@@ -498,6 +498,19 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param QueryMagic|null $queryMagic
+     * @return BaseQueryRelateContract
+     */
+    public function whenMagic(?QueryMagic $queryMagic = null): BaseQueryRelateContract
+    {
+        if ($queryMagic instanceof QueryMagic) {
+            return $this->magic($queryMagic);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param bool $condition
      * @param callable $trueCallable
      * @param callable $falseCallable
