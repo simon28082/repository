@@ -24,9 +24,9 @@ class Repository extends Command
     protected $description = 'Create a new repository class';
 
     /**
-     * @var RepositoryCreator|null
+     * @var RepositoryCreator
      */
-    protected $creator = null;
+    protected $creator;
 
     /**
      * Repository constructor.
@@ -39,7 +39,7 @@ class Repository extends Command
     }
 
     /**
-     *
+     * @throws \Exception
      */
     public function handle()
     {
@@ -52,7 +52,7 @@ class Repository extends Command
             exit();
         }
 
-        $this->creator->create($arguments['repository'], $options['model'], $options['path'], $options['namespace']);
+        $this->creator->create($arguments['repository'], $options['model'], $options['path']);
 
         //update composer autoload
         $this->getLaravel()->make('composer')->dumpAutoloads();
@@ -76,9 +76,8 @@ class Repository extends Command
     protected function getOptions(): array
     {
         return [
-            ['model', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_REQUIRED, 'The model name.'],
-            ['path', $this->app->make('config')->get('repository.repository_path'), InputOption::VALUE_OPTIONAL, 'File storage location.', ''],
-            ['namespace', $this->app->make('config')->get('repository.repository_namespace'), InputOption::VALUE_OPTIONAL, 'File loaded namespace.', ''],
+            ['model', null, InputOption::VALUE_REQUIRED, 'The model name.',],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'File storage location.', config('repository.repository_path')],
         ];
     }
 }

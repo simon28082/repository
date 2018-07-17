@@ -24,9 +24,9 @@ class Magic extends Command
     protected $description = 'Create a new magic class';
 
     /**
-     * @var MagicCreator|null
+     * @var MagicCreator
      */
-    protected $creator = null;
+    protected $creator;
 
     /**
      * Magic constructor.
@@ -39,7 +39,7 @@ class Magic extends Command
     }
 
     /**
-     *
+     * @throws \Exception
      */
     public function handle()
     {
@@ -48,7 +48,7 @@ class Magic extends Command
 
         $options = $this->options();
 
-        $this->creator->create($arguments['magic'], $options['path'], $options['namespace']);
+        $this->creator->create($arguments['magic'], $options['path']);
 
         //update composer autoload
         $this->getLaravel()->make('composer')->dumpAutoloads();
@@ -72,8 +72,7 @@ class Magic extends Command
     protected function getOptions(): array
     {
         return [
-            ['path', $this->app->make('config')->get('repository.magic_path'), InputOption::VALUE_OPTIONAL, 'File storage location.', ''],
-            ['namespace', $this->app->make('config')->get('repository.magic_namespace'), InputOption::VALUE_OPTIONAL, 'File loaded namespace.', ''],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'File storage location.', config('repository.magic_path')],
         ];
     }
 }

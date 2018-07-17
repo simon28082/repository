@@ -4,6 +4,7 @@ namespace CrCms\Repository\Console\Commands\Creator;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
+use Exception;
 
 /**
  * Class RepositoryCreator
@@ -51,11 +52,11 @@ class RepositoryCreator
      * @param string $repository
      * @param string $model
      * @param string $path
-     * @param string $namespace
+     * @throws Exception
      */
-    public function create(string $repository, string $model, string $path = '', string $namespace = '')
+    public function create(string $repository, string $model, string $path = '')
     {
-        $this->setNamespace($namespace);
+        $this->setNamespace($repository);
 
         $this->setModel($model);
 
@@ -76,11 +77,13 @@ class RepositoryCreator
     }
 
     /**
-     * @param string $namespace
+     * @param string $repository
      */
-    protected function setNamespace(string $namespace)
+    protected function setNamespace(string $repository)
     {
-        $this->namespace = $namespace ? $namespace : $this->config->get('repository.repository_namespace');
+        $this->namespace = strpos($repository,'\\') ?
+            str_replace(strrchr($repository, '\\'), '', $repository) :
+            $this->config->get('repository.repository_namespace');
     }
 
     /**

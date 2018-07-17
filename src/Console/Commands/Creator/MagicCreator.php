@@ -52,12 +52,11 @@ class MagicCreator
     /**
      * @param string $magic
      * @param string $path
-     * @param string $namespace
      * @throws Exception
      */
-    public function create(string $magic, string $path = '', string $namespace = '')
+    public function create(string $magic, string $path = '')
     {
-        $this->setNamespace($namespace);
+        $this->setNamespace($magic);
 
         $this->setMagic($magic);
 
@@ -76,12 +75,13 @@ class MagicCreator
     }
 
     /**
-     * @param string $namespace
+     * @param string $magic
      */
-    protected function setNamespace(string $namespace)
+    protected function setNamespace(string $magic)
     {
-        //auto include namespace
-        $this->namespace = $namespace ? $namespace : $this->config->get('repository.magic_namespace');
+        $this->namespace = strpos($magic,'\\') ?
+            str_replace(strrchr($magic, '\\'), '', $magic) :
+            $this->config->get('repository.magic_namespace');
     }
 
     /**
