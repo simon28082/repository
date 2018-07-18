@@ -3,6 +3,7 @@
 namespace CrCms\Repository;
 
 use CrCms\Repository\Concerns\HasData;
+use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate;
 
@@ -12,15 +13,17 @@ use CrCms\Repository\Contracts\QueryRelate;
  */
 abstract class AbstractMagic implements QueryMagic
 {
-    use HasData;
+    use HasData, HasSceneGuard;
 
     /**
      * AbstractMagic constructor.
      * @param array $data
+     * @param string $scene
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], string $scene = '')
     {
         $this->setData($data);
+        $this->setCurrentScene($scene ? $scene : $this->currentScene);
     }
 
     /**
@@ -30,16 +33,14 @@ abstract class AbstractMagic implements QueryMagic
      */
     public function magic(QueryRelate $queryRelate, AbstractRepository $repository): QueryRelate
     {
-        return $this->magicSearch($this->data, $queryRelate);
-    }
+        // 版本兼容，下个大版本直接删除
+        if (method_exists($this,'magicSearch')) {
+            return $this->magicSearch($this->data, $queryRelate);
+        }
 
-    /**
-     * @param array $data
-     * @param QueryRelate $queryRelate
-     * @return QueryRelate
-     */
-    protected function magicSearch(array $data, QueryRelate $queryRelate): QueryRelate
-    {
+        $guard = $this->getSceneGuard($this->currentScene);
+        $data = empty($guard) ? $this->data : $this->guardFilter($this->data, $guard);
+
         return $this->dispatch($this->filter($data), $queryRelate);
     }
 

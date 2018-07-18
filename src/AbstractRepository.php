@@ -6,6 +6,7 @@ use CrCms\Event\HasEvents;
 use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Concerns\HasOriginal;
+use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
@@ -19,7 +20,7 @@ use UnexpectedValueException;
  */
 abstract class AbstractRepository
 {
-    use HasData, HasGuard, HasEvents, HasOriginal;
+    use HasData, HasGuard, HasEvents, HasOriginal, HasSceneGuard;
 
     /**
      * @var Repository
@@ -73,13 +74,14 @@ abstract class AbstractRepository
 
     /**
      * @param array $data
-     * @return bool|mixed
+     * @param string $scene
+     * @return bool|object
      */
-    public function create(array $data)
+    public function create(array $data, string $scene = '')
     {
         $this->setOriginal($data);
 
-        $this->setData($this->guard($data));
+        $this->setData($this->guardResult($data, $scene));
 
         if ($this->fireEvent('creating', $data) === false) return false;
 
@@ -93,13 +95,14 @@ abstract class AbstractRepository
     /**
      * @param array $data
      * @param string|int $id
-     * @return mixed
+     * @param string $scene
+     * @return bool|object
      */
-    public function update(array $data, $id)
+    public function update(array $data, $id, string $scene = '')
     {
         $this->setOriginal($data);
 
-        $this->setData($this->guard($data));
+        $this->setData($this->guardResult($data, $scene));
 
         if ($this->fireEvent('updating', $data) === false) return false;
 
@@ -190,6 +193,21 @@ abstract class AbstractRepository
         }
 
         throw new MethodNotFoundException(static::class, $name);
+    }
+
+    /**
+     * @param array $data
+     * @param string $scene
+     * @return array
+     */
+    protected function guardResult(array $data, string $scene): array
+    {
+        // 版本兼容，下个大版本直接删除
+        if (!empty($this->guard) || !method_exists($this, 'sceneGuard')) {
+            return $this->guard($data);
+        }
+
+        return $this->sceneGuard($data, $scene ? $scene : $this->currentScene);
     }
 
     /**
