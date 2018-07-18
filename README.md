@@ -128,7 +128,7 @@ class TestRepository extends AbstractRepository
 }
 ```
 
-### Guard Or Scene
+### Guard Or Scenes
 
 Usually we need to filter the incoming parameter values when adding or modifying and querying the data, and retain the required parameter values.
 
@@ -155,7 +155,7 @@ class TestRepository extends AbstractRepository
 
 $testRepository->create($data, 'create'); //OR
 $testRepository->setCurrentScene('create')->create($data); //OR
-$testRepository->setGuard(['sort', 'added_at'])->create($guard); 
+$testRepository->setGuard(['sort', 'added_at'])->create($data); 
 
 ```
 
@@ -259,17 +259,17 @@ $repository = new TestRepository;
 
 ```
 
-### store cache
+#### store
 ```
 $repository->cache()->do(new User);
 ```
 
-### forget
+#### forget
 ```
 $repository->cache()->forget('do')
 ```
 
-### flush
+#### flush
 ```
 $repository->cache()->flush()
 ```
