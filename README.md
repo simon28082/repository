@@ -3,53 +3,42 @@
 [![Latest Stable Version](https://poser.pugx.org/crcms/repository/v/stable)](https://packagist.org/packages/crcms/repository)
 [![License](https://poser.pugx.org/crcms/repository/license)](https://packagist.org/packages/crcms/repository)
 
+## Install
+
+You can install the package via composer:
+
+```
+composer require crcms/repository
+```
+
+## Laravel
+
+If your version is less than 5.5 please modify ``config / app.php``
+
+```
+'providers' => [
+    CrCms\Repository\RepositoryServiceProvider::class,
+]
+
+```
+
+If you'd like to make configuration changes in the configuration file you can pubish it with the following Aritsan command:
+```
+php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvider"
+```
+
+##　Commands
+
+```
+php artisan make:repository TestRepository --model TestModel
+```
+```
+php artisan make:magic TestMagic
+```
+
 ## Example
-```
-class TestRepository extends AbstractRepository
-{
-    /**
-     * @var array
-     */
-    protected $guard = [
-        'id', 'title','other'
-    ];
 
-    /**
-     * @return \Illuminate\Foundation\Application|mixed
-     */
-    public function newModel(): TestModel
-    {
-        return app(TestModel::class);
-    }
-
-    /**
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
-    public function paginate(AbstractMagic $magic = null, int $perPage = 15): LengthAwarePaginator
-    {
-        $query = $this->where('built_in', 1);
-
-        if ($magic) {
-            $query->magic($magic);
-        }
-
-        return $query->orderBy($this->getModel()->getKeyName(), 'desc')->paginate($perPage);
-    }
-
-    /**
-     * @param int $name
-     * @param int $title
-     */
-    public function updateName(string $name, string $title)
-    {
-        $this->getModel()->where('name', $name)->update(['title' => $title]);
-    }
-    
-}
-```
-
-## QueryMagic
+### QueryMagic
 ```
 
 use CrCms\Repository\AbstractMagic;
@@ -86,10 +75,139 @@ class TestMagic extends AbstractMagic
     {
         return $queryRelate->where('id', $id);
     }
+    
+    /**
+     * @param QueryRelate $queryRelate
+     * @param array $sort
+     * @return QueryRelate
+     */
+    protected function bySort(QueryRelate $queryRelate, array $sort)
+    {
+        return $queryRelate->orderByArray($sort);
+    }
 }
 ```
 
-## Listener
+### Repository
+```
+class TestRepository extends AbstractRepository
+{
+    /**
+     * @var array
+     */
+    protected $guard = [
+        'id', 'title','other'
+    ];
+
+    /**
+     * @return TestModel
+     */
+    public function newModel(): TestModel
+    {
+        return app(TestModel::class);
+    }
+
+    /**
+     * @param int $perPage
+     * @return LengthAwarePaginator
+     */
+    public function paginate(AbstractMagic $magic = null, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->whenMagic($magic)->where('built_in', 1)->orderBy($this->getModel()->getKeyName(), 'desc')->paginate($perPage);
+    }
+
+    /**
+     * @param int $name
+     * @param int $title
+     */
+    public function updateName(string $name, string $title)
+    {
+        $this->where('name', $name)->update(['title' => $title]);
+    }
+    
+}
+```
+
+### Guard Or Scene
+
+Usually we need to filter the incoming parameter values when adding or modifying and querying the data, and retain the required parameter values.
+
+Guard and scenes are born for this
+
+```
+class TestRepository extends AbstractRepository
+{
+    /**
+     * @var array
+     */
+    protected $scenes = [
+        'create' => ['sort', 'added_at'],
+        'modify' => ['sort', 'published_at']
+    ];
+    
+    /**
+     * @var array
+     */
+    protected $guard = [
+        'id', 'title', 'other'
+    ];
+}
+
+$testRepository->create($data, 'create'); //OR
+$testRepository->setCurrentScene('create')->create($data); //OR
+$testRepository->setGuard(['sort', 'added_at'])->create($guard); 
+
+```
+
+```
+class TestMagic extends AbstractMagic
+{
+    /**
+     * @var array
+     */
+    protected $scenes = [
+        'frontend' => ['name'],
+        'backend' => ['title']
+    ];
+    
+    /**
+     * @var array
+     */
+    protected $guard = [
+        'title',
+    ];
+
+    /**
+     * @param QueryRelate $queryRelate
+     * @param int $id
+     * @return QueryRelate
+     */
+    protected function byName(QueryRelate $queryRelate, string $name)
+    {
+        return $queryRelate->where('name', $name);
+    }
+
+    /**
+     * @param QueryRelate $queryRelate
+     * @param string $title
+     * @return QueryRelate
+     */
+    protected function byTitle(QueryRelate $queryRelate, string $title)
+    {
+        return $queryRelate->where('title', 'like', "%{$title}%");
+    }
+}
+
+$testRepository->magic(new TestMagic($data, 'frontend'))->paginate(); //OR
+$testRepository->magic((new TestMagic($data))->setCurrentScene('frontend'))->paginate(); //OR
+$testRepository->magic((new TestMagic($data))->setGuard(['title']))->paginate(); //OR->create($data);
+
+```
+
+**Note: when guard and scenes are both present, guard has a higher priority. If guard is empty, it will use scenes.**
+
+### Listener
+
 ```
 TestRepository::observer(TestListener::class);
 
@@ -126,7 +244,38 @@ TestListener {
 }
 ```
 
-## Repository Methods
+### Cache
+
+```
+class TestRepository {
+
+    public function do(User $user)
+    {
+        return $this->byIntId($user->id);
+    }
+}
+
+$repository = new TestRepository;
+
+```
+
+### store cache
+```
+$repository->cache()->do(new User);
+```
+
+### forget
+```
+$repository->cache()->forget('do')
+```
+
+### flush
+```
+$repository->cache()->flush()
+```
+
+
+### Repository Methods
 ```
 public function all(): Collection;
 ```
@@ -221,7 +370,7 @@ public function first();
 public function firstOrFail() : Model;
 ```    
 
-## QueryRelate
+### QueryRelate Methods
 
 ```
 public function select(array $column = ['*']): QueryRelate;
@@ -307,141 +456,70 @@ public function whereNotIn(string $column, array $values): QueryRelate;
 ```
 public function orWhereNotIn(string $column, array $values): QueryRelate;
 ```    
-
 ```
 public function whereNull(string $column): QueryRelate;
 ```
-
 ```
 public function orWhereNull(string $column): QueryRelate;
 ```
-
 ```
 public function whereNotNull(string $column): QueryRelate;
 ```
-
 ```
 public function orWhereNotNull(string $column): QueryRelate;
 ```
-
 ```
 public function raw(string $sql): QueryRelate;
 ```    
-
 ```
 public function from(string $table): QueryRelate;
 ```
-
 ```
 public function join(string $table, string $one, string $operator = '=', string $two = ''): QueryRelate;
 ```
-
 ```
 public function joinClosure(string $table, \Closure $callback): QueryRelate;
 ```
-
 ```
 public function leftJoin(string $table, string $first, string $operator = '=', string $two = ''): QueryRelate;
 ```
-
 ```
 public function leftJoinClosure(string $table, \Closure $callback): QueryRelate;
 ```
-
 ```
 public function rightJoin(string $table, string $first, string $operator = '=', string $two = ''): QueryRelate;
 ```
-
 ```
 public function rightJoinClosure(string $table, \Closure $callback): QueryRelate;
 ```
-
 ```
 public function callable(callable $callable): QueryRelate;
 ```
-
 ```
 public function wheres(array $wheres): QueryRelate;
 ```    
-
 ```
 public function union(QueryRelate $queryRelate): QueryRelate;
 ```
-
 ```
 public function magic(QueryMagic $queryMagic): QueryRelate;
 ```
-
+```
+public function whenMagic(?QueryMagic $queryMagic = null): QueryRelate;
+```
 ```
 public function with(string $relation): QueryRelate;
 ```
-
 ```
 public function withArray(array $relations): QueryRelate;
 ```
-
 ```
 public function without(string $relation): QueryRelate;
 ```
-
 ```
 public function withoutArray(array $relations): QueryRelate;
 ```
 
-
-## Cache
-
-```
-class TestRepository {
-
-    public function do(User $user)
-    {
-        return $this->byIntId($user->id);
-    }
-}
-
-$repository = new TestRepository;
-
-```
-
-### store cache
-```
-$repository->cache()->do(new User);
-```
-
-### forget
-```
-$repository->cache()->forget('do')
-```
-
-### flush
-```
-$repository->cache()->flush()
-```
-
-## Install
-
-You can install the package via composer:
-
-```
-composer require crcms/repository
-```
-
-## Laravel
-
-Modify ``config / app.php``
-
-```
-'providers' => [
-    CrCms\Repository\RepositoryServiceProvider::class,
-]
-
-```
-
-If you'd like to make configuration changes in the configuration file you can pubish it with the following Aritsan command:
-```
-php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvider"
-```
 
 ## License
 [MIT license](https://opensource.org/licenses/MIT)
