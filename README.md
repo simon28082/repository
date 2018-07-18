@@ -27,7 +27,7 @@ If you'd like to make configuration changes in the configuration file you can pu
 php artisan vendor:publish --provider="CrCms\Repository\RepositoryServiceProvider"
 ```
 
-##　Commands
+## Commands
 
 ```
 php artisan make:repository TestRepository --model TestModel
