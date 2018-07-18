@@ -3,6 +3,7 @@
 namespace CrCms\Repository;
 
 use CrCms\Repository\Concerns\HasData;
+use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate;
@@ -13,7 +14,7 @@ use CrCms\Repository\Contracts\QueryRelate;
  */
 abstract class AbstractMagic implements QueryMagic
 {
-    use HasData, HasSceneGuard;
+    use HasData, HasGuard, HasSceneGuard;
 
     /**
      * AbstractMagic constructor.
@@ -34,14 +35,26 @@ abstract class AbstractMagic implements QueryMagic
     public function magic(QueryRelate $queryRelate, AbstractRepository $repository): QueryRelate
     {
         // 版本兼容，下个大版本直接删除
-        if (method_exists($this,'magicSearch')) {
+        if (method_exists($this, 'magicSearch')) {
             return $this->magicSearch($this->data, $queryRelate);
         }
 
-        $guard = $this->getSceneGuard($this->currentScene);
-        $data = empty($guard) ? $this->data : $this->guardFilter($this->data, $guard);
+        return $this->dispatch($this->filter($this->guardResult($this->data)), $queryRelate);
+    }
 
-        return $this->dispatch($this->filter($data), $queryRelate);
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function guardResult(array $data): array
+    {
+        // guard 优先
+        if (!empty($this->guard)) {
+            return $this->guard($data);
+        }
+
+        $guard = $this->getSceneGuard($this->currentScene);
+        return empty($guard) ? $data : $this->guardFilter($data, $guard);
     }
 
     /**

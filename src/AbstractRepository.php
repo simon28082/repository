@@ -202,12 +202,10 @@ abstract class AbstractRepository
      */
     protected function guardResult(array $data, string $scene): array
     {
-        // 版本兼容，下个大版本直接删除
-        if (!empty($this->guard) || !method_exists($this, 'sceneGuard')) {
-            return $this->guard($data);
-        }
-
-        return $this->sceneGuard($data, $scene ? $scene : $this->currentScene);
+        // guard 优先
+        return empty($this->guard) ?
+            $this->sceneGuard($data, $scene ? $scene : $this->currentScene) :
+            $this->guard($data);
     }
 
     /**
