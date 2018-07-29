@@ -97,7 +97,7 @@ interface Repository
     /**
      * @param $limit
      * @param callable $callback
-     * @return void
+     * @return bool
      */
     public function chunk(int $limit, callable $callback): bool;
 
