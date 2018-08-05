@@ -33,9 +33,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->publishes([
             $this->packagePath . 'config' => config_path(),
         ]);
-
-        //register dispatcher
-        AbstractRepository::setDispatcher(new Dispatcher);
     }
 
     /**
@@ -53,6 +50,9 @@ class RepositoryServiceProvider extends ServiceProvider
         //merge config
         $configFile = $this->packagePath . "config/{$this->namespaceName}.php";
         if (file_exists($configFile)) $this->mergeConfigFrom($configFile, $this->namespaceName);
+        
+        //register dispatcher
+        AbstractRepository::setDispatcher(new Dispatcher);
     }
 
     /**
