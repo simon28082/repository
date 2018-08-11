@@ -8,7 +8,7 @@
         "php":">=7.1",
         "illuminate/support":"^5.5",
         "illuminate/cache":"^5.5",
-        "crcms/event":"dev-master"
+        "crcms/event":"~0.0.2"
     },
 	"autoload": {
         "files": [
