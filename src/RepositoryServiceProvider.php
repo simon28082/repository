@@ -33,6 +33,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->publishes([
             $this->packagePath . 'config' => config_path(),
         ]);
+
+        AbstractRepository::events(config('repository.listener'));
     }
 
     /**
@@ -40,6 +42,10 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //merge config
+        $configFile = $this->packagePath . "config/{$this->namespaceName}.php";
+        if (file_exists($configFile)) $this->mergeConfigFrom($configFile, $this->namespaceName);
+
         //bind commands
         $this->app->singleton('command.repository.make', Repository::class);
         $this->app->singleton('command.magic.make', Magic::class);
@@ -47,10 +53,6 @@ class RepositoryServiceProvider extends ServiceProvider
         // Register commands
         $this->commands(['command.repository.make', 'command.magic.make']);
 
-        //merge config
-        $configFile = $this->packagePath . "config/{$this->namespaceName}.php";
-        if (file_exists($configFile)) $this->mergeConfigFrom($configFile, $this->namespaceName);
-        
         //register dispatcher
         AbstractRepository::setDispatcher(new Dispatcher);
     }

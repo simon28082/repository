@@ -57,7 +57,7 @@ use Illuminate\Support\Collection;
  * @method QueryRelateContract rightJoinClosure(string $table, \Closure $callback)
  * @method QueryRelateContract callable(callable $callable)
  * @method QueryRelateContract whereArray(array $array)
- * @method QueryRelateContract union(QueryRelate $queryRelate, bool $unionAll = true)
+ * @method QueryRelateContract union(QueryRelateContract $queryRelate, bool $unionAll = true)
  * @method QueryRelateContract magic(QueryMagic $queryMagic)
  * @method QueryRelateContract whenMagic(?QueryMagic $queryMagic = null)
  * @method QueryRelateContract when(bool $condition, callable $trueCallable, callable $falseCallable)
@@ -108,11 +108,6 @@ abstract class AbstractRepository
     protected $model;
 
     /**
-     * @var array
-     */
-    protected static $events = [];
-
-    /**
      * @var CacheService
      */
     protected $cache;
@@ -121,6 +116,11 @@ abstract class AbstractRepository
      * @var array
      */
     protected $config;
+
+    /**
+     * @var array
+     */
+    protected static $events = [];
 
     /**
      * AbstractRepository constructor.
@@ -243,17 +243,6 @@ abstract class AbstractRepository
     public function getDriver(): RepositoryDriver
     {
         return $this->driver;
-    }
-
-    /**
-     * @return array
-     */
-    public static function events(): array
-    {
-        return array_merge(
-            array_keys(config('repository.listener')),
-            array_keys(static::$events)
-        );
     }
 
     /**
