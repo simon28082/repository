@@ -118,11 +118,6 @@ abstract class AbstractRepository
     protected $config;
 
     /**
-     * @var array
-     */
-    protected static $events = [];
-
-    /**
      * AbstractRepository constructor.
      */
     public function __construct()
