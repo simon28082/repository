@@ -147,8 +147,13 @@ abstract class AbstractRepository
      * @param string $scene
      * @return bool|object
      */
-    public function create(array $data, string $scene = '')
+    public function create(array $data)
     {
+        $scene = '';
+        if (func_num_args() === 2) {
+            $scene = func_get_arg(1);
+        }
+
         $this->setOriginal($data);
 
         $this->setData($this->guardResult($data, $scene));
@@ -168,8 +173,13 @@ abstract class AbstractRepository
      * @param string $scene
      * @return bool|object
      */
-    public function update(array $data, $id, string $scene = '')
+    public function update(array $data, $id)
     {
+        $scene = '';
+        if (func_num_args() === 3) {
+            $scene = func_get_arg(2);
+        }
+
         $this->setOriginal($data);
 
         $this->setData($this->guardResult($data, $scene));
