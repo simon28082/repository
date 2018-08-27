@@ -128,6 +128,17 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param string $sql
+     * @param array $bindings
+     * @return BaseQueryRelateContract
+     */
+    public function orderByRaw(string $sql, array $bindings = []): BaseQueryRelateContract
+    {
+        $this->query->orderByRaw($sql, $bindings);
+        return $this;
+    }
+
+    /**
      * @return BaseQueryRelateContract
      */
     public function distinct(): BaseQueryRelateContract

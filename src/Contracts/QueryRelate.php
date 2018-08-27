@@ -60,6 +60,13 @@ interface QueryRelate
     public function orderByArray(array $columns): QueryRelate;
 
     /**
+     * @param $sql
+     * @param array $bindings
+     * @return QueryRelate
+     */
+    public function orderByRaw(string $sql, array $bindings = []);
+
+    /**
      * @return QueryRelate
      */
     public function distinct(): QueryRelate;
