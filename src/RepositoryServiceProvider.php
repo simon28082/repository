@@ -6,13 +6,14 @@ use CrCms\Event\Dispatcher;
 use CrCms\Repository\Console\Commands\Magic;
 use CrCms\Repository\Console\Commands\Repository;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Config\Repository as Config;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * @var string
@@ -33,8 +34,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->publishes([
             $this->packagePath . 'config' => config_path(),
         ]);
-
-        AbstractRepository::events(config('repository.listener'));
     }
 
     /**
@@ -55,6 +54,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //register dispatcher
         AbstractRepository::setDispatcher(new Dispatcher);
+        AbstractRepository::events($this->app->make(Config::class)->get('repository.listener'));
     }
 
     /**
