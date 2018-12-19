@@ -101,7 +101,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
             $model = $this->repository->newModel()->create($data);
             return $model;
         } catch (\RuntimeException $exception) {
-            throw new ResourceStoreException($exception->getMessage());
+            throw new ResourceStoreException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
 
@@ -132,7 +132,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         try {
             $model->save();
         } catch (\RuntimeException $exception) {
-            throw new ResourceUpdateException($exception->getMessage());
+            throw new ResourceUpdateException($exception->getMessage(), $exception->getCode(), $exception);
         }
         return $model;
     }
@@ -335,7 +335,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         try {
             $rows = $this->queryRelate->getQuery()->delete();
         } catch (\RuntimeException $exception) {
-            throw new ResourceDeleteException($exception->getMessage());
+            throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
             $this->resetQueryRelate();
         }
@@ -356,7 +356,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         try {
             $row = $this->queryRelate->whereIn($key, (array)$id)->getQuery()->delete();
         } catch (\RuntimeException $exception) {
-            throw new ResourceDeleteException($exception->getMessage());
+            throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
             $this->resetQueryRelate();
         }
