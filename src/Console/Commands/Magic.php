@@ -8,8 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class Magic
- * @package CrCms\Repository\Console\Commands
+ * Class Magic.
  */
 class Magic extends Command
 {
@@ -30,6 +29,7 @@ class Magic extends Command
 
     /**
      * Magic constructor.
+     *
      * @param MagicCreator $creator
      */
     public function __construct(MagicCreator $creator)
@@ -53,7 +53,7 @@ class Magic extends Command
         //update composer autoload
         $this->getLaravel()->make('composer')->dumpAutoloads();
 
-        $this->info("Successfully created the magic class");
+        $this->info('Successfully created the magic class');
     }
 
     /**

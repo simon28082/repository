@@ -7,14 +7,14 @@ use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Concerns\HasOriginal;
 use CrCms\Repository\Concerns\HasSceneGuard;
+use CrCms\Repository\Contracts\QueryMagic;
+use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Services\CacheService;
-use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
-use UnexpectedValueException;
-use CrCms\Repository\Contracts\QueryMagic;
 use Illuminate\Support\Collection;
+use UnexpectedValueException;
 
 /**
  * @method QueryRelateContract select(array $column = ['*'])
@@ -66,7 +66,6 @@ use Illuminate\Support\Collection;
  * @method QueryRelateContract with(string $relation)
  * @method QueryRelateContract withoutArray(array $relations)
  * @method QueryRelateContract without(string $relation)
- *
  * @method Collection all()
  * @method Collection get()
  * @method Collection pluck(string $column, string $key = '')
@@ -91,7 +90,6 @@ use Illuminate\Support\Collection;
  * @method int deleteByArray(array $ids): int
  *
  * Class AbstractRepository
- * @package CrCms\Repository
  */
 abstract class AbstractRepository
 {
@@ -143,8 +141,9 @@ abstract class AbstractRepository
     abstract public function newModel();
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $scene
+     *
      * @return bool|object
      */
     public function create(array $data)
@@ -158,7 +157,9 @@ abstract class AbstractRepository
 
         $this->setData($this->guardResult($data, $scene));
 
-        if ($this->fireEvent('creating', $data) === false) return false;
+        if ($this->fireEvent('creating', $data) === false) {
+            return false;
+        }
 
         $model = $this->driver->create($this->getData());
 
@@ -168,9 +169,10 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array $data
+     * @param array      $data
      * @param string|int $id
-     * @param string $scene
+     * @param string     $scene
+     *
      * @return bool|object
      */
     public function update(array $data, $id)
@@ -184,7 +186,9 @@ abstract class AbstractRepository
 
         $this->setData($this->guardResult($data, $scene));
 
-        if ($this->fireEvent('updating', $data) === false) return false;
+        if ($this->fireEvent('updating', $data) === false) {
+            return false;
+        }
 
         $model = is_numeric($id) ?
             $this->driver->updateByIntId($this->getData(), $id) :
@@ -197,17 +201,20 @@ abstract class AbstractRepository
 
     /**
      * @param string|int $id
+     *
      * @return int
      */
     public function delete($id)
     {
-        $id = (array)$id;
+        $id = (array) $id;
 
         $this->setOriginal($id);
 
         $this->setData($id);
 
-        if ($this->fireEvent('deleting', $id) === false) return false;
+        if ($this->fireEvent('deleting', $id) === false) {
+            return false;
+        }
 
         $key = $this->getModel()->getKeyName();
 
@@ -216,7 +223,7 @@ abstract class AbstractRepository
         $rows = $this->driver->whereIn($key, $this->getData())->delete();
 
         if ($rows <= 0) {
-            throw new UnexpectedValueException('Data deletion failed, Keys is:' . implode(',', $this->data));
+            throw new UnexpectedValueException('Data deletion failed, Keys is:'.implode(',', $this->data));
         }
 
         $this->fireEvent('deleted', $models);
@@ -226,6 +233,7 @@ abstract class AbstractRepository
 
     /**
      * @param string $driver
+     *
      * @return RepositoryDriver
      */
     public function driver(string $driver): RepositoryDriver
@@ -235,6 +243,7 @@ abstract class AbstractRepository
 
     /**
      * @param RepositoryDriver $repositoryDriver
+     *
      * @return QueryRelateContract
      */
     public function newQueryRelate(RepositoryDriver $repositoryDriver): QueryRelateContract
@@ -252,7 +261,8 @@ abstract class AbstractRepository
 
     /**
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return Repository|mixed
      */
     public function __call(string $name, array $arguments)
@@ -265,8 +275,9 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $scene
+     *
      * @return array
      */
     protected function guardResult(array $data, string $scene): array
@@ -279,12 +290,13 @@ abstract class AbstractRepository
 
     /**
      * @param int $minute
+     *
      * @return CacheService
      */
     public function cache(int $minute = 1440): CacheService
     {
         if (empty($this->cache)) {
-            $this->cache = new CacheService;
+            $this->cache = new CacheService();
             $this->cache->setRepository($this);
         }
 

@@ -5,8 +5,7 @@ namespace CrCms\Repository\Tests;
 use Tests\TestCase;
 
 /**
- * Class SceneTest
- * @package CrCms\Repository\Tests
+ * Class SceneTest.
  */
 class SceneTest extends TestCase
 {
@@ -25,8 +24,8 @@ class SceneTest extends TestCase
     {
         $this->scene->setScenes([
             $this->scene->getCurrentScene() => ['id', 'name', 'age'],
-            'name' => ['name'],
-            'age' => ['age']
+            'name'                          => ['name'],
+            'age'                           => ['age'],
         ]);
 
         $this->assertArrayHasKey($this->scene->getCurrentScene(), $this->scene->getScenes());
@@ -43,24 +42,23 @@ class SceneTest extends TestCase
         $guard = $this->scene->getSceneGuard('test');
         $this->assertEquals(count($guard), 3);
 
-        $this->scene->addSceneGuard('test','d');
+        $this->scene->addSceneGuard('test', 'd');
         $this->assertEquals(count($guard), 4);
-        $this->assertArrayHasKey('d',$this->scene->getSceneGuard('test'));
+        $this->assertArrayHasKey('d', $this->scene->getSceneGuard('test'));
     }
 
     public function testSceneGuardFilter()
     {
         $array = $this->scene->sceneGuard(['id' => 1, 'key1' => 'v1', 'k2' => 'v2'], $this->scene->getCurrentScene());
 
-        $this->assertEquals(count($array),1);
-        $this->assertArrayHasKey('id',$array);
+        $this->assertEquals(count($array), 1);
+        $this->assertArrayHasKey('id', $array);
     }
 
     public function testSetCurrentScene()
     {
         $this->scene->setCurrentScene('test');
 
-        $this->assertEquals($this->scene->getCurrentScene(),'test');
+        $this->assertEquals($this->scene->getCurrentScene(), 'test');
     }
-
 }

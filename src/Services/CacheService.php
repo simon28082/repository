@@ -7,9 +7,8 @@ use CrCms\Repository\Exceptions\MethodNotFoundException;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Class Cache
+ * Class Cache.
  *
- * @package App\Helpers
  * @author simon
  */
 class CacheService
@@ -31,26 +30,31 @@ class CacheService
 
     /**
      * @param AbstractRepository $repository
+     *
      * @return $this
      */
     public function setRepository(AbstractRepository $repository)
     {
         $this->repository = $repository;
+
         return $this;
     }
 
     /**
      * @param int $minute
+     *
      * @return $this
      */
     public function setCacheMinute(int $minute)
     {
         $this->cacheMinute = $minute;
+
         return $this;
     }
 
     /**
      * @param string $key
+     *
      * @return void
      */
     public function forget(string $key)
@@ -59,8 +63,6 @@ class CacheService
         if (!empty($cacheKey)) {
             Cache::forget($cacheKey);
         }
-
-        return;
     }
 
     /**
@@ -71,14 +73,13 @@ class CacheService
         array_map(function ($cacheKey) {
             Cache::forget($cacheKey);
         }, $this->cacheKeys);
-
-        return;
     }
 
     /**
      * @param string $cacheKey
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return mixed
      */
     protected function remember(string $cacheKey, string $name, array $arguments)
@@ -103,22 +104,24 @@ class CacheService
 
     /**
      * @param string $name
+     *
      * @return string
      */
     protected function cachePrefix(string $name): string
     {
-        return get_class($this->repository) . $name;
+        return get_class($this->repository).$name;
     }
 
     /**
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return string
      */
     protected function setKey(string $name, array $arguments): string
     {
         $prefix = $this->cachePrefix($name);
-        $cacheKey = sha1($prefix . serialize($arguments));
+        $cacheKey = sha1($prefix.serialize($arguments));
         $this->cacheKeys[$prefix] = $cacheKey;
 
         return $cacheKey;
@@ -127,6 +130,7 @@ class CacheService
     /**
      * @param $name
      * @param $arguments
+     *
      * @return mixed
      */
     public function __call($name, $arguments)

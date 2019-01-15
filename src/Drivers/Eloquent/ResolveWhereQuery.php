@@ -5,12 +5,10 @@ namespace CrCms\Repository\Drivers\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Class ResolveWhereQuery
- * @package CrCms\Repository\Eloquent
+ * Class ResolveWhereQuery.
  */
 class ResolveWhereQuery
 {
-
     /**
      * [
      * ['orWhere','id','=',1],
@@ -24,16 +22,16 @@ class ResolveWhereQuery
      * ['whereNotIn','id',[5,6]]
      * ],
      * ]
-     * ]
+     * ].
      *
-     * @param array $wheres
+     * @param array   $wheres
      * @param Builder $query
+     *
      * @return Builder
      */
     protected function handle(array $wheres, Builder $query): Builder
     {
         foreach ($wheres as $where) {
-
             $method = array_shift($where);
 
             //子集解析
@@ -49,7 +47,6 @@ class ResolveWhereQuery
         return $query;
     }
 
-
     /**
      * @return Builder
      */
@@ -58,10 +55,11 @@ class ResolveWhereQuery
         return $this->handle($this->resolve($wheres), $query);
     }
 
-
     /**
-     * 简写方法解析
+     * 简写方法解析.
+     *
      * @param array $wheres
+     *
      * @return array
      */
     protected function resolve(array $wheres): array

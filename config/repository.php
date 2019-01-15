@@ -70,10 +70,10 @@ return [
     */
     'listener' => [
         'creating' => [],
-        'created' => [],
+        'created'  => [],
         'updating' => [],
-        'updated' => [],
+        'updated'  => [],
         'deleting' => [],
-        'deleted' => [],
+        'deleted'  => [],
     ],
 ];

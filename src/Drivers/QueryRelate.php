@@ -7,9 +7,7 @@ use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 
 /**
- * Class QueryRelate
- *
- * @package CrCms\Repository\Drivers
+ * Class QueryRelate.
  */
 abstract class QueryRelate implements QueryRelateContract
 {
@@ -25,6 +23,7 @@ abstract class QueryRelate implements QueryRelateContract
 
     /**
      * @param Repository $repository
+     *
      * @return QueryRelateContract
      */
     public function setRepository(Repository $repository): QueryRelateContract
@@ -45,6 +44,7 @@ abstract class QueryRelate implements QueryRelateContract
     /**
      * @param $name
      * @param $arguments
+     *
      * @return mixed
      */
     public function __call($name, $arguments)

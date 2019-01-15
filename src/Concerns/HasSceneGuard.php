@@ -3,8 +3,7 @@
 namespace CrCms\Repository\Concerns;
 
 /**
- * Trait HasSceneGuard
- * @package CrCms\Repository\Concerns
+ * Trait HasSceneGuard.
  */
 trait HasSceneGuard
 {
@@ -20,11 +19,13 @@ trait HasSceneGuard
 
     /**
      * @param string $scene
+     *
      * @return HasSceneGuard
      */
     public function setCurrentScene(string $scene): self
     {
         $this->currentScene = $scene;
+
         return $this;
     }
 
@@ -38,17 +39,20 @@ trait HasSceneGuard
 
     /**
      * @param string $scene
-     * @param array $guard
+     * @param array  $guard
+     *
      * @return HasSceneGuard
      */
     public function setSceneGuard(string $scene, array $guard): self
     {
         $this->scenes[$scene] = $guard;
+
         return $this;
     }
 
     /**
      * @param string $scene
+     *
      * @return array
      */
     public function getSceneGuard(string $scene): array
@@ -59,6 +63,7 @@ trait HasSceneGuard
     /**
      * @param string $scene
      * @param string $value
+     *
      * @return HasSceneGuard
      */
     public function addSceneGuard(string $scene, string $value): self
@@ -74,11 +79,13 @@ trait HasSceneGuard
 
     /**
      * @param array $scenes
+     *
      * @return HasSceneGuard
      */
     public function setScenes(array $scenes): self
     {
         $this->scenes = $scenes;
+
         return $this;
     }
 
@@ -91,8 +98,9 @@ trait HasSceneGuard
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $scene
+     *
      * @return array
      */
     public function sceneGuard(array $data, string $scene): array
@@ -103,6 +111,7 @@ trait HasSceneGuard
     /**
      * @param array $data
      * @param array $guard
+     *
      * @return array
      */
     protected function guardFilter(array $data, array $guard): array

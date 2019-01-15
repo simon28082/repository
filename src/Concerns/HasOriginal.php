@@ -11,6 +11,7 @@ trait HasOriginal
 
     /**
      * @param array $data
+     *
      * @return HasData
      */
     public function setOriginal(array $data): self

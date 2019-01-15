@@ -3,8 +3,8 @@
 namespace CrCms\Repository\Drivers\Eloquent;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Drivers\Eloquent\Contracts\Eloquent as EloquentContract;
 use CrCms\Repository\Contracts\QueryRelate;
+use CrCms\Repository\Drivers\Eloquent\Contracts\Eloquent as EloquentContract;
 use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
@@ -17,14 +17,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
- * Class Eloquent
- *
- * @package CrCms\Repository\Drivers\Eloquent
+ * Class Eloquent.
  */
 class Eloquent extends RepositoryDriver implements EloquentContract
 {
     /**
      * Eloquent constructor.
+     *
      * @param AbstractRepository $repository
      */
     public function __construct(AbstractRepository $repository)
@@ -40,11 +39,11 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     public function resetQueryRelate()
     {
         $this->setQueryRelate($this->newQueryRelate());
-        return;
     }
 
     /**
      * @param $id
+     *
      * @return mixed
      */
     protected function byIdOrFail($id)
@@ -59,6 +58,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $id
+     *
      * @return Model
      */
     public function byIntIdOrFail(int $id): Model
@@ -68,6 +68,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $id
+     *
      * @return Model
      */
     public function byStringIdOrFail(string $id): Model
@@ -93,12 +94,14 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param array $data
+     *
      * @return Model
      */
     public function create(array $data): Model
     {
         try {
             $model = $this->repository->newModel()->create($data);
+
             return $model;
         } catch (\RuntimeException $exception) {
             throw new ResourceStoreException($exception->getMessage(), $exception->getCode(), $exception);
@@ -107,6 +110,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param array $data
+     *
      * @return mixed
      */
     public function update(array $data): int
@@ -121,6 +125,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param Model $model
      * @param array $data
+     *
      * @return Model
      */
     protected function updateByModel(Model $model, array $data): Model
@@ -134,12 +139,14 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         } catch (\RuntimeException $exception) {
             throw new ResourceUpdateException($exception->getMessage(), $exception->getCode(), $exception);
         }
+
         return $model;
     }
 
     /**
      * @param array $data
-     * @param int $id
+     * @param int   $id
+     *
      * @return Model
      */
     public function updateByIntId(array $data, int $id): Model
@@ -150,8 +157,9 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $id
+     *
      * @return Model
      */
     public function updateByStringId(array $data, string $id): Model
@@ -163,6 +171,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $perPage
+     *
      * @return LengthAwarePaginator
      */
     public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 0): LengthAwarePaginator
@@ -176,6 +185,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param $id
+     *
      * @return Model
      */
     protected function byId($id)
@@ -190,6 +200,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $id
+     *
      * @return Model
      */
     public function byIntId(int $id)
@@ -199,6 +210,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $id
+     *
      * @return Model
      */
     public function byStringId(string $id)
@@ -209,6 +221,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $field
      * @param string $value
+     *
      * @return Model
      */
     public function oneByString(string $field, string $value)
@@ -218,7 +231,8 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $field
-     * @param int $value
+     * @param int    $value
+     *
      * @return Model
      */
     public function oneByInt(string $field, int $value)
@@ -229,6 +243,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $field
      * @param string $value
+     *
      * @return Model
      */
     public function oneByStringOrFail(string $field, string $value): Model
@@ -238,7 +253,8 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $field
-     * @param int $value
+     * @param int    $value
+     *
      * @return Model
      */
     public function oneByIntOrFail(string $field, int $value): Model
@@ -249,6 +265,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $field
      * @param $value
+     *
      * @return Model|null
      */
     public function oneBy(string $field, $value)
@@ -263,6 +280,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $field
      * @param $value
+     *
      * @return Model
      */
     public function oneByOrFail(string $field, $value): Model
@@ -271,6 +289,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+
         return $model;
     }
 
@@ -312,8 +331,9 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     }
 
     /**
-     * @param string $column
+     * @param string      $column
      * @param string|null $key
+     *
      * @return Collection
      */
     public function pluck(string $column, string $key = null): Collection
@@ -327,11 +347,13 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param mixed $id
+     *
      * @return int
      */
     public function delete(): int
     {
         $rows = 0;
+
         try {
             $rows = $this->queryRelate->getQuery()->delete();
         } catch (\RuntimeException $exception) {
@@ -346,6 +368,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param $id
      * @param string|null $key
+     *
      * @return int
      */
     protected function deleteByKey($id, string $key = null): int
@@ -353,8 +376,9 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         $key = empty($key) ? $this->repository->getModel()->getKeyName() : $key;
 
         $row = 0;
+
         try {
-            $row = $this->queryRelate->whereIn($key, (array)$id)->getQuery()->delete();
+            $row = $this->queryRelate->whereIn($key, (array) $id)->getQuery()->delete();
         } catch (\RuntimeException $exception) {
             throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
@@ -366,6 +390,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $id
+     *
      * @return int
      */
     public function deleteByStringId(string $id, string $key = null): int
@@ -375,6 +400,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $id
+     *
      * @return int
      */
     public function deleteByIntId(int $id, string $key = null): int
@@ -384,6 +410,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param array $ids
+     *
      * @return int
      */
     public function deleteByArray(array $ids, string $key = null): int
@@ -393,6 +420,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $column
+     *
      * @return int
      */
     public function max(string $column): int
@@ -406,6 +434,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $column
+     *
      * @return int
      */
     public function count(string $column = '*'): int
@@ -419,6 +448,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param $column
+     *
      * @return int
      */
     public function avg($column): int
@@ -432,6 +462,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $column
+     *
      * @return int
      */
     public function sum(string $column): int
@@ -444,8 +475,9 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     }
 
     /**
-     * @param int $limit
+     * @param int      $limit
      * @param callable $callback
+     *
      * @return bool
      */
     public function chunk(int $limit, callable $callback): bool
@@ -460,6 +492,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $key
      * @param string $default
+     *
      * @return string
      */
     public function valueOfString(string $key, string $default = ''): string
@@ -469,7 +502,8 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $key
-     * @param int $default
+     * @param int    $default
+     *
      * @return int
      */
     public function valueOfInt(string $key, int $default = 0): int
@@ -480,6 +514,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
     /**
      * @param string $key
      * @param $default
+     *
      * @return mixed
      */
     protected function value(string $key, $default)
@@ -497,27 +532,31 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $column
-     * @param int $amount
-     * @param array $extra
+     * @param int    $amount
+     * @param array  $extra
+     *
      * @return int
      */
     public function increment(string $column, int $amount = 1, array $extra = []): int
     {
         $rows = $this->queryRelate->getQuery()->increment($column, $amount, $extra);
         $this->resetQueryRelate();
+
         return $rows;
     }
 
     /**
      * @param string $column
-     * @param int $amount
-     * @param array $extra
+     * @param int    $amount
+     * @param array  $extra
+     *
      * @return int
      */
     public function decrement(string $column, int $amount = 1, array $extra = []): int
     {
         $rows = $this->queryRelate->getQuery()->decrement($column, $amount, $extra);
         $this->resetQueryRelate();
+
         return $rows;
     }
 
@@ -530,11 +569,12 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+
         return $model;
     }
 
     /**
-     * return run sql
+     * return run sql.
      *
      * @return string
      */
@@ -549,6 +589,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $id
+     *
      * @return Model
      */
     public function findByInt(int $id)
@@ -558,6 +599,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param int $id
+     *
      * @return Model
      */
     public function findByIntOrFail(int $id): Model
@@ -566,11 +608,13 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+
         return $model;
     }
 
     /**
      * @param string $id
+     *
      * @return Model
      */
     public function findByString(string $id)
@@ -580,6 +624,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
 
     /**
      * @param string $id
+     *
      * @return Model
      */
     public function findByStringOrFail(string $id): Model
@@ -588,12 +633,14 @@ class Eloquent extends RepositoryDriver implements EloquentContract
         if (empty($model)) {
             throw new ResourceNotFoundException();
         }
+
         return $model;
     }
 
     /**
      * @param $name
      * @param $arguments
+     *
      * @return $this|mixed
      */
     public function __call($name, $arguments)
@@ -604,8 +651,10 @@ class Eloquent extends RepositoryDriver implements EloquentContract
             $result = call_user_func_array([$this->queryRelate, $name], $arguments);
             if ($result instanceof $this->queryRelate) {
                 $this->setQueryRelate($result);
+
                 return $this;
             }
+
             return $result;
         }
 
