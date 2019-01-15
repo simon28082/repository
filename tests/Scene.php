@@ -5,8 +5,7 @@ namespace CrCms\Repository\Tests;
 use CrCms\Repository\Concerns\HasSceneGuard;
 
 /**
- * Class Scene
- * @package CrCms\Repository\Tests
+ * Class Scene.
  */
 class Scene
 {

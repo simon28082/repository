@@ -9,8 +9,7 @@ use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate;
 
 /**
- * Class AbstractMagic
- * @package CrCms\Repository
+ * Class AbstractMagic.
  */
 abstract class AbstractMagic implements QueryMagic
 {
@@ -18,7 +17,8 @@ abstract class AbstractMagic implements QueryMagic
 
     /**
      * AbstractMagic constructor.
-     * @param array $data
+     *
+     * @param array  $data
      * @param string $scene
      */
     public function __construct(array $data = [], string $scene = '')
@@ -28,8 +28,9 @@ abstract class AbstractMagic implements QueryMagic
     }
 
     /**
-     * @param QueryRelate $queryRelate
+     * @param QueryRelate        $queryRelate
      * @param AbstractRepository $repository
+     *
      * @return QueryRelate
      */
     public function magic(QueryRelate $queryRelate, AbstractRepository $repository): QueryRelate
@@ -44,6 +45,7 @@ abstract class AbstractMagic implements QueryMagic
 
     /**
      * @param array $data
+     *
      * @return array
      */
     protected function guardResult(array $data): array
@@ -54,19 +56,21 @@ abstract class AbstractMagic implements QueryMagic
         }
 
         $guard = $this->getSceneGuard($this->currentScene);
+
         return empty($guard) ? $data : $this->guardFilter($data, $guard);
     }
 
     /**
-     * @param array $data
+     * @param array       $data
      * @param QueryRelate $queryRelate
+     *
      * @return QueryRelate
      */
     protected function dispatch(array $data, QueryRelate $queryRelate): QueryRelate
     {
         foreach ($data as $key => $item) {
             $item = is_array($item) ? $item : trim($item);
-            $method = 'by' . studly_case($key);
+            $method = 'by'.studly_case($key);
 
             if (method_exists($this, $method)) {
                 $queryRelate = call_user_func_array([$this, $method], [$queryRelate, $item]);
@@ -78,6 +82,7 @@ abstract class AbstractMagic implements QueryMagic
 
     /**
      * @param array $data
+     *
      * @return array
      */
     protected function filter(array $data): array
@@ -88,7 +93,7 @@ abstract class AbstractMagic implements QueryMagic
             }
             $item = trim($item);
             //防止字符串'0'
-            return (is_numeric($item) || !empty($item));
+            return is_numeric($item) || !empty($item);
         });
     }
 }

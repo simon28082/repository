@@ -3,8 +3,7 @@
 namespace CrCms\Repository;
 
 /**
- * Class RepositoryConfig
- * @package CrCms\Repository
+ * Class RepositoryConfig.
  */
 class RepositoryConfig
 {
@@ -20,6 +19,7 @@ class RepositoryConfig
 
     /**
      * RepositoryConfig constructor.
+     *
      * @param array $config
      */
     protected function __construct(array $config = [])
@@ -29,11 +29,12 @@ class RepositoryConfig
 
     /**
      * @param array $config
+     *
      * @return RepositoryConfig
      */
     public static function instance(array $config = [])
     {
-        if (!static::$instance instanceof RepositoryConfig) {
+        if (!static::$instance instanceof self) {
             static::$instance = new static($config);
         }
 
@@ -42,11 +43,13 @@ class RepositoryConfig
 
     /**
      * @param array $config
+     *
      * @return $this
      */
     public function mergeConfig(array $config)
     {
         $this->config = array_merge($this->defaultConfig(), $config);
+
         return $this;
     }
 
@@ -63,6 +66,6 @@ class RepositoryConfig
      */
     protected function defaultConfig(): array
     {
-        return require __DIR__ . DIRECTORY_SEPARATOR . '../config/repository.php';
+        return require __DIR__.DIRECTORY_SEPARATOR.'../config/repository.php';
     }
 }

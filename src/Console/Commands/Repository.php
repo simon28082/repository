@@ -8,8 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class Repository
- * @package CrCms\Repository\Console\Commands
+ * Class Repository.
  */
 class Repository extends Command
 {
@@ -30,6 +29,7 @@ class Repository extends Command
 
     /**
      * Repository constructor.
+     *
      * @param RepositoryCreator $creator
      */
     public function __construct(RepositoryCreator $creator)
@@ -57,7 +57,7 @@ class Repository extends Command
         //update composer autoload
         $this->getLaravel()->make('composer')->dumpAutoloads();
 
-        $this->info("Successfully created the repository class");
+        $this->info('Successfully created the repository class');
     }
 
     /**
@@ -66,7 +66,7 @@ class Repository extends Command
     protected function getArguments(): array
     {
         return [
-            ['repository', InputArgument::REQUIRED, 'The repository name.']
+            ['repository', InputArgument::REQUIRED, 'The repository name.'],
         ];
     }
 
@@ -76,7 +76,7 @@ class Repository extends Command
     protected function getOptions(): array
     {
         return [
-            ['model', null, InputOption::VALUE_REQUIRED, 'The model name.',],
+            ['model', null, InputOption::VALUE_REQUIRED, 'The model name.'],
             ['path', null, InputOption::VALUE_OPTIONAL, 'File storage location.', config('repository.repository_path')],
         ];
     }

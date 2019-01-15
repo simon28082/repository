@@ -3,9 +3,7 @@
 namespace CrCms\Repository\Contracts;
 
 /**
- * Interface RepositoryQueryRelate
- *
- * @package CrCms\Repository\Contracts
+ * Interface RepositoryQueryRelate.
  */
 interface RepositoryQueryRelate
 {

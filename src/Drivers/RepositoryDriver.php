@@ -8,9 +8,7 @@ use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Contracts\RepositoryQueryRelate;
 
 /**
- * Class RepositoryDriver
- *
- * @package CrCms\Repository\Drivers
+ * Class RepositoryDriver.
  */
 abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
 {
@@ -26,6 +24,7 @@ abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
 
     /**
      * RepositoryDriver constructor.
+     *
      * @param AbstractRepository $repository
      */
     public function __construct(AbstractRepository $repository)
@@ -43,21 +42,25 @@ abstract class RepositoryDriver implements Repository, RepositoryQueryRelate
 
     /**
      * @param AbstractRepository $repository
+     *
      * @return RepositoryDriver
      */
     public function setRepository(AbstractRepository $repository): self
     {
         $this->repository = $repository;
+
         return $this;
     }
 
     /**
      * @param QueryRelate $queryRelate
+     *
      * @return $this
      */
     public function setQueryRelate(QueryRelate $queryRelate)
     {
         $this->queryRelate = $queryRelate;
+
         return $this;
     }
 

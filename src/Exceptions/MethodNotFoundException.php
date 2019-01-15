@@ -5,14 +5,13 @@ namespace CrCms\Repository\Exceptions;
 use BadMethodCallException;
 
 /**
- * Class MethodNotFoundException
- *
- * @package CrCms\Repository\Exceptions
+ * Class MethodNotFoundException.
  */
 class MethodNotFoundException extends BadMethodCallException
 {
     /**
      * MethodNotFoundException constructor.
+     *
      * @param string $class
      * @param string $method
      */

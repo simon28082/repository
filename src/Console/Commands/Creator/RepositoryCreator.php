@@ -2,13 +2,12 @@
 
 namespace CrCms\Repository\Console\Commands\Creator;
 
+use Exception;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
-use Exception;
 
 /**
- * Class RepositoryCreator
- * @package CrCms\Repository\Console\Commands\Creator
+ * Class RepositoryCreator.
  */
 class RepositoryCreator
 {
@@ -52,6 +51,7 @@ class RepositoryCreator
      * @param string $repository
      * @param string $model
      * @param string $path
+     *
      * @throws Exception
      */
     public function create(string $repository, string $model, string $path = '')
@@ -81,7 +81,7 @@ class RepositoryCreator
      */
     protected function setNamespace(string $repository)
     {
-        $this->namespace = strpos($repository,'\\') ?
+        $this->namespace = strpos($repository, '\\') ?
             str_replace(strrchr($repository, '\\'), '', $repository) :
             $this->config->get('repository.repository_namespace');
     }
@@ -110,9 +110,6 @@ class RepositoryCreator
         $this->path = $path ? $path : $this->config->get('repository.repository_path');
     }
 
-    /**
-     *
-     */
     protected function autoCreateDirectory()
     {
         $directory = $this->getRepositoryDirectoryPath();
@@ -135,7 +132,7 @@ class RepositoryCreator
      */
     protected function getStubFilePath(): string
     {
-        return __DIR__ . '/../../../../resource/stubs/repository.stub';
+        return __DIR__.'/../../../../resource/stubs/repository.stub';
     }
 
     /**
@@ -177,7 +174,6 @@ class RepositoryCreator
      */
     protected function repositoryFilePath(): string
     {
-        return $this->getRepositoryDirectoryPath() . '/' . $this->repository . '.php';
+        return $this->getRepositoryDirectoryPath().'/'.$this->repository.'.php';
     }
 }
-

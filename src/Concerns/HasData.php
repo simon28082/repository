@@ -3,8 +3,7 @@
 namespace CrCms\Repository\Concerns;
 
 /**
- * Class HasData
- * @package CrCms\Repository\Concerns
+ * Class HasData.
  */
 trait HasData
 {
@@ -15,6 +14,7 @@ trait HasData
 
     /**
      * @param array $data
+     *
      * @return HasData
      */
     public function setData(array $data): self
@@ -34,7 +34,8 @@ trait HasData
 
     /**
      * @param array|string $key
-     * @param null $value
+     * @param null         $value
+     *
      * @return HasData
      */
     public function addData($key, $value = null): self

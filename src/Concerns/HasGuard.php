@@ -11,6 +11,7 @@ trait HasGuard
 
     /**
      * @param array $guard
+     *
      * @return HasGuard
      */
     public function setGuard(array $guard): self
@@ -30,11 +31,14 @@ trait HasGuard
 
     /**
      * @param array $data
+     *
      * @return array
      */
     public function guard(array $data): array
     {
-        if (empty($this->guard)) return $this->guard;
+        if (empty($this->guard)) {
+            return $this->guard;
+        }
 
         return array_filter($data, function ($key) {
             return in_array($key, $this->guard, true);

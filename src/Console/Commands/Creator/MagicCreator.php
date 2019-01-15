@@ -2,14 +2,12 @@
 
 namespace CrCms\Repository\Console\Commands\Creator;
 
+use Exception;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
-use Exception;
-use Illuminate\Support\Str;
 
 /**
- * Class MagicCreator
- * @package CrCms\Repository\Console\Commands\Creator
+ * Class MagicCreator.
  */
 class MagicCreator
 {
@@ -40,8 +38,9 @@ class MagicCreator
 
     /**
      * MagicCreator constructor.
+     *
      * @param Filesystem $filesystem
-     * @param Config $config
+     * @param Config     $config
      */
     public function __construct(Filesystem $filesystem, Config $config)
     {
@@ -52,6 +51,7 @@ class MagicCreator
     /**
      * @param string $magic
      * @param string $path
+     *
      * @throws Exception
      */
     public function create(string $magic, string $path = '')
@@ -79,7 +79,7 @@ class MagicCreator
      */
     protected function setNamespace(string $magic)
     {
-        $this->namespace = strpos($magic,'\\') ?
+        $this->namespace = strpos($magic, '\\') ?
             str_replace(strrchr($magic, '\\'), '', $magic) :
             $this->config->get('repository.magic_namespace');
     }
@@ -100,9 +100,6 @@ class MagicCreator
         $this->path = $path ? $path : $this->config->get('repository.magic_path');
     }
 
-    /**
-     *
-     */
     protected function autoCreateDirectory()
     {
         $magicDirectory = $this->getMagicDirectoryPath();
@@ -125,7 +122,7 @@ class MagicCreator
      */
     protected function getStubFilePath(): string
     {
-        return __DIR__ . '/../../../../resource/stubs/magic.stub';
+        return __DIR__.'/../../../../resource/stubs/magic.stub';
     }
 
     /**
@@ -163,7 +160,6 @@ class MagicCreator
      */
     protected function magicFilePath(): string
     {
-        return $this->getMagicDirectoryPath() . '/' . $this->magic . '.php';
+        return $this->getMagicDirectoryPath().'/'.$this->magic.'.php';
     }
 }
-
