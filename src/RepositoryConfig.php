@@ -34,7 +34,7 @@ class RepositoryConfig
      */
     public static function instance(array $config = [])
     {
-        if (!static::$instance instanceof self) {
+        if (! static::$instance instanceof self) {
             static::$instance = new static($config);
         }
 

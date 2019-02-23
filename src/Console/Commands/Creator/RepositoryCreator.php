@@ -3,8 +3,8 @@
 namespace CrCms\Repository\Console\Commands\Creator;
 
 use Exception;
-use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Config\Repository as Config;
 
 /**
  * Class RepositoryCreator.
@@ -114,7 +114,7 @@ class RepositoryCreator
     {
         $directory = $this->getRepositoryDirectoryPath();
 
-        if (!$this->fileSystem->isDirectory($directory)) {
+        if (! $this->fileSystem->isDirectory($directory)) {
             $this->fileSystem->makeDirectory($directory, 0755, true);
         }
     }

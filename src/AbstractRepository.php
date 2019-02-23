@@ -3,18 +3,18 @@
 namespace CrCms\Repository;
 
 use CrCms\Event\HasEvents;
+use UnexpectedValueException;
+use Illuminate\Support\Collection;
 use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
 use CrCms\Repository\Concerns\HasOriginal;
-use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Contracts\QueryMagic;
-use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Services\CacheService;
+use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
-use CrCms\Repository\Services\CacheService;
-use Illuminate\Support\Collection;
-use UnexpectedValueException;
+use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 
 /**
  * @method QueryRelateContract select(array $column = ['*'])
@@ -128,7 +128,7 @@ abstract class AbstractRepository
      */
     public function getModel()
     {
-        if (!$this->model) {
+        if (! $this->model) {
             $this->model = $this->newModel();
         }
 

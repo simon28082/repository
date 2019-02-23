@@ -2,9 +2,9 @@
 
 namespace CrCms\Repository\Drivers;
 
-use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
+use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 
 /**
  * Class QueryRelate.

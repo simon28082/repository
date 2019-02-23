@@ -70,7 +70,7 @@ trait HasSceneGuard
     {
         $this->scenes[$scene] = $this->getSceneGuard($scene);
 
-        if (!in_array($value, $this->scenes[$scene], true)) {
+        if (! in_array($value, $this->scenes[$scene], true)) {
             $this->scenes[$scene][] = $value;
         }
 

@@ -2,19 +2,19 @@
 
 namespace CrCms\Repository\Drivers\Eloquent;
 
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 use CrCms\Repository\AbstractRepository;
+use Illuminate\Database\Eloquent\Builder;
 use CrCms\Repository\Contracts\QueryRelate;
-use CrCms\Repository\Drivers\Eloquent\Contracts\Eloquent as EloquentContract;
 use CrCms\Repository\Drivers\RepositoryDriver;
+use CrCms\Repository\Exceptions\ResourceStoreException;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
-use CrCms\Repository\Exceptions\ResourceNotFoundException;
-use CrCms\Repository\Exceptions\ResourceStoreException;
 use CrCms\Repository\Exceptions\ResourceUpdateException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use CrCms\Repository\Exceptions\ResourceNotFoundException;
+use CrCms\Repository\Drivers\Eloquent\Contracts\Eloquent as EloquentContract;
 
 /**
  * Class Eloquent.

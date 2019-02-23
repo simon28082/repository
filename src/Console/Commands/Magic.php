@@ -2,10 +2,10 @@
 
 namespace CrCms\Repository\Console\Commands;
 
-use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 
 /**
  * Class Magic.

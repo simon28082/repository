@@ -2,8 +2,8 @@
 
 namespace CrCms\Repository\Tests;
 
-use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 use Tests\TestCase;
+use CrCms\Repository\Console\Commands\Creator\MagicCreator;
 
 /**
  * Class MagicGenerateTest.

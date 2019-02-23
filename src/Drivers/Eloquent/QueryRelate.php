@@ -2,12 +2,12 @@
 
 namespace CrCms\Repository\Drivers\Eloquent;
 
-use CrCms\Repository\Contracts\QueryMagic;
-use CrCms\Repository\Contracts\QueryRelate as BaseQueryRelateContract;
-use CrCms\Repository\Contracts\Repository;
-use CrCms\Repository\Drivers\QueryRelate as BaseQueryRelate;
-use CrCms\Repository\Exceptions\MethodNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
+use CrCms\Repository\Contracts\QueryMagic;
+use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Exceptions\MethodNotFoundException;
+use CrCms\Repository\Drivers\QueryRelate as BaseQueryRelate;
+use CrCms\Repository\Contracts\QueryRelate as BaseQueryRelateContract;
 
 /**
  * Class QueryRelate.

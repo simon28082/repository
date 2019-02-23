@@ -2,11 +2,11 @@
 
 namespace CrCms\Repository;
 
-use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
+use InvalidArgumentException;
+use CrCms\Repository\Drivers\RepositoryDriver;
 use CrCms\Repository\Drivers\Eloquent\Eloquent;
 use CrCms\Repository\Drivers\Eloquent\QueryRelate;
-use CrCms\Repository\Drivers\RepositoryDriver;
-use InvalidArgumentException;
+use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 
 /**
  * Class RepositoryFactory.

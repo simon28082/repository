@@ -2,9 +2,9 @@
 
 namespace CrCms\Repository\Services;
 
+use Illuminate\Support\Facades\Cache;
 use CrCms\Repository\AbstractRepository;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Class Cache.
@@ -60,7 +60,7 @@ class CacheService
     public function forget(string $key)
     {
         $cacheKey = $this->cacheKeys[$key] ?? null;
-        if (!empty($cacheKey)) {
+        if (! empty($cacheKey)) {
             Cache::forget($cacheKey);
         }
     }
@@ -95,7 +95,7 @@ class CacheService
             return $result;
         }
 
-        if (!is_null($result)) {
+        if (! is_null($result)) {
             Cache::put($cacheKey, $result, $this->cacheMinute);
         }
 

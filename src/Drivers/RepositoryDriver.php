@@ -3,8 +3,8 @@
 namespace CrCms\Repository\Drivers;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\Repository;
+use CrCms\Repository\Contracts\QueryRelate;
 use CrCms\Repository\Contracts\RepositoryQueryRelate;
 
 /**

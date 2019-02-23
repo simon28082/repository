@@ -3,10 +3,10 @@
 namespace CrCms\Repository;
 
 use CrCms\Event\Dispatcher;
+use Illuminate\Support\ServiceProvider;
 use CrCms\Repository\Console\Commands\Magic;
 use CrCms\Repository\Console\Commands\Repository;
 use Illuminate\Contracts\Config\Repository as Config;
-use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
 {

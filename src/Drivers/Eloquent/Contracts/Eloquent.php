@@ -2,8 +2,8 @@
 
 namespace CrCms\Repository\Drivers\Eloquent\Contracts;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Interface Eloquent.

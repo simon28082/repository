@@ -4,9 +4,9 @@ namespace CrCms\Repository;
 
 use CrCms\Repository\Concerns\HasData;
 use CrCms\Repository\Concerns\HasGuard;
-use CrCms\Repository\Concerns\HasSceneGuard;
 use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate;
+use CrCms\Repository\Concerns\HasSceneGuard;
 
 /**
  * Class AbstractMagic.
@@ -51,7 +51,7 @@ abstract class AbstractMagic implements QueryMagic
     protected function guardResult(array $data): array
     {
         // guard 优先
-        if (!empty($this->guard)) {
+        if (! empty($this->guard)) {
             return $this->guard($data);
         }
 
@@ -93,7 +93,7 @@ abstract class AbstractMagic implements QueryMagic
             }
             $item = trim($item);
             //防止字符串'0'
-            return is_numeric($item) || !empty($item);
+            return is_numeric($item) || ! empty($item);
         });
     }
 }

@@ -3,8 +3,8 @@
 namespace CrCms\Repository\Console\Commands\Creator;
 
 use Exception;
-use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Config\Repository as Config;
 
 /**
  * Class MagicCreator.
@@ -104,7 +104,7 @@ class MagicCreator
     {
         $magicDirectory = $this->getMagicDirectoryPath();
 
-        if (!$this->fileSystem->isDirectory($magicDirectory)) {
+        if (! $this->fileSystem->isDirectory($magicDirectory)) {
             $this->fileSystem->makeDirectory($magicDirectory, 0755, true);
         }
     }
