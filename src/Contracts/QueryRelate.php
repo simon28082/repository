@@ -97,6 +97,36 @@ interface QueryRelate
     public function orWhere(string $column, $operator = null, $value = null): self;
 
     /**
+     * @param $column
+     * @param null $operator
+     * @param null $value
+     * @return QueryRelate
+     */
+    public function having($column, $operator = null, $value = null): self;
+
+    /**
+     * @param $column
+     * @param null $operator
+     * @param null $value
+     * @return QueryRelate
+     */
+    public function orHaving($column, $operator = null, $value = null): self;
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return QueryRelate
+     */
+    public function havingRaw(string $sql, array $bindings = []): self;
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return QueryRelate
+     */
+    public function orHavingRaw(string $sql, array $bindings = []): self;
+
+    /**
      * @param \Closure $callback
      *
      * @return QueryRelate
@@ -326,7 +356,7 @@ interface QueryRelate
      *
      * @return QueryRelate
      */
-    public function union(self $queryRelate, bool $unionAll = true): self;
+    public function union(QueryRelate $queryRelate, bool $unionAll = true): self;
 
     /**
      * @param QueryMagic $queryMagic
@@ -386,4 +416,18 @@ interface QueryRelate
      * @return QueryRelate
      */
     public function without(string $relation): self;
+
+    /**
+     * lockForUpdate
+     *
+     * @return QueryRelate
+     */
+    public function lockForUpdate(): self;
+
+    /**
+     * sharedLock
+     *
+     * @return QueryRelate
+     */
+    public function sharedLock(): self;
 }

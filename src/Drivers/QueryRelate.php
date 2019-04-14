@@ -42,12 +42,20 @@ abstract class QueryRelate implements QueryRelateContract
     }
 
     /**
-     * @param $name
-     * @param $arguments
+     * @return object
+     */
+    public function getQuery(): object
+    {
+        return $this->query;
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
      *
      * @return mixed
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         if (method_exists($this->repository, $name)) {
             return call_user_func_array([$this->repository, $name], $arguments);

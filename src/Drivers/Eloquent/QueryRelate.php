@@ -27,7 +27,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @return Builder
      */
-    public function getQuery(): Builder
+    public function getQuery(): object
     {
         return $this->query;
     }
@@ -58,7 +58,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $expression
-     * @param array  $bindings
+     * @param array $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -146,7 +146,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array  $bindings
+     * @param array $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -171,7 +171,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return BaseQueryRelateContract
      */
@@ -185,7 +185,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return BaseQueryRelateContract
      */
@@ -222,7 +222,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $between
+     * @param array $between
      *
      * @return BaseQueryRelateContract
      */
@@ -235,7 +235,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $between
+     * @param array $between
      *
      * @return BaseQueryRelateContract
      */
@@ -248,7 +248,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array  $bindings
+     * @param array $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -261,7 +261,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array  $bindings
+     * @param array $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -335,7 +335,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $values
+     * @param array $values
      *
      * @return BaseQueryRelateContract
      */
@@ -348,7 +348,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $values
+     * @param array $values
      *
      * @return BaseQueryRelateContract
      */
@@ -361,7 +361,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $values
+     * @param array $values
      *
      * @return BaseQueryRelateContract
      */
@@ -374,7 +374,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array  $values
+     * @param array $values
      *
      * @return BaseQueryRelateContract
      */
@@ -434,8 +434,58 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
+     * @param $column
+     * @param null $operator
+     * @param null $value
+     * @return BaseQueryRelateContract
+     */
+    public function having($column, $operator = null, $value = null): BaseQueryRelateContract
+    {
+        $this->query->having($column, $operator, $value, 'and');
+
+        return $this;
+    }
+
+    /**
+     * @param $column
+     * @param null $operator
+     * @param null $value
+     * @return BaseQueryRelateContract
+     */
+    public function orHaving($column, $operator = null, $value = null): BaseQueryRelateContract
+    {
+        $this->query->orHaving($column, $operator, $value);
+
+        return $this;
+    }
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return BaseQueryRelateContract
+     */
+    public function havingRaw(string $sql, array $bindings = []): BaseQueryRelateContract
+    {
+        $this->query->havingRaw($sql, $bindings, 'and');
+
+        return $this;
+    }
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return BaseQueryRelateContract
+     */
+    public function orHavingRaw(string $sql, array $bindings = []): BaseQueryRelateContract
+    {
+        $this->query->orHavingRaw($sql, $bindings);
+
+        return $this;
+    }
+
+    /**
      * @param BaseQueryRelateContract $queryRelate
-     * @param bool                    $unionAll
+     * @param bool $unionAll
      *
      * @return BaseQueryRelateContract
      */
@@ -486,7 +536,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string   $table
+     * @param string $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -514,7 +564,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string   $table
+     * @param string $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -542,7 +592,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string   $table
+     * @param string $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -608,7 +658,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param bool     $condition
+     * @param bool $condition
      * @param callable $trueCallable
      * @param callable $falseCallable
      *
@@ -680,6 +730,30 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     public function without(string $relation): BaseQueryRelateContract
     {
         $this->query->without($relation);
+
+        return $this;
+    }
+
+    /**
+     * lockForUpdate
+     *
+     * @return BaseQueryRelateContract
+     */
+    public function lockForUpdate(): BaseQueryRelateContract
+    {
+        $this->query->lockForUpdate();
+
+        return $this;
+    }
+
+    /**
+     * sharedLock
+     *
+     * @return BaseQueryRelateContract
+     */
+    public function sharedLock(): BaseQueryRelateContract
+    {
+        $this->query->sharedLock();
 
         return $this;
     }
