@@ -759,15 +759,22 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param $name
-     * @param $arguments
-     *
-     * @return mixed
+     * @param string $name
+     * @param array $arguments
+     * @return $this|mixed
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         if (method_exists($this->repository, $name)) {
             return call_user_func_array([$this->repository, $name], $arguments);
+        } else if (method_exists($this->query, $name)) {
+            $query = call_user_func_array([$this->query, $name], $arguments);
+            if ($query instanceof $this->query) {
+                $this->query = $query;
+                return $this;
+            }
+
+            return $query;
         }
 
         throw new MethodNotFoundException(static::class, $name);
