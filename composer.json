@@ -5,9 +5,10 @@
 	"homepage": "https://github.com/crcms/repository",
     "license": "MIT",
     "require": {
-        "php":">=7.1",
+        "php":">=7.2",
         "illuminate/support":"^5.5",
         "illuminate/cache":"^5.5",
+        "illuminate/database":"^5.5",
         "crcms/event":"~1.0.0"
     },
 	"autoload": {
