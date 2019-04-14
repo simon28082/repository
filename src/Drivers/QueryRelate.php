@@ -51,7 +51,7 @@ abstract class QueryRelate implements QueryRelateContract
 
     /**
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return mixed
      */

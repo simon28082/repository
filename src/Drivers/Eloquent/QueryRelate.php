@@ -58,7 +58,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $expression
-     * @param array $bindings
+     * @param array  $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -146,7 +146,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -171,7 +171,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return BaseQueryRelateContract
      */
@@ -185,7 +185,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     /**
      * @param string $column
      * @param string $operator
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return BaseQueryRelateContract
      */
@@ -222,7 +222,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $between
+     * @param array  $between
      *
      * @return BaseQueryRelateContract
      */
@@ -235,7 +235,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $between
+     * @param array  $between
      *
      * @return BaseQueryRelateContract
      */
@@ -248,7 +248,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -261,7 +261,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
      *
      * @return BaseQueryRelateContract
      */
@@ -335,7 +335,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array  $values
      *
      * @return BaseQueryRelateContract
      */
@@ -348,7 +348,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array  $values
      *
      * @return BaseQueryRelateContract
      */
@@ -361,7 +361,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array  $values
      *
      * @return BaseQueryRelateContract
      */
@@ -374,7 +374,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array  $values
      *
      * @return BaseQueryRelateContract
      */
@@ -437,6 +437,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param $column
      * @param null $operator
      * @param null $value
+     *
      * @return BaseQueryRelateContract
      */
     public function having($column, $operator = null, $value = null): BaseQueryRelateContract
@@ -450,6 +451,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      * @param $column
      * @param null $operator
      * @param null $value
+     *
      * @return BaseQueryRelateContract
      */
     public function orHaving($column, $operator = null, $value = null): BaseQueryRelateContract
@@ -461,7 +463,8 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
+     *
      * @return BaseQueryRelateContract
      */
     public function havingRaw(string $sql, array $bindings = []): BaseQueryRelateContract
@@ -473,7 +476,8 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
+     *
      * @return BaseQueryRelateContract
      */
     public function orHavingRaw(string $sql, array $bindings = []): BaseQueryRelateContract
@@ -485,7 +489,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param BaseQueryRelateContract $queryRelate
-     * @param bool $unionAll
+     * @param bool                    $unionAll
      *
      * @return BaseQueryRelateContract
      */
@@ -536,7 +540,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string $table
+     * @param string   $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -564,7 +568,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string $table
+     * @param string   $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -592,7 +596,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param string $table
+     * @param string   $table
      * @param \Closure $callback
      *
      * @return BaseQueryRelateContract
@@ -658,7 +662,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * @param bool $condition
+     * @param bool     $condition
      * @param callable $trueCallable
      * @param callable $falseCallable
      *
@@ -735,7 +739,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * lockForUpdate
+     * lockForUpdate.
      *
      * @return BaseQueryRelateContract
      */
@@ -747,7 +751,7 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
     }
 
     /**
-     * sharedLock
+     * sharedLock.
      *
      * @return BaseQueryRelateContract
      */
@@ -760,17 +764,19 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
 
     /**
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return $this|mixed
      */
     public function __call(string $name, array $arguments)
     {
         if (method_exists($this->repository, $name)) {
             return call_user_func_array([$this->repository, $name], $arguments);
-        } else if (method_exists($this->query, $name)) {
+        } elseif (method_exists($this->query, $name)) {
             $query = call_user_func_array([$this->query, $name], $arguments);
             if ($query instanceof $this->query) {
                 $this->query = $query;
+
                 return $this;
             }
 
