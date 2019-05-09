@@ -186,7 +186,7 @@ abstract class AbstractRepository
 
         $this->setData($this->guardResult($data, $scene));
 
-        if ($this->fireEvent('updating', $data) === false) {
+        if ($this->fireEvent('updating', $data, $id) === false) {
             return false;
         }
 
