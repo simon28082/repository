@@ -25,16 +25,16 @@ trait HasData
     }
 
     /**
-     * @return array
+     * @return mixed
      */
-    public function getData(): array
+    public function getData(?string $key = null, $default = null)
     {
-        return $this->data;
+        return $key ? ($this->data[$key] ?? $default) : $this->data;
     }
 
     /**
      * @param array|string $key
-     * @param null         $value
+     * @param null $value
      *
      * @return HasData
      */
