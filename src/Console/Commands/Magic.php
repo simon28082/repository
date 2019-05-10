@@ -28,7 +28,7 @@ class Magic extends GeneratorCommand
     /**
      * @return string
      */
-    protected function getStub(): string 
+    protected function getStub(): string
     {
         return __DIR__.'/stubs/magic.stub';
     }
