@@ -34,7 +34,7 @@ trait HasData
 
     /**
      * @param array|string $key
-     * @param null $value
+     * @param null         $value
      *
      * @return HasData
      */
