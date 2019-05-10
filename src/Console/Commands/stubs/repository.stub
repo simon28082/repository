@@ -1,0 +1,17 @@
+<?php
+
+namespace DummyNamespace;
+
+use CrCms\Repository\AbstractRepository;
+use DummyFullModelClass;
+
+class DummyClass extends AbstractRepository
+{
+    /**
+     * @return DummyModelClass
+     */
+    public function newModel(): DummyModelClass
+    {
+        return new DummyModelClass();
+    }
+}

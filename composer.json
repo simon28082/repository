@@ -7,6 +7,7 @@
     "require": {
         "php":">=7.2",
         "illuminate/support":"^5.5",
+        "illuminate/console":"^5.5",
         "illuminate/cache":"^5.5",
         "illuminate/database":"^5.5",
         "crcms/event":"~1.0.0"

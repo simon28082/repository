@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace;
+
+use CrCms\Repository\AbstractMagic;
+
+class DummyClass extends AbstractMagic
+{
+
+}

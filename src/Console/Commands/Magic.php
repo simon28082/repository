@@ -2,15 +2,13 @@
 
 namespace CrCms\Repository\Console\Commands;
 
-use CrCms\Repository\Console\Commands\Creator\MagicCreator;
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class Magic.
  */
-class Magic extends Command
+class Magic extends GeneratorCommand
 {
     /**
      * @var string
@@ -23,47 +21,16 @@ class Magic extends Command
     protected $description = 'Create a new magic class';
 
     /**
-     * @var MagicCreator
+     * @var string
      */
-    protected $creator;
+    protected $type = 'Magic';
 
     /**
-     * Magic constructor.
-     *
-     * @param MagicCreator $creator
+     * @return string
      */
-    public function __construct(MagicCreator $creator)
+    protected function getStub(): string 
     {
-        parent::__construct();
-        $this->creator = $creator;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function handle()
-    {
-        //
-        $arguments = $this->arguments();
-
-        $options = $this->options();
-
-        $this->creator->create($arguments['magic'], $options['path']);
-
-        //update composer autoload
-        $this->getLaravel()->make('composer')->dumpAutoloads();
-
-        $this->info('Successfully created the magic class');
-    }
-
-    /**
-     * @return array
-     */
-    protected function getArguments(): array
-    {
-        return [
-            ['magic', InputArgument::REQUIRED, 'The magic name.'],
-        ];
+        return __DIR__.'/stubs/magic.stub';
     }
 
     /**
@@ -72,7 +39,7 @@ class Magic extends Command
     protected function getOptions(): array
     {
         return [
-            ['path', null, InputOption::VALUE_OPTIONAL, 'File storage location.', config('repository.magic_path')],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the magic already exists'],
         ];
     }
 }

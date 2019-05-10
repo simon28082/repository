@@ -2,15 +2,15 @@
 
 namespace CrCms\Repository\Console\Commands;
 
-use CrCms\Repository\Console\Commands\Creator\RepositoryCreator;
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
+use InvalidArgumentException;
 
 /**
  * Class Repository.
  */
-class Repository extends Command
+class Repository extends GeneratorCommand
 {
     /**
      * @var string
@@ -23,51 +23,82 @@ class Repository extends Command
     protected $description = 'Create a new repository class';
 
     /**
-     * @var RepositoryCreator
+     * @var string
      */
-    protected $creator;
+    protected $type = 'Repository';
 
     /**
-     * Repository constructor.
+     * Build the class with the given name.
      *
-     * @param RepositoryCreator $creator
+     * Remove the base controller import if we are already in base namespace.
+     *
+     * @param  string  $name
+     * @return string
      */
-    public function __construct(RepositoryCreator $creator)
+    protected function buildClass($name)
     {
-        parent::__construct();
-        $this->creator = $creator;
+        $replace = [];
+
+        $replace = $this->buildModelReplacements($replace);
+
+        return str_replace(
+            array_keys($replace), array_values($replace), parent::buildClass($name)
+        );
     }
 
     /**
-     * @throws \Exception
-     */
-    public function handle()
-    {
-        //
-        $arguments = $this->arguments();
-        $options = $this->options();
-
-        if (empty($options['model'])) {
-            $this->error('The model option not null');
-            exit();
-        }
-
-        $this->creator->create($arguments['repository'], $options['model'], $options['path']);
-
-        //update composer autoload
-        $this->getLaravel()->make('composer')->dumpAutoloads();
-
-        $this->info('Successfully created the repository class');
-    }
-
-    /**
+     * Build the model replacement values.
+     *
+     * @param  array  $replace
      * @return array
      */
-    protected function getArguments(): array
+    protected function buildModelReplacements(array $replace = [])
     {
-        return [
-            ['repository', InputArgument::REQUIRED, 'The repository name.'],
-        ];
+        $modelClass = $this->parseModel($this->option('model'));
+
+        if (! class_exists($modelClass)) {
+            if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
+                $this->call('make:model', ['name' => $modelClass]);
+            }
+        }
+
+        return array_merge($replace, [
+            'DummyFullModelClass' => $modelClass,
+            'DummyModelClass' => class_basename($modelClass),
+            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
+        ]);
+    }
+
+    /**
+     * Get the fully-qualified model class name.
+     *
+     * @param  string  $model
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function parseModel($model)
+    {
+        if (preg_match('([^A-Za-z0-9_/\\\\])', $model)) {
+            throw new InvalidArgumentException('Model name contains invalid characters.');
+        }
+
+        $model = trim(str_replace('/', '\\', $model), '\\');
+
+        if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
+            $model = $rootNamespace.$model;
+        }
+
+        return $model;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    protected function getStub(): string
+    {
+        return __DIR__.'/stubs/repository.stub';
     }
 
     /**
@@ -76,8 +107,8 @@ class Repository extends Command
     protected function getOptions(): array
     {
         return [
-            ['model', null, InputOption::VALUE_REQUIRED, 'The model name.'],
-            ['path', null, InputOption::VALUE_OPTIONAL, 'File storage location.', config('repository.repository_path')],
+            ['model', 'm', InputOption::VALUE_REQUIRED, 'The model name.'],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the repository already exists'],
         ];
     }
 }
