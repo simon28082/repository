@@ -11,11 +11,6 @@ use Illuminate\Support\ServiceProvider;
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
      * @var string
      */
     protected $namespaceName = 'repository';
@@ -31,9 +26,11 @@ class RepositoryServiceProvider extends ServiceProvider
     public function boot()
     {
         //move config path
-        $this->publishes([
-            $this->packagePath.'config' => config_path(),
-        ]);
+        if (function_exists('config_path')) {
+            $this->publishes([
+                $this->packagePath.'config' => config_path(),
+            ]);
+        }
     }
 
     /**
@@ -42,6 +39,9 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         //merge config
+        if ($this->isLumen()) {
+            $this->app->configure($this->namespaceName);
+        }
         $configFile = $this->packagePath."config/{$this->namespaceName}.php";
         if (file_exists($configFile)) {
             $this->mergeConfigFrom($configFile, $this->namespaceName);
@@ -60,13 +60,12 @@ class RepositoryServiceProvider extends ServiceProvider
     }
 
     /**
-     * @return array
+     * isLumen.
+     *
+     * @return bool
      */
-    public function provides(): array
+    protected function isLumen(): bool
     {
-        return [
-            'command.repository.make',
-            'command.magic.make',
-        ];
+        return $this->app instanceof \Laravel\Lumen\Application;
     }
 }
