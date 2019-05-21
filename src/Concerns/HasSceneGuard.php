@@ -15,7 +15,7 @@ trait HasSceneGuard
     /**
      * @var string
      */
-    protected $currentScene = 'default';
+    protected $currentScene;
 
     /**
      * @param string $scene

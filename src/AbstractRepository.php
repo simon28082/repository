@@ -282,9 +282,11 @@ abstract class AbstractRepository
      */
     protected function guardResult(array $data, string $scene): array
     {
-        // guard 优先
-        return empty($this->guard) ?
-            $this->sceneGuard($data, $scene ? $scene : $this->currentScene) :
+        $scene = $scene ? $scene : $this->currentScene;
+
+        // scene 优先
+        return $this->getSceneGuard($scene) ?
+            $this->sceneGuard($data, $scene) :
             $this->guard($data);
     }
 

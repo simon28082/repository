@@ -207,7 +207,7 @@ $testRepository->magic((new TestMagic($data))->setGuard(['title']))->paginate();
 
 ```
 
-**Note: when guard and scenes are both present, guard has a higher priority. If guard is empty, it will use scenes.**
+**Note: when guard and scenes are both present, scenes has a higher priority. If scenes is empty, it will use guard.**
 
 ### Listener
 
