@@ -2,6 +2,8 @@
 
 namespace CrCms\Repository\Concerns;
 
+use Illuminate\Support\Arr;
+
 /**
  * Class HasData.
  */
@@ -45,5 +47,15 @@ trait HasData
             $this->data[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * @param string|array $key
+     *
+     * @return void
+     */
+    public function forgetData($key): void
+    {
+        Arr::forget($this->data, $key);
     }
 }
