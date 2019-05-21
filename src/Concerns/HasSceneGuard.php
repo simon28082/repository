@@ -15,14 +15,14 @@ trait HasSceneGuard
     /**
      * @var string
      */
-    protected $currentScene;
+    protected $currentScene = '';
 
     /**
      * @param string $scene
      *
      * @return HasSceneGuard
      */
-    public function setCurrentScene(string $scene): self
+    public function setCurrentScene(?string $scene = null): self
     {
         $this->currentScene = $scene;
 
