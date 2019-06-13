@@ -1,6 +1,6 @@
 <?php
 
-namespace CrCms\Repository\Drivers\Eloquent\Contracts;
+namespace CrCms\Repository\Contracts;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Interface Eloquent.
  */
-interface Eloquent
+interface EloquentContract extends RepositoryContract
 {
     /**
      * @param int    $perPage
      * @param array  $columns
      * @param string $pageName
-     * @param null   $page
+     * @param int   $page
      *
      * @return LengthAwarePaginator
      */

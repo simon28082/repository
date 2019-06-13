@@ -1,10 +1,10 @@
 <?php
 
-namespace CrCms\Repository\Drivers\Eloquent;
+namespace CrCms\Repository\Eloquent;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Contracts\QueryRelate;
-use CrCms\Repository\Drivers\RepositoryDriver;
+use CrCms\Repository\Contracts\EloquentContract;
+use CrCms\Repository\Drivers\Eloquent\QueryRelateContract;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 /**
  * Class Eloquent.
  */
-class Eloquent extends EloquentContract
+class Eloquent implements EloquentContract, QueryRelateContract
 {
     /**
      * Eloquent constructor.
@@ -30,6 +30,17 @@ class Eloquent extends EloquentContract
         parent::__construct($repository);
 
         $this->setQueryRelate($this->newQueryRelate());
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    abstract protected function newModel();
+
+    public function getQueryRelate()
+    {
+        // TODO: Implement getQueryRelate() method.
     }
 
     /**
@@ -144,7 +155,7 @@ class Eloquent extends EloquentContract
 
     /**
      * @param array $data
-     * @param int   $id
+     * @param int $id
      *
      * @return Model
      */
@@ -156,7 +167,7 @@ class Eloquent extends EloquentContract
     }
 
     /**
-     * @param array  $data
+     * @param array $data
      * @param string $id
      *
      * @return Model
@@ -230,7 +241,7 @@ class Eloquent extends EloquentContract
 
     /**
      * @param string $field
-     * @param int    $value
+     * @param int $value
      *
      * @return Model
      */
@@ -252,7 +263,7 @@ class Eloquent extends EloquentContract
 
     /**
      * @param string $field
-     * @param int    $value
+     * @param int $value
      *
      * @return Model
      */
@@ -330,7 +341,7 @@ class Eloquent extends EloquentContract
     }
 
     /**
-     * @param string      $column
+     * @param string $column
      * @param string|null $key
      *
      * @return Collection
@@ -377,7 +388,7 @@ class Eloquent extends EloquentContract
         $row = 0;
 
         try {
-            $row = $this->queryRelate->whereIn($key, (array) $id)->getQuery()->delete();
+            $row = $this->queryRelate->whereIn($key, (array)$id)->getQuery()->delete();
         } catch (\RuntimeException $exception) {
             throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
@@ -474,7 +485,7 @@ class Eloquent extends EloquentContract
     }
 
     /**
-     * @param int      $limit
+     * @param int $limit
      * @param callable $callback
      *
      * @return bool
@@ -501,7 +512,7 @@ class Eloquent extends EloquentContract
 
     /**
      * @param string $key
-     * @param int    $default
+     * @param int $default
      *
      * @return int
      */
@@ -531,8 +542,8 @@ class Eloquent extends EloquentContract
 
     /**
      * @param string $column
-     * @param int    $amount
-     * @param array  $extra
+     * @param int $amount
+     * @param array $extra
      *
      * @return int
      */
@@ -546,8 +557,8 @@ class Eloquent extends EloquentContract
 
     /**
      * @param string $column
-     * @param int    $amount
-     * @param array  $extra
+     * @param int $amount
+     * @param array $extra
      *
      * @return int
      */

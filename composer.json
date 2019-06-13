@@ -1,36 +1,55 @@
 {
-    "name": "crcms/repository",
-    "description": "Detached model and controller warehouse data provider",
-	"keywords": ["repository", "ORM", "model", "laravel", "php"],
-	"homepage": "https://github.com/crcms/repository",
-    "license": "MIT",
-    "require": {
-        "php":">=7.2",
-        "illuminate/support":"^5.5",
-        "illuminate/console":"^5.5",
-        "illuminate/cache":"^5.5",
-        "illuminate/database":"^5.5",
-        "crcms/event":"~1.0.0"
-    },
-	"autoload": {
-        "files": [
-        ],
-        "psr-4": {
-            "CrCms\\Repository\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "CrCms\\Repository\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "CrCms\\Repository\\RepositoryServiceProvider"
-            ],
-            "aliases": {
-            }
-        }
+  "name": "crcms/repository",
+  "description": "Repository based on database abstraction layer",
+  "keywords": [
+    "repository",
+    "orm",
+    "model",
+    "laravel",
+    "php"
+  ],
+  "homepage": "https://github.com/crcms/repository",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "simon",
+      "email": "simon@crcms.cn"
     }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "illuminate/support": "^5.8",
+    "illuminate/events": "^5.8",
+    "illuminate/console": "^5.8",
+    "illuminate/cache": "^5.8",
+    "illuminate/database": "^5.8",
+    "lorisleiva/laravel-search-string": "^0.1.3"
+  },
+  "require-dev": {
+    "codedungeon/phpunit-result-printer": "^0.26.2",
+    "mockery/mockery": "^1.2",
+    "phpunit/phpunit": "^8.1",
+    "symfony/var-dumper": "^4.2"
+  },
+  "autoload": {
+    "files": [
+    ],
+    "psr-4": {
+      "CrCms\\Repository\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "CrCms\\Repository\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "CrCms\\Repository\\RepositoryServiceProvider"
+      ],
+      "aliases": {
+      }
+    }
+  }
 }

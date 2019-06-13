@@ -7,11 +7,9 @@ use Illuminate\Support\Collection;
 /**
  * Interface Repository.
  */
-interface Repository
+interface RepositoryContract
 {
     /**
-     * @param array $columns
-     *
      * @return Collection
      */
     public function all(): Collection;
@@ -86,6 +84,8 @@ interface Repository
     public function max(string $column): int;
 
     /**
+     * @param string $column
+     *
      * @return int
      */
     public function count(string $column = '*'): int;
@@ -154,7 +154,7 @@ interface Repository
     public function update(array $data): int;
 
     /**
-     * @param int $id
+     * @param string $id
      *
      * @return int
      */
