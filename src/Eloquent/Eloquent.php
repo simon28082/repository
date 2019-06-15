@@ -2,7 +2,6 @@
 
 namespace CrCms\Repository\Eloquent;
 
-use CrCms\Repository\AbstractRepository;
 use CrCms\Repository\Contracts\EloquentContract;
 use CrCms\Repository\Drivers\Eloquent\QueryRelateContract;
 use CrCms\Repository\Exceptions\MethodNotFoundException;
@@ -14,41 +13,73 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Exception;
+use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
  * Class Eloquent.
  */
-class Eloquent implements EloquentContract, QueryRelateContract
+abstract class Eloquent implements EloquentContract, QueryRelateContract
 {
-    /**
-     * Eloquent constructor.
-     *
-     * @param AbstractRepository $repository
-     */
-    public function __construct(AbstractRepository $repository)
-    {
-        parent::__construct($repository);
+    use ForwardsCalls;
 
-        $this->setQueryRelate($this->newQueryRelate());
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * @var Builder
+     */
+    protected $queryRelate;
+
+    /**
+     *
+     * @return Model
+     */
+    abstract public function newModel();
+
+    /**
+     *
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->model;
     }
 
     /**
      *
-     * @return mixed
+     * @return Builder|mixed
      */
-    abstract protected function newModel();
-
     public function getQueryRelate()
     {
-        // TODO: Implement getQueryRelate() method.
+        return $this->queryRelate;
+    }
+
+    /**
+     *
+     * @return Builder
+     */
+    public function setQueryRelate()
+    {
+        return $this->queryRelate;
+    }
+
+    /**
+     * @return Builder
+     */
+    public function newQueryRelate(): Builder
+    {
+        return $this->getModel()->newQuery();
     }
 
     /**
      * @return void
      */
-    public function resetQueryRelate()
+    public function resetQueryRelate(): void
     {
-        $this->setQueryRelate($this->newQueryRelate());
+        $this->queryRelate = $this->newQueryRelate();
     }
 
     /**
@@ -87,22 +118,6 @@ class Eloquent implements EloquentContract, QueryRelateContract
     }
 
     /**
-     * @return Builder
-     */
-    public function newQuery(): Builder
-    {
-        return $this->repository->getModel()->newQuery();
-    }
-
-    /**
-     * @return QueryRelate
-     */
-    public function newQueryRelate(): QueryRelate
-    {
-        return $this->repository->newQueryRelate($this)->setQuery($this->newQuery());
-    }
-
-    /**
      * @param array $data
      *
      * @return Model
@@ -110,11 +125,10 @@ class Eloquent implements EloquentContract, QueryRelateContract
     public function create(array $data): Model
     {
         try {
-            $model = $this->repository->newModel()->create($data);
-
+            $model = $this->newModel()->create($data);
             return $model;
-        } catch (\RuntimeException $exception) {
-            throw new ResourceStoreException($exception->getMessage(), $exception->getCode(), $exception);
+        } catch (Exception $e) {
+            throw new ResourceStoreException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -648,19 +662,17 @@ class Eloquent implements EloquentContract, QueryRelateContract
     }
 
     /**
-     * @param $name
+     * @param $method
      * @param $arguments
      *
      * @return $this|mixed
      */
-    public function __call($name, $arguments)
+    public function __call($method, $arguments)
     {
-        //$forbidden = ['paginate','get','all','first','update','create','delete','find','value','pluck','chunk','sum','avg','count','max','min','increment','decrement'];
-        //&& !in_array($name,$forbidden,true)
-        if (method_exists($this->queryRelate, $name)) {
-            $result = call_user_func_array([$this->queryRelate, $name], $arguments);
+        if (method_exists($this->queryRelate, $method)) {
+            $result = $this->forwardCallTo($this->queryRelate, $method, $arguments);
             if ($result instanceof $this->queryRelate) {
-                $this->setQueryRelate($result);
+                $this->queryRelate = $result;
 
                 return $this;
             }
@@ -668,6 +680,6 @@ class Eloquent implements EloquentContract, QueryRelateContract
             return $result;
         }
 
-        throw new MethodNotFoundException(static::class, $name);
+        static::throwBadMethodCallException($method);
     }
 }

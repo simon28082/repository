@@ -11,7 +11,7 @@ class ResourceStoreException extends ResourceException
      *
      * @param string $message
      */
-    public function __construct($message = 'resource store fail', $code = 0, Throwable $previous = null)
+    public function __construct($message = 'Resource store fail', $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -14,7 +14,7 @@ class ResourceUpdateException extends ResourceException
      *
      * @param string $message
      */
-    public function __construct($message = 'resource update fail', $code = 0, Throwable $previous = null)
+    public function __construct($message = 'Resource update fail', $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
