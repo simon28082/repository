@@ -383,7 +383,7 @@ interface QueryRelate
      *
      * @return QueryRelate
      */
-    public function when(bool $condition, callable $trueCallable, callable $falseCallable): self;
+    public function when(bool $condition, callable $trueCallable, ?callable $falseCallable = null): self;
 
     /**
      * @param array $conditions

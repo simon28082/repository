@@ -668,9 +668,15 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
      *
      * @return BaseQueryRelateContract
      */
-    public function when(bool $condition, callable $trueCallable, callable $falseCallable): BaseQueryRelateContract
+    public function when(bool $condition, callable $trueCallable, ?callable $falseCallable = null): BaseQueryRelateContract
     {
-        $this->query = call_user_func($condition ? $trueCallable : $falseCallable, $this)->getQuery();
+        if ($condition) {
+            $this->query = call_user_func($trueCallable, $this)->getQuery();
+        } elseif ($falseCallable) {
+            $this->query = call_user_func($falseCallable, $this)->getQuery();
+        } else {
+
+        }
 
         return $this;
     }
