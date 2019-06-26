@@ -645,9 +645,7 @@ class Eloquent extends RepositoryDriver implements EloquentContract
      */
     public function __call($name, $arguments)
     {
-        //$forbidden = ['paginate','get','all','first','update','create','delete','find','value','pluck','chunk','sum','avg','count','max','min','increment','decrement'];
-        //&& !in_array($name,$forbidden,true)
-        if (method_exists($this->queryRelate, $name)) {
+        try {
             $result = call_user_func_array([$this->queryRelate, $name], $arguments);
             if ($result instanceof $this->queryRelate) {
                 $this->setQueryRelate($result);
@@ -656,8 +654,8 @@ class Eloquent extends RepositoryDriver implements EloquentContract
             }
 
             return $result;
+        } catch (\Exception $e) {
+            throw new MethodNotFoundException(static::class, $name, $e);
         }
-
-        throw new MethodNotFoundException(static::class, $name);
     }
 }
