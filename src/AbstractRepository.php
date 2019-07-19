@@ -11,7 +11,6 @@ use CrCms\Repository\Contracts\QueryMagic;
 use CrCms\Repository\Contracts\QueryRelate as QueryRelateContract;
 use CrCms\Repository\Contracts\Repository;
 use CrCms\Repository\Drivers\RepositoryDriver;
-use CrCms\Repository\Exceptions\MethodNotFoundException;
 use CrCms\Repository\Services\CacheService;
 use Illuminate\Support\Collection;
 use UnexpectedValueException;
