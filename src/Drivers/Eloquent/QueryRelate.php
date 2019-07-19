@@ -675,7 +675,6 @@ class QueryRelate extends BaseQueryRelate implements BaseQueryRelateContract
         } elseif ($falseCallable) {
             $this->query = call_user_func($falseCallable, $this)->getQuery();
         } else {
-
         }
 
         return $this;
