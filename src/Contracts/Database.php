@@ -4,10 +4,7 @@ namespace CrCms\Repository\Contracts;
 
 use Illuminate\Support\Collection;
 
-/**
- * Interface Repository.
- */
-interface RepositoryContract
+interface Database
 {
     /**
      * @return Collection
@@ -48,7 +45,7 @@ interface RepositoryContract
 
     /**
      * @param string $field
-     * @param int    $value
+     * @param int $value
      *
      * @return mixed
      */
@@ -122,7 +119,7 @@ interface RepositoryContract
 
     /**
      * @param string $key
-     * @param int    $default
+     * @param int $default
      *
      * @return mixed
      */
@@ -130,8 +127,8 @@ interface RepositoryContract
 
     /**
      * @param string $column
-     * @param int    $amount
-     * @param array  $extra
+     * @param int $amount
+     * @param array $extra
      *
      * @return mixed
      */
@@ -139,8 +136,8 @@ interface RepositoryContract
 
     /**
      * @param string $column
-     * @param int    $amount
-     * @param array  $extra
+     * @param int $amount
+     * @param array $extra
      *
      * @return mixed
      */
