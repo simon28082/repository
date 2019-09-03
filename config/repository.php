@@ -40,4 +40,7 @@ return [
         'deleting' => [],
         'deleted'  => [],
     ],
+
+    // Default page entry
+    'page_entry' => 20,
 ];

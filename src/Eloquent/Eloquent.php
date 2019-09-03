@@ -2,356 +2,27 @@
 
 namespace CrCms\Repository\Eloquent;
 
-use CrCms\Repository\Contracts\EloquentContract;
-use CrCms\Repository\Drivers\Eloquent\QueryRelateContract;
-use CrCms\Repository\Exceptions\MethodNotFoundException;
-use CrCms\Repository\Exceptions\ResourceDeleteException;
-use CrCms\Repository\Exceptions\ResourceNotFoundException;
-use CrCms\Repository\Exceptions\ResourceStoreException;
-use CrCms\Repository\Exceptions\ResourceUpdateException;
+use CrCms\Repository\Contracts\Eloquent as EloquentContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Exception;
-use Illuminate\Support\Traits\ForwardsCalls;
 
-/**
- * Class Eloquent.
- */
-abstract class Eloquent implements EloquentContract, QueryRelateContract
+abstract class Eloquent implements EloquentContract
 {
-    use ForwardsCalls;
-
     /**
-     * @var Model
-     */
-    protected $model;
-
-    /**
-     * @var Builder
-     */
-    protected $queryRelate;
-
-    /**
-     *
      * @return Model
      */
     abstract public function newModel();
 
     /**
+     * @param array $columns
      *
-     * @return Model
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     *
-     * @return Builder|mixed
-     */
-    public function getQueryRelate()
-    {
-        return $this->queryRelate;
-    }
-
-    /**
-     *
-     * @return Builder
-     */
-    public function setQueryRelate()
-    {
-        return $this->queryRelate;
-    }
-
-    /**
-     * @return Builder
-     */
-    public function newQueryRelate(): Builder
-    {
-        return $this->getModel()->newQuery();
-    }
-
-    /**
-     * @return void
-     */
-    public function resetQueryRelate(): void
-    {
-        $this->queryRelate = $this->newQueryRelate();
-    }
-
-    /**
-     * @param $id
-     *
-     * @return mixed
-     */
-    protected function byIdOrFail($id)
-    {
-        $model = $this->byId($id);
-        if (empty($model)) {
-            throw new ResourceNotFoundException();
-        }
-
-        return $model;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function byIntIdOrFail(int $id): Model
-    {
-        return $this->byIdOrFail($id);
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function byStringIdOrFail(string $id): Model
-    {
-        return $this->byIdOrFail($id);
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return Model
-     */
-    public function create(array $data): Model
-    {
-        try {
-            $model = $this->newModel()->create($data);
-            return $model;
-        } catch (Exception $e) {
-            throw new ResourceStoreException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return mixed
-     */
-    public function update(array $data): int
-    {
-        $row = $this->queryRelate->getQuery()->update($data);
-
-        $this->resetQueryRelate();
-
-        return $row;
-    }
-
-    /**
-     * @param Model $model
-     * @param array $data
-     *
-     * @return Model
-     */
-    protected function updateByModel(Model $model, array $data): Model
-    {
-        array_walk($data, function ($value, $key) use ($model) {
-            $model->{$key} = $value;
-        });
-
-        try {
-            $model->save();
-        } catch (\RuntimeException $exception) {
-            throw new ResourceUpdateException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        return $model;
-    }
-
-    /**
-     * @param array $data
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function updateByIntId(array $data, int $id): Model
-    {
-        $model = $this->byIntIdOrFail($id);
-
-        return $this->updateByModel($model, $data);
-    }
-
-    /**
-     * @param array $data
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function updateByStringId(array $data, string $id): Model
-    {
-        $model = $this->byStringIdOrFail($id);
-
-        return $this->updateByModel($model, $data);
-    }
-
-    /**
-     * @param int $perPage
-     *
-     * @return LengthAwarePaginator
-     */
-    public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 0): LengthAwarePaginator
-    {
-        $paginate = $this->queryRelate->getQuery()->paginate($perPage, $columns, $pageName, $page);
-
-        $this->resetQueryRelate();
-
-        return $paginate;
-    }
-
-    /**
-     * @param $id
-     *
-     * @return Model
-     */
-    protected function byId($id)
-    {
-        //在QueryRelate 中的 __call中也没有找到first，需要用getQuery()，它指向的是Query\Builder
-        $model = $this->queryRelate->where($this->repository->getModel()->getKeyName(), $id)->getQuery()->first();
-
-        $this->resetQueryRelate();
-
-        return $model;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function byIntId(int $id)
-    {
-        return $this->byId($id);
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function byStringId(string $id)
-    {
-        return $this->byId($id);
-    }
-
-    /**
-     * @param string $field
-     * @param string $value
-     *
-     * @return Model
-     */
-    public function oneByString(string $field, string $value)
-    {
-        return $this->oneBy($field, $value);
-    }
-
-    /**
-     * @param string $field
-     * @param int $value
-     *
-     * @return Model
-     */
-    public function oneByInt(string $field, int $value)
-    {
-        return $this->oneBy($field, $value);
-    }
-
-    /**
-     * @param string $field
-     * @param string $value
-     *
-     * @return Model
-     */
-    public function oneByStringOrFail(string $field, string $value): Model
-    {
-        return $this->oneByOrFail($field, $value);
-    }
-
-    /**
-     * @param string $field
-     * @param int $value
-     *
-     * @return Model
-     */
-    public function oneByIntOrFail(string $field, int $value): Model
-    {
-        return $this->oneByOrFail($field, $value);
-    }
-
-    /**
-     * @param string $field
-     * @param $value
-     *
-     * @return Model|null
-     */
-    public function oneBy(string $field, $value)
-    {
-        $model = $this->queryRelate->where($field, $value)->getQuery()->first();
-
-        $this->resetQueryRelate();
-
-        return $model;
-    }
-
-    /**
-     * @param string $field
-     * @param $value
-     *
-     * @return Model
-     */
-    public function oneByOrFail(string $field, $value): Model
-    {
-        $model = $this->oneBy($field, $value);
-        if (empty($model)) {
-            throw new ResourceNotFoundException();
-        }
-
-        return $model;
-    }
-
-    /**
-     * @return Model|null
-     */
-    public function first()
-    {
-        $model = $this->queryRelate->getQuery()->first();
-
-        $this->resetQueryRelate();
-
-        return $model;
-    }
-
-    /**
      * @return Collection
      */
-    public function all(): Collection
+    public function all(array $columns = []): Collection
     {
-        //all表示不加任何条件，必须重新设置query
-        $models = $this->queryRelate->setQuery($this->newQuery())->getQuery()->get();
-
-        $this->resetQueryRelate();
-
-        return $models;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function get(): Collection
-    {
-        $models = $this->queryRelate->getQuery()->get();
-
-        $this->resetQueryRelate();
-
-        return $models;
+        return $this->newQuery()->get(empty($columns) ? ['*'] : $columns);
     }
 
     /**
@@ -360,326 +31,141 @@ abstract class Eloquent implements EloquentContract, QueryRelateContract
      *
      * @return Collection
      */
-    public function pluck(string $column, string $key = null): Collection
+    public function pluck(string $column, ?string $key = null): Collection
     {
-        $models = $this->queryRelate->getQuery()->pluck($column, $key);
-
-        $this->resetQueryRelate();
-
-        return $models;
-    }
-
-    /**
-     * @param mixed $id
-     *
-     * @return int
-     */
-    public function delete(): int
-    {
-        $rows = 0;
-
-        try {
-            $rows = $this->queryRelate->getQuery()->delete();
-        } catch (\RuntimeException $exception) {
-            throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
-        } finally {
-            $this->resetQueryRelate();
-        }
-
-        return $rows;
-    }
-
-    /**
-     * @param $id
-     * @param string|null $key
-     *
-     * @return int
-     */
-    protected function deleteByKey($id, string $key = null): int
-    {
-        $key = empty($key) ? $this->repository->getModel()->getKeyName() : $key;
-
-        $row = 0;
-
-        try {
-            $row = $this->queryRelate->whereIn($key, (array)$id)->getQuery()->delete();
-        } catch (\RuntimeException $exception) {
-            throw new ResourceDeleteException($exception->getMessage(), $exception->getCode(), $exception);
-        } finally {
-            $this->resetQueryRelate();
-        }
-
-        return $row;
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return int
-     */
-    public function deleteByStringId(string $id, string $key = null): int
-    {
-        return $this->deleteByKey($id, $key);
+        return $this->newQuery()->pluck($column, $key);
     }
 
     /**
      * @param int $id
      *
-     * @return int
+     * @return Model|null
      */
-    public function deleteByIntId(int $id, string $key = null): int
+    public function oneByIntId(int $id)
     {
-        return $this->deleteByKey($id, $key);
+        return $this->newQuery()->find($id);
     }
 
     /**
-     * @param array $ids
+     * @param string $id
      *
-     * @return int
+     * @return Model|null
      */
-    public function deleteByArray(array $ids, string $key = null): int
+    public function oneByStringId(string $id)
     {
-        return $this->deleteByKey($ids, $key);
+        return $this->newQuery()->find($id);
     }
 
     /**
      * @param string $column
+     * @param int $value
      *
-     * @return int
+     * @return Model|null
      */
+    public function oneByInt(string $column, int $value)
+    {
+        return $this->newQuery()->where($column, $value)->first();
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     *
+     * @return Model|null
+     */
+    public function oneByString(string $column, string $value)
+    {
+        return $this->newQuery()->where($column, $value)->first();
+    }
+
     public function max(string $column): int
     {
-        $max = $this->queryRelate->getQuery()->max($column);
-
-        $this->resetQueryRelate();
-
-        return $max;
+        return $this->newQuery()->max($column);
     }
 
-    /**
-     * @param string $column
-     *
-     * @return int
-     */
     public function count(string $column = '*'): int
     {
-        $count = $this->queryRelate->getQuery()->count($column);
-
-        $this->resetQueryRelate();
-
-        return $count;
+        // TODO: Implement count() method.
     }
 
-    /**
-     * @param $column
-     *
-     * @return int
-     */
     public function avg($column): int
     {
-        $avg = $this->queryRelate->getQuery()->avg($column);
-
-        $this->resetQueryRelate();
-
-        return $avg;
+        // TODO: Implement avg() method.
     }
 
-    /**
-     * @param string $column
-     *
-     * @return int
-     */
     public function sum(string $column): int
     {
-        $sum = $this->queryRelate->getQuery()->sum($column);
-
-        $this->resetQueryRelate();
-
-        return $sum;
+        // TODO: Implement sum() method.
     }
 
-    /**
-     * @param int $limit
-     * @param callable $callback
-     *
-     * @return bool
-     */
     public function chunk(int $limit, callable $callback): bool
     {
-        $result = $this->queryRelate->getQuery()->chunk($limit, $callback);
-
-        $this->resetQueryRelate();
-
-        return $result;
+        // TODO: Implement chunk() method.
     }
 
-    /**
-     * @param string $key
-     * @param string $default
-     *
-     * @return string
-     */
-    public function valueOfString(string $key, string $default = ''): string
+    public function increment(string $column, int $step = 1, array $extra = []): int
     {
-        return $this->value($key, $default);
+        // TODO: Implement increment() method.
     }
 
-    /**
-     * @param string $key
-     * @param int $default
-     *
-     * @return int
-     */
-    public function valueOfInt(string $key, int $default = 0): int
+    public function decrement(string $column, int $step = 1, array $extra = []): int
     {
-        return $this->value($key, $default);
+        // TODO: Implement decrement() method.
     }
 
-    /**
-     * @param string $key
-     * @param $default
-     *
-     * @return mixed
-     */
-    protected function value(string $key, $default)
+    public function deleteByIntId(int $id): int
     {
-        $value = $this->queryRelate->getQuery()->value($key);
-
-        $this->resetQueryRelate();
-
-        if (empty($value)) {
-            $value = $default;
-        }
-
-        return $value;
+        // TODO: Implement deleteByIntId() method.
     }
 
-    /**
-     * @param string $column
-     * @param int $amount
-     * @param array $extra
-     *
-     * @return int
-     */
-    public function increment(string $column, int $amount = 1, array $extra = []): int
+    public function deleteByStringId(string $id): int
     {
-        $rows = $this->queryRelate->getQuery()->increment($column, $amount, $extra);
-        $this->resetQueryRelate();
-
-        return $rows;
+        // TODO: Implement deleteByStringId() method.
     }
 
-    /**
-     * @param string $column
-     * @param int $amount
-     * @param array $extra
-     *
-     * @return int
-     */
-    public function decrement(string $column, int $amount = 1, array $extra = []): int
+    public function paginate(array $columns = ['*'], $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator
     {
-        $rows = $this->queryRelate->getQuery()->decrement($column, $amount, $extra);
-        $this->resetQueryRelate();
-
-        return $rows;
+        // TODO: Implement paginate() method.
     }
 
-    /**
-     * @return Model
-     */
-    public function firstOrFail(): Model
+    public function create(array $data): Model
     {
-        $model = $this->first();
-        if (empty($model)) {
-            throw new ResourceNotFoundException();
-        }
-
-        return $model;
+        // TODO: Implement create() method.
     }
 
-    /**
-     * return run sql.
-     *
-     * @return string
-     */
-    public function toSql(): string
+    public function updateByIntId(array $data, int $id): Model
     {
-        $sql = $this->queryRelate->getQuery()->toSql();
-
-        $this->resetQueryRelate();
-
-        return $sql;
+        // TODO: Implement updateByIntId() method.
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function findByInt(int $id)
+    public function updateByStringId(array $data, string $id): Model
     {
-        return $this->getRepository()->getModel()->find($id);
+        // TODO: Implement updateByStringId() method.
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function findByIntOrFail(int $id): Model
+    public function byIntIdOrFail(int $id): Model
     {
-        $model = $this->findByInt($id);
-        if (empty($model)) {
-            throw new ResourceNotFoundException();
-        }
-
-        return $model;
+        // TODO: Implement byIntIdOrFail() method.
     }
 
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function findByString(string $id)
+    public function byStringIdOrFail(string $id): Model
     {
-        return $this->getRepository()->getModel()->find($id);
+        // TODO: Implement byStringIdOrFail() method.
     }
 
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function findByStringOrFail(string $id): Model
+    public function oneByStringOrFail(string $column, string $value): Model
     {
-        $model = $this->findByString($id);
-        if (empty($model)) {
-            throw new ResourceNotFoundException();
-        }
-
-        return $model;
+        // TODO: Implement oneByStringOrFail() method.
     }
 
-    /**
-     * @param $method
-     * @param $arguments
-     *
-     * @return $this|mixed
-     */
-    public function __call($method, $arguments)
+    public function oneByIntOrFail(string $column, int $value): Model
     {
-        if (method_exists($this->queryRelate, $method)) {
-            $result = $this->forwardCallTo($this->queryRelate, $method, $arguments);
-            if ($result instanceof $this->queryRelate) {
-                $this->queryRelate = $result;
+        // TODO: Implement oneByIntOrFail() method.
+    }
 
-                return $this;
-            }
 
-            return $result;
-        }
-
-        static::throwBadMethodCallException($method);
+    protected function newQuery(): Builder
+    {
+        return $this->newModel()->newQuery();
     }
 }

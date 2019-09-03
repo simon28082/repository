@@ -7,14 +7,11 @@ use Illuminate\Support\Collection;
 interface Database extends Any
 {
     /**
+     * @param array $columns
+     *
      * @return Collection
      */
-    public function all(): Collection;
-
-    /**
-     * @return Collection
-     */
-    public function get(): Collection;
+    public function all(array $columns = []): Collection;
 
     /**
      * @param string $column
@@ -25,53 +22,34 @@ interface Database extends Any
     public function pluck(string $column, ?string $key = null): Collection;
 
     /**
-     * @return mixed
-     */
-    public function first();
-
-    /**
      * @param int $id
      *
      * @return mixed
      */
-    public function findByInt(int $id);
+    public function oneByIntId(int $id);
 
     /**
      * @param string $id
      *
      * @return mixed
      */
-    public function findByString(string $id);
+    public function oneByStringId(string $id);
 
     /**
-     * @param string $field
+     * @param string $column
      * @param int $value
      *
      * @return mixed
      */
-    public function oneByInt(string $field, int $value);
+    public function oneByInt(string $column, int $value);
 
     /**
-     * @param string $field
+     * @param string $column
      * @param string $value
      *
      * @return mixed
      */
-    public function oneByString(string $field, string $value);
-
-    /**
-     * @param string $id
-     *
-     * @return mixed
-     */
-    public function byStringId(string $id);
-
-    /**
-     * @param int $id
-     *
-     * @return mixed
-     */
-    public function byIntId(int $id);
+    public function oneByString(string $column, string $value);
 
     /**
      * @param string $column
@@ -110,52 +88,45 @@ interface Database extends Any
     public function chunk(int $limit, callable $callback): bool;
 
     /**
-     * @param string $key
-     * @param string $default
+     * @param string $column
+     * @param int $step
+     * @param array $extra
      *
-     * @return mixed
+     * @return int
      */
-    public function valueOfString(string $key, string $default = ''): string;
-
-    /**
-     * @param string $key
-     * @param int $default
-     *
-     * @return mixed
-     */
-    public function valueOfInt(string $key, int $default = 0): int;
+    public function increment(string $column, int $step = 1, array $extra = []): int;
 
     /**
      * @param string $column
-     * @param int $amount
+     * @param int $step
      * @param array $extra
      *
-     * @return mixed
+     * @return int
      */
-    public function increment(string $column, int $amount = 1, array $extra = []): int;
-
-    /**
-     * @param string $column
-     * @param int $amount
-     * @param array $extra
-     *
-     * @return mixed
-     */
-    public function decrement(string $column, int $amount = 1, array $extra = []): int;
+    public function decrement(string $column, int $step = 1, array $extra = []): int;
 
     /**
      * @param array $data
      *
-     * @return int
+     * @return mixed
      */
-    public function update(array $data): int;
+    public function create(array $data);
 
     /**
+     * @param array $data
+     * @param int $id
+     *
+     * @return mixed
+     */
+    public function updateByIntId(array $data, int $id);
+
+    /**
+     * @param array $data
      * @param string $id
      *
-     * @return int
+     * @return mixed
      */
-    public function deleteByStringId(string $id): int;
+    public function updateByStringId(array $data, string $id);
 
     /**
      * @param int $id
@@ -165,16 +136,9 @@ interface Database extends Any
     public function deleteByIntId(int $id): int;
 
     /**
-     * deleteByArray.
-     *
-     * @param array $ids
+     * @param string $id
      *
      * @return int
      */
-    public function deleteByArray(array $ids): int;
-
-    /**
-     * @return int
-     */
-    public function delete(): int;
+    public function deleteByStringId(string $id): int;
 }

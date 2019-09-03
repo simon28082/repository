@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 interface Eloquent extends Database
 {
     /**
-     * @param int    $perPage
-     * @param array  $columns
+     * @param int $perPage
+     * @param array $columns
      * @param string $pageName
-     * @param int   $page
+     * @param int $page
      *
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15, array $columns = ['*'], $pageName = 'page', int $page = 0): LengthAwarePaginator;
+    public function paginate(array $columns = ['*'], $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator;
 
     /**
      * @param array $data
@@ -26,14 +26,14 @@ interface Eloquent extends Database
 
     /**
      * @param array $data
-     * @param int   $id
+     * @param int $id
      *
      * @return Model
      */
     public function updateByIntId(array $data, int $id): Model;
 
     /**
-     * @param array  $data
+     * @param array $data
      * @param string $id
      *
      * @return Model
@@ -55,37 +55,18 @@ interface Eloquent extends Database
     public function byStringIdOrFail(string $id): Model;
 
     /**
-     * @param string $field
+     * @param string $column
      * @param string $value
      *
      * @return Model
      */
-    public function oneByStringOrFail(string $field, string $value): Model;
+    public function oneByStringOrFail(string $column, string $value): Model;
 
     /**
-     * @param string $field
-     * @param int    $value
+     * @param string $column
+     * @param int $value
      *
      * @return Model
      */
-    public function oneByIntOrFail(string $field, int $value): Model;
-
-    /**
-     * @return Model
-     */
-    public function firstOrFail(): Model;
-
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function findByIntOrFail(int $id): Model;
-
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function findByStringOrFail(string $id): Model;
+    public function oneByIntOrFail(string $column, int $value): Model;
 }
