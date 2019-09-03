@@ -8,13 +8,12 @@ use Throwable;
 class ResourceException extends RuntimeException
 {
     /**
-     * ResourceException constructor.
-     *
      * @param string $message
+     * @param int $code
+     * @param Throwable|null $previous
      */
-    public function __construct($message = '', $code = 0, Throwable $previous = null)
+    public function __construct($message = '', int $code = 0, Throwable $previous = null)
     {
-        $code = is_int($code) ? $code : 0;
         parent::__construct($message, $code, $previous);
     }
 }

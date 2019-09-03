@@ -4,17 +4,14 @@ namespace CrCms\Repository\Exceptions;
 
 use Throwable;
 
-/**
- * Class ResourceDeleteException.
- */
 class ResourceDeleteException extends ResourceException
 {
     /**
-     * ResourceDeleteException constructor.
-     *
      * @param string $message
+     * @param int $code
+     * @param Throwable|null $previous
      */
-    public function __construct($message = 'resource delete fail', $code = 0, Throwable $previous = null)
+    public function __construct($message = 'Resource deletion failed', $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
