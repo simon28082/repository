@@ -2,7 +2,7 @@
 
 namespace CrCms\Repository\Concerns;
 
-trait HasOriginal
+trait Original
 {
     /**
      * @var array
@@ -12,12 +12,11 @@ trait HasOriginal
     /**
      * @param array $data
      *
-     * @return HasData
+     * @return Original
      */
     public function setOriginal(array $data): self
     {
         $this->original = $data;
-
         return $this;
     }
 

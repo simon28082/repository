@@ -4,10 +4,7 @@ namespace CrCms\Repository\Concerns;
 
 use Illuminate\Support\Arr;
 
-/**
- * Class HasData.
- */
-trait HasData
+trait Data
 {
     /**
      * @var array
@@ -17,28 +14,39 @@ trait HasData
     /**
      * @param array $data
      *
-     * @return HasData
+     * @return Data
      */
     public function setData(array $data): self
     {
         $this->data = $data;
-
         return $this;
     }
 
     /**
-     * @return mixed
+     *
+     * @return array
      */
-    public function getData(?string $key = null, $default = null)
+    public function getData(): array
     {
-        return $key ? ($this->data[$key] ?? $default) : $this->data;
+        return $this->data;
+    }
+
+    /**
+     * @param string $key
+     * @param null $default
+     *
+     * @return mixed|null
+     */
+    public function getDataByKey(string $key, $default = null)
+    {
+        return $this->data[$key] ?? $default;
     }
 
     /**
      * @param array|string $key
-     * @param null         $value
+     * @param null $value
      *
-     * @return HasData
+     * @return Data
      */
     public function addData($key, $value = null): self
     {
