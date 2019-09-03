@@ -4,7 +4,7 @@ namespace CrCms\Repository\Contracts;
 
 use Illuminate\Support\Collection;
 
-interface Database
+interface Database extends Any
 {
     /**
      * @return Collection
@@ -18,11 +18,11 @@ interface Database
 
     /**
      * @param string $column
-     * @param string $key
+     * @param string|null $key
      *
      * @return Collection
      */
-    public function pluck(string $column, string $key = ''): Collection;
+    public function pluck(string $column, ?string $key = null): Collection;
 
     /**
      * @return mixed

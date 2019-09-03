@@ -5,10 +5,7 @@ namespace CrCms\Repository\Contracts;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Interface Eloquent.
- */
-interface EloquentContract extends RepositoryContract
+interface Eloquent extends Database
 {
     /**
      * @param int    $perPage
