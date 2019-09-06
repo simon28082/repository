@@ -15,7 +15,7 @@ interface Eloquent extends Database
      *
      * @return LengthAwarePaginator
      */
-    public function paginate(array $columns = ['*'], $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator;
+    public function paginate(array $columns = ['*'], string $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator;
 
     /**
      * @param array $data

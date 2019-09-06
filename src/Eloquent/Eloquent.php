@@ -3,13 +3,22 @@
 namespace CrCms\Repository\Eloquent;
 
 use CrCms\Repository\Contracts\Eloquent as EloquentContract;
+use CrCms\Repository\Exceptions\ResourceDeleteException;
+use CrCms\Repository\Exceptions\ResourceNotFoundException;
+use CrCms\Repository\Exceptions\ResourceStoreException;
+use CrCms\Repository\Exceptions\ResourceUpdateException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
 abstract class Eloquent implements EloquentContract
 {
+    /**
+     * @var Model
+     */
+    protected $model;
+
     /**
      * @return Model
      */
@@ -22,7 +31,9 @@ abstract class Eloquent implements EloquentContract
      */
     public function all(array $columns = []): Collection
     {
-        return $this->newQuery()->get(empty($columns) ? ['*'] : $columns);
+        return $this->proxyReset(
+            $this->model()->get(empty($columns) ? ['*'] : $columns)
+        );
     }
 
     /**
@@ -33,7 +44,9 @@ abstract class Eloquent implements EloquentContract
      */
     public function pluck(string $column, ?string $key = null): Collection
     {
-        return $this->newQuery()->pluck($column, $key);
+        return $this->proxyReset(
+            $this->model()->pluck($column, $key)
+        );
     }
 
     /**
@@ -43,7 +56,9 @@ abstract class Eloquent implements EloquentContract
      */
     public function oneByIntId(int $id)
     {
-        return $this->newQuery()->find($id);
+        return $this->proxyReset(
+            $this->model()->find($id)
+        );
     }
 
     /**
@@ -53,7 +68,9 @@ abstract class Eloquent implements EloquentContract
      */
     public function oneByStringId(string $id)
     {
-        return $this->newQuery()->find($id);
+        return $this->proxyReset(
+            $this->model()->find($id)
+        );
     }
 
     /**
@@ -64,7 +81,9 @@ abstract class Eloquent implements EloquentContract
      */
     public function oneByInt(string $column, int $value)
     {
-        return $this->newQuery()->where($column, $value)->first();
+        return $this->proxyReset(
+            $this->model()->where($column, $value)->first()
+        );
     }
 
     /**
@@ -75,97 +94,150 @@ abstract class Eloquent implements EloquentContract
      */
     public function oneByString(string $column, string $value)
     {
-        return $this->newQuery()->where($column, $value)->first();
-    }
-
-    public function max(string $column): int
-    {
-        return $this->newQuery()->max($column);
-    }
-
-    public function count(string $column = '*'): int
-    {
-        // TODO: Implement count() method.
-    }
-
-    public function avg($column): int
-    {
-        // TODO: Implement avg() method.
-    }
-
-    public function sum(string $column): int
-    {
-        // TODO: Implement sum() method.
+        return $this->proxyReset(
+            $this->model()->where($column, $value)->first()
+        );
     }
 
     public function chunk(int $limit, callable $callback): bool
     {
-        // TODO: Implement chunk() method.
+        return $this->proxyReset(
+            $this->model()->chunk($limit, $callback)
+        );
     }
 
     public function increment(string $column, int $step = 1, array $extra = []): int
     {
-        // TODO: Implement increment() method.
+        return $this->proxyReset(
+            $this->model()->increment($column, $step, $extra)
+        );
     }
 
     public function decrement(string $column, int $step = 1, array $extra = []): int
     {
-        // TODO: Implement decrement() method.
+        return $this->proxyReset(
+            $this->model()->decrement($column, $step, $extra)
+        );
+    }
+
+    public function paginate(array $columns = ['*'], string $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator
+    {
+        return $this->model()->paginate($perPage, $columns, $pageName, $page);
     }
 
     public function deleteByIntId(int $id): int
     {
-        // TODO: Implement deleteByIntId() method.
+        try {
+            return $this->newModel()::destroy($id);
+        } catch (\Exception $e) {
+            throw new ResourceDeleteException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function deleteByStringId(string $id): int
     {
-        // TODO: Implement deleteByStringId() method.
-    }
-
-    public function paginate(array $columns = ['*'], $pageName = 'page', int $page = 0, int $perPage = 20): LengthAwarePaginator
-    {
-        // TODO: Implement paginate() method.
+        try {
+            return $this->newModel()::destroy($id);
+        } catch (\Exception $e) {
+            throw new ResourceDeleteException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function create(array $data): Model
     {
-        // TODO: Implement create() method.
+        try {
+            return $this->newModel()::create($data);
+        } catch (\Exception $e) {// @todo 暂时全部Exception
+            throw new ResourceStoreException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function updateByIntId(array $data, int $id): Model
     {
-        // TODO: Implement updateByIntId() method.
+        try {
+            $model = $this->newModel();
+            $model->where($model->getKeyName(), $id)->update($data);
+            return $model;
+        } catch (\Exception $e) {
+            throw new ResourceUpdateException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function updateByStringId(array $data, string $id): Model
     {
-        // TODO: Implement updateByStringId() method.
+        try {
+            $model = $this->newModel();
+            $model->where($model->getKeyName(), $id)->update($data);
+            return $model;
+        } catch (\Exception $e) {
+            throw new ResourceUpdateException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    public function update()
+    {
+
+    }
+
+    public function delete()
+    {
+
     }
 
     public function byIntIdOrFail(int $id): Model
     {
-        // TODO: Implement byIntIdOrFail() method.
+        try {
+            return $this->model()->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function byStringIdOrFail(string $id): Model
     {
-        // TODO: Implement byStringIdOrFail() method.
+        try {
+            return $this->model()->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function oneByStringOrFail(string $column, string $value): Model
     {
-        // TODO: Implement oneByStringOrFail() method.
+        try {
+            return $this->model()->where($column, $value)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function oneByIntOrFail(string $column, int $value): Model
     {
-        // TODO: Implement oneByIntOrFail() method.
+        try {
+            return $this->model()->where($column, $value)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
-
-    protected function newQuery(): Builder
+    protected function model(): Model
     {
-        return $this->newModel()->newQuery();
+        if (is_null($this->model)) {
+            $this->model = $this->newModel();
+        }
+
+        return $this->model;
+    }
+
+    protected function resetModel(): void
+    {
+        $this->model = $this->newModel();
+    }
+
+    protected function proxyReset($result)
+    {
+        return tap($result, function () {
+            $this->resetModel();
+        });
     }
 }
