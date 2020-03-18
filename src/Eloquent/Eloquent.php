@@ -2,6 +2,10 @@
 
 namespace CrCms\Repository\Eloquent;
 
+use CrCms\Repository\Concerns\Data;
+use CrCms\Repository\Concerns\Event;
+use CrCms\Repository\Concerns\Original;
+use CrCms\Repository\Concerns\Scene;
 use CrCms\Repository\Contracts\Eloquent as EloquentContract;
 use CrCms\Repository\Exceptions\ResourceDeleteException;
 use CrCms\Repository\Exceptions\ResourceNotFoundException;
@@ -14,6 +18,8 @@ use Illuminate\Support\Collection;
 
 abstract class Eloquent implements EloquentContract
 {
+    use Scene,Data,Original,Event;
+
     /**
      * @var Model
      */
@@ -143,10 +149,21 @@ abstract class Eloquent implements EloquentContract
         }
     }
 
-    public function create(array $data): Model
+    public function create(array $data,?string $scene = null): Model
     {
+        $this->setOriginal($data);
+
+        $this->setData($this->sceneFilter($data));
+
+        if ($this->fireRepositoryEvent('creating') === false) {
+            return false;
+        }
+
         try {
-            return $this->newModel()::create($data);
+            $model = $this->newModel()->guard([])->create($this->getData());
+
+            $this->fireRepositoryEvent('created',$model);
+
         } catch (\Exception $e) {// @todo 暂时全部Exception
             throw new ResourceStoreException($e->getMessage(), $e->getCode(), $e);
         }
@@ -154,29 +171,27 @@ abstract class Eloquent implements EloquentContract
 
     public function updateByIntId(array $data, int $id): Model
     {
-        try {
-            $model = $this->newModel();
-            $model->where($model->getKeyName(), $id)->update($data);
-            return $model;
-        } catch (\Exception $e) {
-            throw new ResourceUpdateException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->update($data,$id);
     }
 
     public function updateByStringId(array $data, string $id): Model
     {
+        return $this->update($data,$id);
+    }
+
+    public function update(array $data,$key = null): Model
+    {
+        $key = $key ?? $this->model()->getKeyName();
+
+        if (empty($keyValue = $data[$key])) {
+            throw new \UnexpectedValueException("primary key not found");
+        }
+
         try {
-            $model = $this->newModel();
-            $model->where($model->getKeyName(), $id)->update($data);
-            return $model;
+            return $this->newModel()->where($key,$keyValue)->update($data);
         } catch (\Exception $e) {
             throw new ResourceUpdateException($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    public function update()
-    {
-
     }
 
     public function delete()

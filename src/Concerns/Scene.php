@@ -14,9 +14,9 @@ trait Scene
     /**
      * current Scene
      *
-     * @var string
+     * @var string|null
      */
-    protected $scene = 'default';
+    protected $scene = null;
 
     /**
      * @param string $scene
@@ -77,6 +77,10 @@ trait Scene
      */
     protected function sceneFilter(array $data): array
     {
+        if (empty($this->scene)) {
+            return $data;
+        }
+
         return Arr::only($data,$this->scenes[$this->scene] ?? []);
     }
 }

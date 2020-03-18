@@ -3,8 +3,8 @@
 namespace CrCms\Repository\Services;
 
 use CrCms\Repository\AbstractRepository;
-use CrCms\Repository\Exceptions\MethodNotFoundException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
  * Class Cache.
@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Cache;
  */
 class CacheService
 {
+    use ForwardsCalls;
+
     /**
      * @var AbstractRepository
      */
@@ -33,7 +35,7 @@ class CacheService
      *
      * @return $this
      */
-    public function setRepository(AbstractRepository $repository)
+    public function setRepository(AbstractRepository $repository): self
     {
         $this->repository = $repository;
 
@@ -45,7 +47,7 @@ class CacheService
      *
      * @return $this
      */
-    public function setCacheMinute(int $minute)
+    public function setCacheMinute(int $minute): self
     {
         $this->cacheMinute = $minute;
 
@@ -57,7 +59,7 @@ class CacheService
      *
      * @return void
      */
-    public function forget(string $key)
+    public function forget(string $key): void
     {
         $cacheKey = $this->cacheKeys[$key] ?? null;
         if (!empty($cacheKey)) {
@@ -68,7 +70,7 @@ class CacheService
     /**
      * @return void
      */
-    public function flush()
+    public function flush(): void
     {
         array_map(function ($cacheKey) {
             Cache::forget($cacheKey);
@@ -128,18 +130,18 @@ class CacheService
     }
 
     /**
-     * @param $name
-     * @param $arguments
+     * @param string $name
+     * @param array $arguments
      *
      * @return mixed
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         $cacheKey = $this->setKey($name, $arguments);
         if (method_exists($this->repository, $name)) {
             return $this->remember($cacheKey, $name, $arguments);
         }
 
-        throw new MethodNotFoundException(static::class, $name);
+        static::throwBadMethodCallException($name);
     }
 }

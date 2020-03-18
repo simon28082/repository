@@ -18,11 +18,11 @@
   ],
   "require": {
     "php": ">=7.2",
-    "illuminate/support": "^5.8",
-    "illuminate/events": "^5.8",
-    "illuminate/console": "^5.8",
-    "illuminate/cache": "^5.8",
-    "illuminate/database": "^5.8",
+    "illuminate/support": "^5.8|^6.0|^7.0",
+    "illuminate/events": "^5.8|^6.0|^7.0",
+    "illuminate/console": "^5.8|^6.0|^7.0",
+    "illuminate/cache": "^5.8|^6.0|^7.0",
+    "illuminate/database": "^5.8|^6.0|^7.0",
     "lorisleiva/laravel-search-string": "^0.1.3"
   },
   "require-dev": {
