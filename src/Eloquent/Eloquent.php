@@ -25,21 +25,26 @@ abstract class Eloquent implements EloquentContract
      */
     protected $model;
 
+    protected $scopeQuery;
+
     /**
      * @return Model
      */
     abstract public function newModel();
+
+    public function __construct()
+    {
+
+    }
 
     /**
      * @param array $columns
      *
      * @return Collection
      */
-    public function all(array $columns = []): Collection
+    public function all(array $columns = ['*']): Collection
     {
-        return $this->proxyReset(
-            $this->model()->get(empty($columns) ? ['*'] : $columns)
-        );
+        return $this->newModel()->all($columns);
     }
 
     /**
@@ -50,66 +55,22 @@ abstract class Eloquent implements EloquentContract
      */
     public function pluck(string $column, ?string $key = null): Collection
     {
-        return $this->proxyReset(
-            $this->model()->pluck($column, $key)
-        );
+        return $this->newModel()->pluck($column,$key);
     }
 
     /**
-     * @param int $id
+     * @param int|string $key
      *
      * @return Model|null
      */
-    public function oneByIntId(int $id)
+    public function oneByKey($key)
     {
-        return $this->proxyReset(
-            $this->model()->find($id)
-        );
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return Model|null
-     */
-    public function oneByStringId(string $id)
-    {
-        return $this->proxyReset(
-            $this->model()->find($id)
-        );
-    }
-
-    /**
-     * @param string $column
-     * @param int $value
-     *
-     * @return Model|null
-     */
-    public function oneByInt(string $column, int $value)
-    {
-        return $this->proxyReset(
-            $this->model()->where($column, $value)->first()
-        );
-    }
-
-    /**
-     * @param string $column
-     * @param string $value
-     *
-     * @return Model|null
-     */
-    public function oneByString(string $column, string $value)
-    {
-        return $this->proxyReset(
-            $this->model()->where($column, $value)->first()
-        );
+        return $this->newModel()->find($key);
     }
 
     public function chunk(int $limit, callable $callback): bool
     {
-        return $this->proxyReset(
-            $this->model()->chunk($limit, $callback)
-        );
+        return $this->newModel()->chunk($limit,$callback);
     }
 
     public function increment(string $column, int $step = 1, array $extra = []): int
@@ -194,7 +155,7 @@ abstract class Eloquent implements EloquentContract
         }
     }
 
-    public function delete()
+    public function delete($key)
     {
 
     }
@@ -235,20 +196,25 @@ abstract class Eloquent implements EloquentContract
         }
     }
 
-    protected function model(): Model
-    {
-        if (is_null($this->model)) {
-            $this->model = $this->newModel();
-        }
-
-        return $this->model;
-    }
+//    protected function model(): Model
+//    {
+//        if (is_null($this->model)) {
+//            $this->model = $this->newModel();
+//        }
+//
+//        return $this->model;
+//    }
 
     protected function resetModel(): void
     {
         $this->model = $this->newModel();
     }
 
+    /**
+     * @param $result
+     *
+     * @return mixed
+     */
     protected function proxyReset($result)
     {
         return tap($result, function () {

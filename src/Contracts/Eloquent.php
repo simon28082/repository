@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace CrCms\Repository\Contracts;
 
@@ -26,47 +27,24 @@ interface Eloquent extends Database
 
     /**
      * @param array $data
-     * @param int $id
+     * @param null $key
      *
      * @return Model
      */
-    public function updateByIntId(array $data, int $id): Model;
+    public function update(array $data, $key = null): Model;
 
     /**
-     * @param array $data
-     * @param string $id
+     * @param string|int $key
      *
      * @return Model
      */
-    public function updateByStringId(array $data, string $id): Model;
-
-    /**
-     * @param int $id
-     *
-     * @return Model
-     */
-    public function byIntIdOrFail(int $id): Model;
-
-    /**
-     * @param string $id
-     *
-     * @return Model
-     */
-    public function byStringIdOrFail(string $id): Model;
+    public function byKeyOrFail(string $key): Model;
 
     /**
      * @param string $column
-     * @param string $value
+     * @param string|int $value
      *
      * @return Model
      */
-    public function oneByStringOrFail(string $column, string $value): Model;
-
-    /**
-     * @param string $column
-     * @param int $value
-     *
-     * @return Model
-     */
-    public function oneByIntOrFail(string $column, int $value): Model;
+    public function oneByOrFail(string $column, $value): Model;
 }

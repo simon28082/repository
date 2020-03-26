@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace CrCms\Repository\Contracts;
 
@@ -11,7 +12,7 @@ interface Database extends Any
      *
      * @return Collection
      */
-    public function all(array $columns = []): Collection;
+    public function all(array $columns = ['*']): Collection;
 
     /**
      * @param string $column
@@ -22,34 +23,11 @@ interface Database extends Any
     public function pluck(string $column, ?string $key = null): Collection;
 
     /**
-     * @param int $id
+     * @param string|int $key
      *
-     * @return mixed
+     * @return object|null
      */
-    public function oneByIntId(int $id);
-
-    /**
-     * @param string $id
-     *
-     * @return mixed
-     */
-    public function oneByStringId(string $id);
-
-    /**
-     * @param string $column
-     * @param int $value
-     *
-     * @return mixed
-     */
-    public function oneByInt(string $column, int $value);
-
-    /**
-     * @param string $column
-     * @param string $value
-     *
-     * @return mixed
-     */
-    public function oneByString(string $column, string $value);
+    public function oneByKey($key);
 
     /**
      * @param string $column
@@ -108,37 +86,22 @@ interface Database extends Any
     /**
      * @param array $data
      *
-     * @return mixed
+     * @return object
      */
     public function create(array $data);
 
     /**
      * @param array $data
-     * @param int $id
+     * @param string|int $id
      *
-     * @return mixed
+     * @return object
      */
-    public function updateByIntId(array $data, int $id);
+    public function update(array $data, $key);
 
     /**
-     * @param array $data
-     * @param string $id
-     *
-     * @return mixed
-     */
-    public function updateByStringId(array $data, string $id);
-
-    /**
-     * @param int $id
+     * @param string|int $key
      *
      * @return int
      */
-    public function deleteByIntId(int $id): int;
-
-    /**
-     * @param string $id
-     *
-     * @return int
-     */
-    public function deleteByStringId(string $id): int;
+    public function delete(string $key): int;
 }
