@@ -13,7 +13,9 @@ use CrCms\Repository\Contracts\QueryRelate;
  */
 abstract class AbstractMagic implements QueryMagic
 {
-    use HasData, HasGuard, HasSceneGuard;
+    use HasData;
+    use HasGuard;
+    use HasSceneGuard;
 
     /**
      * AbstractMagic constructor.

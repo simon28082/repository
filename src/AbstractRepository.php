@@ -92,7 +92,11 @@ use UnexpectedValueException;
  */
 abstract class AbstractRepository
 {
-    use HasData, HasGuard, HasEvents, HasOriginal, HasSceneGuard;
+    use HasData;
+    use HasGuard;
+    use HasEvents;
+    use HasOriginal;
+    use HasSceneGuard;
 
     /**
      * @var Repository
